@@ -1,0 +1,87 @@
+:root {
+  --background-color: #fefefe;
+  --font-color: #222;
+  --header-color: #222;
+
+  --anchor-color: RoyalBlue;
+  --anchor-visited-color: Brown;
+
+  --code-block: #efefef;
+  --code-block-font: #222;
+
+  --block-quote: #ddd;
+  --table-border: #222;
+
+  --regular-font: "Hiragino Sans", 'ヒラギノ角ゴ Pro W3', 'メイリオ', sans-serif;
+  --code-font: Menlo, Consolas, Liberation, Mono, Courier;
+
+  --icon-size: 30px;
+
+  --width: 80vw;
+  --grid: 1rem;
+
+  --radius: 4px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--regular-font);
+  background-color: var(--background-color);
+  color: var(--font-color);
+  font-feature-settings: "palt";
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  margin: 0;
+  padding: 0;
+  font-size: 1.6rem;
+}
+
+main {
+  display: block;
+  width: var(--width);
+  margin: .5em auto;
+}
+
+code {
+  font-family: var(--mono-font);
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+hr {
+  margin: 0;
+  padding: 0;
+}
+
+
+.top-header {
+  z-index: 1;
+  top: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: calc(var(--grid)/2);
+  background-color: var(--header-color);
+
+  h1 {
+    color: #fff;
+    text-align: center;
+  }
+}
+
+p {
+  word-break: break-all;
+}
+
+footer {
+  padding: var(--grid);
+  text-align: center;
+}
