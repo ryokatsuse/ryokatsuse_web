@@ -34,32 +34,23 @@ const Bio = () => {
 
   const { author, social } = data.site.siteMetadata
   return (
-    <div
-      style={{
-        display: `flex`
-      }}
-    >
-      <Image
-        fixed={data.avatar.childImageSharp.fixed}
-        alt={author}
-        style={{
-          marginRight: rhythm(1 / 2),
-          marginBottom: 0,
-          minWidth: 50,
-          borderRadius: `100%`,
-        }}
-        imgStyle={{
-          borderRadius: `50%`,
-        }}
-      />
-      <p>
-        フロントエンドエンジニアなので技術のこと、好きな映画や音楽、読み物についても書きます。<br />
-        JavaScript,TypeScript,Vue.js,Nuxt.js,React,Nextjs,Rust
-        {` `}
-        {/* <a href={`https://twitter.com/${social.twitter}`}>
-          You should follow him on Twitter
-        </a> */}
-      </p>
+    <div className="profile">
+      <a href={`https://twitter.com/${social.twitter}`}>
+        <Image
+          fixed={data.avatar.childImageSharp.fixed}
+          alt={author}
+          style={{
+            marginRight: rhythm(1 / 2),
+            marginBottom: 0,
+            minWidth: 50,
+            borderRadius: `100%`,
+          }}
+          imgStyle={{
+            borderRadius: `50%`,
+          }}
+        />
+      </a>
+      <p>フロントエンドエンジニアやってます。技術のことやその他色々書きます。</p>
     </div>
   )
 }
