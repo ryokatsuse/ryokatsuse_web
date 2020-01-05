@@ -301,3 +301,12 @@ code {
     margin-left: var(--grid);
   }
 }
+
+.social-buttons {
+  display: flex;
+  justify-content: flex-end;
+
+  .buttons {
+    cursor: pointer;
+  }
+}

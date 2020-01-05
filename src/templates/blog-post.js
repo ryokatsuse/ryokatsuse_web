@@ -1,13 +1,22 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
-
 import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+import META from "../components/meta"
+import { 
+  TwitterShareButton, 
+  TwitterIcon
+} from 'react-share'
+
+const config = {
+  size: 32
+}
 
 class BlogPostTemplate extends React.Component {
   render() {
     const post = this.props.data.markdownRemark
+    const siteUrl = this.props.data.site.siteMetadata.siteUrl
     const siteTitle = this.props.data.site.siteMetadata.title
     const { previous, next } = this.props.pageContext
 
@@ -17,6 +26,7 @@ class BlogPostTemplate extends React.Component {
           title={post.frontmatter.title}
           description={post.frontmatter.description || post.excerpt}
         />
+        <META />
         <article className="blog-post">
           <header>
             <h1>
@@ -33,6 +43,13 @@ class BlogPostTemplate extends React.Component {
           <section dangerouslySetInnerHTML={{ __html: post.html }} />
           <hr/>
           <footer>
+            <div className="social-buttons">
+              <div className="buttons">
+                <TwitterShareButton title={post.frontmatter.title} url={siteUrl}>
+                    <TwitterIcon size={this.props.size ? this.props.size : config.size} round />
+                </TwitterShareButton>
+              </div>
+            </div>
             <Bio />
           </footer>
         </article>
@@ -74,6 +91,7 @@ export const pageQuery = graphql`
   query BlogPostBySlug($slug: String!) {
     site {
       siteMetadata {
+        siteUrl
         title
       }
     }
