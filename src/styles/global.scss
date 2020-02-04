@@ -301,6 +301,23 @@ a {
   ul {
     margin-left: var(--grid);
   }
+
+  footer {
+    padding: 0;
+  }
+
+  .sns-btn {
+    display: flex;
+    justify-content: flex-end;
+  
+    .react-share__ShareButton {
+      margin-right: 20px;
+    }
+  }
+
+  .profile {
+    margin-top: 20px;
+  }
 }
 
 .profile {
@@ -315,3 +332,4 @@ a {
     }
   }
 }
+
