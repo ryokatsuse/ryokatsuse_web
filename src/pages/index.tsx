@@ -13,7 +13,6 @@ class BlogIndex extends React.Component<any, any> {
     return (
       <Layout location={this.props.location} title={siteTitle}>
         <SEO title="Ryo Katsuse Blog" />
-        <Bio />
         {posts.map(({ node }: {node: any}) => {
           const title = node.frontmatter.title || node.fields.slug
           return (
@@ -26,7 +25,6 @@ class BlogIndex extends React.Component<any, any> {
                     {title}
                   </Link>
                 </h3>
-                <small>{node.frontmatter.date}</small>
               </header>
               <section className="section-block">
                 <p
@@ -34,10 +32,12 @@ class BlogIndex extends React.Component<any, any> {
                     __html: node.frontmatter.description || node.excerpt,
                   }}
                 />
+                <small>{node.frontmatter.date}</small>
               </section>
             </article>
           )
         })}
+        <Bio />
       </Layout>
     )
   }
@@ -60,7 +60,7 @@ export const pageQuery = graphql`
             slug
           }
           frontmatter {
-            date(formatString: "MMMM DD, YYYY")
+            date(formatString: "YYYY-MM-DD")
             title
           }
         }
