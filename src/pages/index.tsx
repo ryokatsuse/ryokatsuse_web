@@ -35,6 +35,7 @@ class BlogIndex extends React.Component<any, any> {
                   }}
                 />
               </section>
+              <hr />
             </article>
           )
         })}
