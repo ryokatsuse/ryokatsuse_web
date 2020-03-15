@@ -100,7 +100,7 @@ select {
   --block-quote: #ddd;
   --table-border: #222;
 
-  --regular-font: "Hiragino Sans", 'ヒラギノ角ゴ Pro W3', 'メイリオ', sans-serif;
+  --regular-font: "Montserrat","游ゴシック",YuGothic,"ヒラギノ角ゴ ProN W3","Hiragino Kaku Gothic ProN","メイリオ",Meiryo,sans-serif;
   --code-font: Menlo, Consolas, Liberation, Mono, Courier;
 
   --icon-size: 30px;
@@ -249,6 +249,10 @@ a {
 .article-block {
   margin-bottom: 2rem;
 
+  hr {
+    margin: 1rem 0;
+  }
+
   header {
     margin-bottom: 1rem;
   }
@@ -296,10 +300,6 @@ a {
 
   p {
     margin-bottom: .5rem;
-  }
-
-  ul {
-    margin-left: var(--grid);
   }
 
   footer {
