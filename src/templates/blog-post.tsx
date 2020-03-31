@@ -62,7 +62,6 @@ class BlogPostTemplate extends React.Component<any, any> {
                 />
               </a>
             </div>
-            <Bio />
           </footer>
         </article>
 
