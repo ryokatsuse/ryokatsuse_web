@@ -1,9 +1,7 @@
 import * as React from "react"
-import { Link } from "gatsby"
 
 class header extends React.Component<any, any> {
   render() {
-    const { title, children } = this.props
 
     return (
       <div>
