@@ -1,6 +1,5 @@
 import * as React from "react"
 import { Link, graphql } from "gatsby"
-import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 
@@ -13,7 +12,6 @@ class BlogIndex extends React.Component<any, any> {
     return (
       <Layout location={this.props.location} title={siteTitle}>
         <SEO title="Ryo Katsuse Blog" />
-        <Bio />
         {posts.map(({ node }: {node: any}) => {
           const title = node.frontmatter.title || node.fields.slug
           return (

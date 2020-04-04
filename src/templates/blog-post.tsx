@@ -1,7 +1,6 @@
 import React from "react"
 import { Link, graphql } from "gatsby"
 
-import Bio from "../components/bio"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import Helmet from "react-helmet"
@@ -62,7 +61,6 @@ class BlogPostTemplate extends React.Component<any, any> {
                 />
               </a>
             </div>
-            <Bio />
           </footer>
         </article>
 
