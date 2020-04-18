@@ -221,8 +221,9 @@ h1 {
 
 main {
   display: block;
-  width: var(--width);
-  margin: 1em auto;
+  max-width: calc(600px + 10%);
+  margin: 0 auto;
+  padding: 5%;
 }
 
 code {
