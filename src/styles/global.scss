@@ -452,3 +452,18 @@ a {
     color: #fff;
   }
 }
+
+blockquote {
+  position: relative;
+  box-sizing: border-box;
+  font-style: italic;
+  background: #efefef;
+  color: #555;
+  padding: 10px;
+  border-left: 10px solid #ccc;
+  margin-bottom: .5rem;
+}
+
+.blog-post blockquote p {
+  margin: 0;
+}
