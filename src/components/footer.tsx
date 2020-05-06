@@ -1,6 +1,6 @@
 import * as React from "react"
 
-class header extends React.Component<any, any> {
+class footer extends React.Component<any, any> {
   render() {
 
     return (
@@ -27,4 +27,4 @@ class header extends React.Component<any, any> {
   }
 }
 
-export default header
+export default footer
