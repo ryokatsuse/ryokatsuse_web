@@ -19,21 +19,13 @@ class BlogIndex extends React.Component<any, any> {
               key={node.fields.slug}
               className="article-block">
               <header>
-                <h3>
+                <h4>
                   <b>{node.frontmatter.date}</b>
                   <Link style={{ boxShadow: `none` }} to={node.fields.slug}>
                     {title}
                   </Link>
-                </h3>
+                </h4>
               </header>
-              {/* <section className="section-block">
-                <p
-                  dangerouslySetInnerHTML={{
-                    __html: node.frontmatter.description || node.excerpt,
-                  }}
-                />
-              </section>
-              <hr /> */}
             </article>
           )
         })}
