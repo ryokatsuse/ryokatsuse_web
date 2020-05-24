@@ -281,6 +281,16 @@ a {
   }
 }
 
+.pagenation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &-next {
+    margin-left: auto;
+  }
+}
+
 .blog-post {
 
   section {
