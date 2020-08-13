@@ -276,7 +276,7 @@ a {
     font-size: 1.4rem;
 
     a {
-      color: #fff;
+      color: #333;
     }
   }
 }
@@ -381,6 +381,15 @@ a {
         a {
           color: #fff;
         }
+      }
+    }
+  }
+  .article-block,
+  .blog-post {
+    h4 {
+
+      a {
+        color: #fff;
       }
     }
   }
