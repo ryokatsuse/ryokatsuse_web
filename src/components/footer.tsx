@@ -1,10 +1,8 @@
 import * as React from "react"
 
-class footer extends React.Component<any, any> {
-  render() {
-
-    return (
-      <div>
+const Footer : React.FC<any> = () => {
+  return (
+    <div>
         <footer>
           <hr />
           <div className="links">
@@ -23,8 +21,6 @@ class footer extends React.Component<any, any> {
           </p>
         </footer>
       </div>
-    )
-  }
-}
-
-export default footer
+  );
+};
+export default Footer
