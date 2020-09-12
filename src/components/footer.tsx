@@ -10,7 +10,7 @@ const Footer : React.FC<any> = () => {
               rel="nofollow noopener noreferrer"
               target="_blank">GitHub</a>
             <a 
-              href="https://twitter.com/RyoEnter"
+              href="https://twitter.com/ryo__kts"
               rel="nofollow noopener noreferrer"
               target="_blank">Twitter</a>
           </div>
