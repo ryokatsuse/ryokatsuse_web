@@ -19,6 +19,7 @@ const Footer : React.FC<any> = () => {
             {` `}
             <a href="/">Ryo Kastuse Blog</a>
           </p>
+          <p>Google Analyticsを使っています。</p>
         </footer>
       </div>
   );
