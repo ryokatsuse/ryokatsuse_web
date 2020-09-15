@@ -1,11 +1,11 @@
 {
-  "name": "gatsby-starter-blog",
+  "name": "ryo-katsuse-blog",
   "private": true,
-  "description": "A starter for a blog powered by Gatsby and Markdown",
+  "description": "I will keep a daily record of technical matters",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "Ryo Katsuse<ryokatsu0719@gmail.com>",
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://ryokatsu.dev/"
   },
   "dependencies": {
     "@types/react": "16.7.13",
