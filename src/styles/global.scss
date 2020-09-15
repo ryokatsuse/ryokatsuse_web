@@ -169,20 +169,6 @@ hr {
   padding: 0;
 }
 
-.top-header {
-  z-index: 1;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  box-sizing: border-box;
-  margin: 0;
-  padding: calc(var(--grid)/2);
-  background-color: var(--header-color);
-
-  .h1-title{
-    text-align: center;
-  }
-}
 
 p {
   word-break: break-all;
@@ -244,17 +230,6 @@ a {
 
   hr {
     margin: 1rem 0;
-  }
-
-  header {
-    margin-bottom: 1rem;
-
-    h3 {
-
-      a {
-        color: #333;
-      }
-    }
   }
 }
 
