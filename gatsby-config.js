@@ -54,6 +54,12 @@ module.exports = {
         trackingId: `UA-50098212-2`,
       },
     },
+    {
+      resolve: 'gatsby-plugin-graphql-codegen',
+      options: {
+        fileName: `types/graphql-types.d.ts`
+      }
+    },
     `gatsby-plugin-feed`,
     {
       resolve: `gatsby-plugin-manifest`,
