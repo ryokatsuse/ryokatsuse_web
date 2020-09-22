@@ -19,7 +19,7 @@ const BlogIndex : React.FC<Props> = ({data}) => {
 
   return (
     <Layout location="" title="">
-      <SEO title="Ryo Katsuse Blog" />
+      <SEO title="ryokatsu.dev" />
       {posts.map(({ node }: {node: any}) => {
         const title = node.frontmatter.title || node.fields.slug
         return (
