@@ -22,7 +22,7 @@ const FCFooter : React.FC<Props> = ({className}) => {
       <p className={`${className}__copy-right`}>
         © {new Date().getFullYear()}
         {` `}
-        <a href="/">Ryo Kastuse Blog</a>
+        <a href="/">ryokatsu.dev</a>
       </p>
       <p>Google Analyticsを使っています。</p>
     </footer>

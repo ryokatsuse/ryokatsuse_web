@@ -1,11 +1,12 @@
 module.exports = {
   siteMetadata: {
-    title: `Ryo Katsuse Blog`,
+    title: `ryokatsu.dev`,
     author: `Ryo Katsuse`,
-    description: `I write about the front end, reading, movies, etc.`,
+    description: `フロントエンドエンジニアによる技術ブログです。`,
     siteUrl: `https://ryokatsu.dev`,
     social: {
-      twitter: `RyoEnter`,
+      github: 'ryokatsuse',
+      twitter: `ryo__kts`,
     },
   },
   plugins: [
@@ -58,8 +59,8 @@ module.exports = {
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
-        name: `Ryo Katsuse Blog`,
-        short_name: `GatsbyJS`,
+        name: `ryokatsu.dev`,
+        short_name: `ryokatsu`,
         start_url: `/`,
         background_color: `#ffffff`,
         theme_color: `#663399`,
