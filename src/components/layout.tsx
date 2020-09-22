@@ -46,5 +46,5 @@ export const Layout = styled(FCLayout)`
   display: block;
   max-width: calc(600px + 10%);
   margin: 0 auto;
-  padding: 5em 2em;
+  padding: 5em 2em 0 2rem;
 `

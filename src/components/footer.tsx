@@ -1,4 +1,5 @@
 import * as React from "react"
+import { graphql, useStaticQuery } from "gatsby"
 import styled from "styled-components"
 
 type Props = {
@@ -6,23 +7,35 @@ type Props = {
 }
 
 const FCFooter : React.FC<Props> = ({className}) => {
+  const {
+    site: {
+      siteMetadata: { author, social },
+    },
+  } = useStaticQuery(graphql`
+    query footerQuery {
+      site {
+        siteMetadata {
+          author
+          social {
+            twitter
+            github
+          }
+        }
+      }
+    }
+  `)
+
   return (
     <footer className={`${className}`}>
-      <hr />
-      <div className={`${className}__links`}>
-        <a className={`${className}__links-link`}
-          href="https://github.com/ryokatsuse"
-          rel="nofollow noopener noreferrer"
-          target="_blank">GitHub</a>
-        <a className={`${className}__links-link`}
-          href="https://twitter.com/ryo__kts"
-          rel="nofollow noopener noreferrer"
-          target="_blank">Twitter</a>
-      </div>
       <p className={`${className}__copy-right`}>
         © {new Date().getFullYear()}
         {` `}
-        <a href="/">ryokatsu.dev</a>
+        このサイトは、<a rel="external" href="https://www.gatsbyjs.org">Gatsby</a>で作られています。
+      <p>ソースコードは
+        <a 
+          href={`https://github.com/${social.github}/ryokatsuse_web`}
+          target="_blank"
+          rel="external noopener">こちらのリポジトリ</a>にあります。</p>
       </p>
       <p>Google Analyticsを使っています。</p>
     </footer>
@@ -31,34 +44,10 @@ const FCFooter : React.FC<Props> = ({className}) => {
 export const Footer = styled(FCFooter)`
   padding: var(--grid);
   text-align: center;
-  padding: 0;
-
-  &__links {
-    margin: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    &-link {
-      color: #333;
-      margin-right: 8px;
-
-      &:last-child {
-        margin-right: 0;
-      }
-    }
-  }
+  background-color: var(--header-color);
+  color: #fff;
 
   &__copy-right {
     font-size: 1rem;
-    font-style: italic;
   }
-  @media (prefers-color-scheme: dark) {
-    &__links {
-      &-link {
-        color: #fff;
-      }
-    }
-  }
-
 `
