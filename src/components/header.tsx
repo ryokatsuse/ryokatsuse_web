@@ -75,7 +75,7 @@ export const Header = styled(FCHeader)`
   margin: 0;
   margin-bottom: 1rem;
   padding: calc(var(--grid)/2);
-  background-color: var(--header-color);
+  background-color: var(--dark-color);
 
   &__title{
     font-size: 1.6rem;

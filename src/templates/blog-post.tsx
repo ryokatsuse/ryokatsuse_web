@@ -22,7 +22,6 @@ type Props = {
 
 const BlogPostTemplate: React.FC<Props> = ({ data, pageContext }) => {
   const post = data.markdownRemark
-  console.log(post)
   const { slug, previous, next } = pageContext
   const url = typeof window !== 'undefined' ? window.location.href : ''
 

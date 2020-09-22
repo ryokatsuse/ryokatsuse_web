@@ -44,7 +44,7 @@ const FCFooter : React.FC<Props> = ({className}) => {
 export const Footer = styled(FCFooter)`
   padding: var(--grid);
   text-align: center;
-  background-color: var(--header-color);
+  background-color: var(--dark-color);
   color: #fff;
 
   &__copy-right {

@@ -94,7 +94,7 @@ select {
 :root {
   --background-color: #fefefe;
   --font-color: #222;
-  --header-color: #222;
+  --dark-color: #222;
 
   --anchor-color: RoyalBlue;
   --anchor-visited-color: Brown;
@@ -282,19 +282,6 @@ a {
   .gatsby-resp-image-wrapper {
     margin-top: 20px;
     margin-bottom: 20px;
-  }
-}
-
-.profile {
-
-  div {
-    margin-right: 0.875rem;
-    min-width: 50px;
-    border-radius: 100%;
-
-    img {
-      border-radius: 50%;
-    }
   }
 }
 
