@@ -79,6 +79,10 @@ const SEO: React.FC<Props> = ({
           content: `website`,
         },
         {
+          property: `og:image`,
+          content: `${site.siteMetadata.siteUrl}/content/assets/ryokatsu.jpg`,
+        },
+        {
           name: `twitter:card`,
           content: `summary`,
         },
