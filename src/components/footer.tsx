@@ -30,13 +30,12 @@ const FCFooter : React.FC<Props> = ({className}) => {
       <p className={`${className}__copy-right`}>
         © {new Date().getFullYear()}
         {` `}
-        このサイトは、<a rel="external" href="https://www.gatsbyjs.org">Gatsby</a>で作られています。
+        このサイトは、<a rel="external" href="https://www.gatsbyjs.org">Gatsby</a>で作られています。</p>
       <p>ソースコードは
         <a 
           href={`https://github.com/${social.github}/ryokatsuse_web`}
           target="_blank"
           rel="external noopener">こちらのリポジトリ</a>にあります。</p>
-      </p>
       <p>Google Analyticsを使っています。</p>
     </footer>
   );

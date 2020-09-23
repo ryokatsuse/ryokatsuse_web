@@ -2,7 +2,6 @@ import * as React from "react"
 import { graphql, Link, useStaticQuery } from "gatsby"
 import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faGithub, faTwitter } from "@fortawesome/free-brands-svg-icons";
 
 type Props = {
   title: string
@@ -46,7 +45,7 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
         >
           <FontAwesomeIcon
             className={`${className}__sns-icon`} 
-            icon={faGithub} />
+            icon={["fab", "github"]} />
         </a>
         <a
           href={`https://twitter.com/${social.twitter}`}
@@ -56,7 +55,7 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
         >
           <FontAwesomeIcon
             className={`${className}__sns-icon`}
-            icon={faTwitter} />
+            icon={["fab", "twitter"]} />
         </a>
       </nav>
     </header>
