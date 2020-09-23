@@ -1,4 +1,5 @@
 import * as React from "react"
+import Toggle from "../components/toggle";
 import { graphql, Link, useStaticQuery } from "gatsby"
 import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
@@ -57,6 +58,7 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
             className={`${className}__sns-icon`}
             icon={["fab", "twitter"]} />
         </a>
+        <Toggle />
       </nav>
     </header>
   );
@@ -72,6 +74,7 @@ export const Header = styled(FCHeader)`
   top: 0;
   box-sizing: border-box;
   margin: 0;
+  z-index: 2;
   margin-bottom: 1rem;
   padding: calc(var(--grid)/2);
   background-color: var(--dark-color);
