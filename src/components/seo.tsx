@@ -84,11 +84,11 @@ const SEO: React.FC<Props> = ({
         },
         {
           name: `twitter:creator`,
-          content: site.siteMetadata.author,
+          content: site.siteMetadata.social.twitter,
         },
         {
           name: `twitter:title`,
-          content: title,
+          content: titleDisp,
         },
         {
           name: `twitter:description`,

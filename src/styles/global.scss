@@ -291,13 +291,6 @@ a {
     --table-border: #eee;
   }
 
-  article img {
-    filter: grayscale(50%);
-  }
-  article img[src*=svg] {
-    filter: invert(100%) grayscale(50%);
-  }
-
   .article-block {
     header {
       h3 {
