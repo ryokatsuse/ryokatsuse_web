@@ -34,8 +34,39 @@ dd {
   margin: 0;
 }
 
+/*
+* root setting
+* 
+*/
+:root {
+  --background-color: #fefefe;
+  --font-color: #222;
+  --dark-color: #222;
+
+  --anchor-color: RoyalBlue;
+  --anchor-visited-color: Brown;
+
+  --code-block: #efefef;
+  --code-block-font: #222;
+
+  --block-quote: #ddd;
+  --table-border: #222;
+
+  --regular-font: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
+  --code-font: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
+
+  --icon-size: 30px;
+
+  --width: 80vw;
+  --grid: 1rem;
+
+  --radius: 3px;
+}
+
 /* Set core body defaults */
 body {
+  --background-color: #fefefe;
+  --font-color: #222;
   min-height: 100vh;
   scroll-behavior: auto;
   text-rendering: optimizeSpeed;
@@ -45,6 +76,13 @@ body {
   color: var(--font-color);
   margin: 0;
   padding: 0;
+}
+
+body.dark {
+  --background-color: #010101;
+  --font-color: #fff;
+  background-color: var(--background-color);
+  color: var(--font-color);
 }
 
 /* Remove list styles on ul, ol elements with a class attribute */
@@ -85,35 +123,6 @@ select {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-}
-
-/*
-* root setting
-* 
-*/
-:root {
-  --background-color: #fefefe;
-  --font-color: #222;
-  --dark-color: #222;
-
-  --anchor-color: RoyalBlue;
-  --anchor-visited-color: Brown;
-
-  --code-block: #efefef;
-  --code-block-font: #222;
-
-  --block-quote: #ddd;
-  --table-border: #222;
-
-  --regular-font: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
-  --code-font: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
-
-  --icon-size: 30px;
-
-  --width: 80vw;
-  --grid: 1rem;
-
-  --radius: 3px;
 }
 
 /* Mobile Theme */
@@ -221,10 +230,6 @@ a {
 
   h4 {
     font-size: 1.4rem;
-
-    a {
-      color: #333;
-    }
   }
 }
 
@@ -247,23 +252,6 @@ a {
   pre[class*="language-"] {
     padding: 12px;
   }
-
-  // pre > code {
-  //   font-family: var(--code-font);
-  //   overflow: auto;
-  //   display: block;
-  //   padding: 0.5rem;
-  //   margin: 0;
-  // }
-
-  // code {
-  //   background-color: var(--code-block);
-  //   color: var(--code-block-font);
-  //   border-radius: var(--radius);
-  //   padding: .2em .4em;
-  //   font-size: 15px;
-  //   margin: 0 4px;
-  // }
 
   p {
     margin-bottom: .5rem;
@@ -319,37 +307,26 @@ a {
       }
     }
   }
-  .article-block,
-  .blog-post {
-    h4 {
-
-      a {
-        color: #fff;
-      }
-    }
-  }
 
   hr {
     background: #fff;
   }
 }
 
-// blockquote {
-//   position: relative;
-//   box-sizing: border-box;
-//   font-style: italic;
-//   background: #efefef;
-//   color: #555;
-//   padding: 10px;
-//   border-left: 10px solid #ccc;
-//   margin-bottom: .5rem;
-// }
+.toggle {
+  display: none;
 
-// .blog-post blockquote p {
-//   margin: 0;
-// }
-
-// .img-center {
-//   width: 50%;
-//   margin: 0 auto;
-// }
+  &__fa {
+    position: relative;
+    vertical-align: middle;
+    font-size: 20px;
+    cursor: pointer;
+    top: -1px;
+  }
+}
+.toggle + .toggle__fa:before {
+  content: '🌞';
+}
+.toggle:checked + .toggle__fa:before {
+  content: '🌛';
+}
