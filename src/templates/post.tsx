@@ -46,7 +46,10 @@ export const Post = styled(FCPost)`
     margin-bottom: 20px;
   }
 
-  & h1,
+  & h1 {
+    margin: 0 0 1.5rem 0;
+  }
+
   & h2,
   & h3,
   & h4 {
