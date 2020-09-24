@@ -183,6 +183,7 @@ a {
   text-decoration: none;
   box-shadow: none;
   color: #007acc;
+  word-break: break-all;
 
   &:hover {
     text-decoration: underline;
@@ -204,4 +205,8 @@ a {
 }
 .toggle:checked + .toggle__fa:before {
   content: '🌛';
+}
+
+.tag__heading {
+  margin-bottom: 2rem;
 }

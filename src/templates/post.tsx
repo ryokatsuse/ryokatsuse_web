@@ -4,12 +4,13 @@ import React from "react"
 import styled from "styled-components"
 import { MarkdownRemark } from "../types/blog-post"
 import { ShareButtons } from "../components/share"
+import { Tags } from "../components/Tags"
 
 type Props = {
   className?: string
   slug: string
   post: Pick<
-    MarkdownRemark<"title" | "date">, | "frontmatter" | "html"
+    MarkdownRemark<"title" | "date" | "tags">, | "frontmatter" | "html"
   >
 }
 
@@ -22,9 +23,18 @@ const FCPost: React.FC<Props> = ({ className, post, slug }) => {
         <h1 className={`${className}__title`}>
           {post.frontmatter.title}
         </h1>
-        <p>
-          {post.frontmatter.date}
-        </p>
+        <div className={`${className}__item`}>
+          <div className={`${className}__date`}>
+            {post.frontmatter.date}
+          </div>
+          <small>
+            {post.frontmatter.tags ? (
+              <div>
+                <Tags tags={post.frontmatter.tags} />
+              </div>
+            ) : null}
+          </small>
+        </div>
       </header>
       <section
         className={`${className}__section`}
@@ -46,8 +56,15 @@ export const Post = styled(FCPost)`
     margin-bottom: 20px;
   }
 
-  & h1 {
+  &__title {
     margin: 0 0 1.5rem 0;
+  }
+
+  &__item {
+    display: flex;
+    flex-flow: row wrap;
+    -webkit-box-align: center;
+    align-items: center;
   }
 
   & h2,

@@ -1,7 +1,7 @@
 const path = require(`path`)
 const { createFilePath } = require(`gatsby-source-filesystem`)
 
-exports.createPages = async ({ graphql, actions }) => {
+const createBlogPages = async (graphql, actions) => {
   const { createPage } = actions
 
   const blogPost = path.resolve(`./src/templates/index.tsx`)
@@ -11,6 +11,7 @@ exports.createPages = async ({ graphql, actions }) => {
         allMarkdownRemark(
           sort: { fields: [frontmatter___date], order: DESC }
           limit: 1000
+          filter: { fields: { sourceFileType: { eq: "blog" } } }
         ) {
           edges {
             node {
@@ -50,15 +51,72 @@ exports.createPages = async ({ graphql, actions }) => {
   })
 }
 
+const createTagPages = async (graphql, actions) => {
+  const { createPage } = actions
+  const tagTemplate = path.resolve("./src/templates/tag/index.tsx")
+
+  const result = await graphql(`
+    {
+      allMarkdownRemark {
+        group(field: frontmatter___tags) {
+          tag: fieldValue
+          totalCount
+        }
+      }
+    }
+  `)
+
+  if (result.errors) {
+    throw result.errors
+  }
+
+  const tags = result.data.allMarkdownRemark.group
+
+  for (const { tag } of tags) {
+    const slug = `/tag/${tag}/`
+    createPage({
+      path: slug,
+      component: tagTemplate,
+      context: {
+        tag,
+        slug,
+      },
+    })
+  }
+}
+
+exports.createPages = async ({ graphql, actions }) => {
+  await createBlogPages(graphql, actions)
+  await createTagPages(graphql, actions)
+}
+
 exports.onCreateNode = ({ node, actions, getNode }) => {
   const { createNodeField } = actions
 
   if (node.internal.type === `MarkdownRemark`) {
-    const value = createFilePath({ node, getNode })
+    // parent node is from gatsby-source-filesystem
+    const parent = getNode(node.parent)
+    const { sourceInstanceName } = parent
+    createNodeField({
+      name: "sourceFileType",
+      node,
+      value: sourceInstanceName,
+    })
+
+    const prefix = sourceInstanceName === "blog" ? "/blog" : "/tag"
+
+    const fp = createFilePath({ node, getNode })
+    const value = prefix + fp
     createNodeField({
       name: `slug`,
       node,
       value,
+    })
+
+    createNodeField({
+      name: `filePath`,
+      node,
+      value: value + "index.md",
     })
   }
 }

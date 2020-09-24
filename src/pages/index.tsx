@@ -3,7 +3,8 @@ import { graphql } from "gatsby"
 import { Layout } from "../components/layout"
 import {
   BlogItem,
-  BlogItemData, } from "../components/BlogItem"
+  BlogItemData
+} from "../components/BlogItem"
 import SEO from "../components/seo"
 import styled from "styled-components"
 
@@ -33,7 +34,10 @@ export default BlogIndex
 
 export const pageQuery = graphql`
   query {
-    allMarkdownRemark(sort: { fields: [frontmatter___date], order: DESC }) {
+    allMarkdownRemark(
+      sort: { fields: [frontmatter___date], order: DESC }
+      filter: { fields: { sourceFileType: { eq: "blog" } } }
+      ) {
       edges {
         node {
           ...BlogIncludeData

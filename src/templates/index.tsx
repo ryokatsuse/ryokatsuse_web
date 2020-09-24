@@ -9,7 +9,7 @@ import { ShareButtons } from "../components/share"
 
 type Props = {
   data: {
-    markdownRemark: MarkdownRemark<"title" | "published" | "updated">
+    markdownRemark: MarkdownRemark<"title" | "published" | "updated" | "tags">
   }
   pageContext: {
     slug: string
@@ -50,6 +50,7 @@ export const pageQuery = graphql`
       frontmatter {
         title
         date(formatString: "YYYY-MM-DD")
+        tags
       }
     }
   }
