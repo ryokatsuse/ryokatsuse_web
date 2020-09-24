@@ -8,6 +8,7 @@ module.exports = {
       github: 'ryokatsuse',
       twitter: `ryo__kts`,
     },
+    repo: "https://github.com/ryokatsuse/ryokatsuse_web",
   },
   plugins: [
     `gatsby-plugin-sass`,

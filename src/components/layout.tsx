@@ -3,7 +3,7 @@ import { graphql, useStaticQuery } from "gatsby"
 import { Header } from "../components/header"
 import { Footer } from "../components/footer"
 import styled from "styled-components"
-import { SiteMetadata } from "../types/siteMetaData"
+import { SiteMetaData } from "../types/siteMetaData"
 import "./fa-default"
 
 type Props = {
