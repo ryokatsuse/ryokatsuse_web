@@ -13,8 +13,12 @@ const FCTags: React.FunctionComponent<Props> = ({ className, tags }) => {
     <div className={`${className}`}>
       <ul className={`${className}__nav`}>
         {tags.map(tag => (
-          <li key={tag}>
-            <FontAwesomeIcon aria-label="タグ" icon={["fas", "hashtag"]} />
+          <li
+          className={`${className}__nav-list`}
+            key={tag}>
+            <FontAwesomeIcon
+              className={`${className}__nav-icon`}
+              aria-label="タグ" icon={["fas", "hashtag"]} />
             <Link
               to={`/tag/${tag}`}>{tag}</Link>
           </li>
@@ -36,20 +40,17 @@ export const Tags = styled(FCTags)`
     align-items: center;
     list-style: none;
 
-    li {
+    &-list {
       margin-left: 10px;
       display: flex;
       align-items: center;
 
       a {
         margin-left: 5px;
-        --font-color: #222;
-        color: var(--font-color);
-        padding: 3px;
-        background: #ccc;
-        border-radius: 4px;
-        text-decoration: none;
       }
+    }
+    &-icon {
+      color: #007acc;
     }
   }
 `
