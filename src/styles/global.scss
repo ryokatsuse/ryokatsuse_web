@@ -86,6 +86,11 @@ body.dark {
 }
 
 // TODO：グローバル過ぎるので修正する
+
+body h3 > a {
+  --font-color: #222;
+  color: var(--font-color);
+}
 body.dark h3 > a {
   --font-color: #fff;
   color: var(--font-color);
