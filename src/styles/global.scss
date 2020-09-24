@@ -85,6 +85,11 @@ body.dark {
   color: var(--font-color);
 }
 
+body.dark h3 > a {
+  --font-color: #fff;
+  color: var(--font-color);
+}
+
 /* Remove list styles on ul, ol elements with a class attribute */
 ul[class],
 ol[class] {
@@ -176,18 +181,6 @@ p {
   word-break: break-all;
 }
 
-
-.copy-right {
-  font-size: 1rem;
-  font-style: italic;
-}
-
-.profile {
-  margin: 2rem 0;
-  display: flex;
-  align-items: center;
-}
-
 a {
   text-decoration: none;
   box-shadow: none;
@@ -195,18 +188,6 @@ a {
 
   &:hover {
     text-decoration: underline;
-  }
-}
-
-.article-block {
-  margin-bottom: 2rem;
-
-  b {
-    margin-right: 10px;
-  }
-
-  hr {
-    margin: 1rem 0;
   }
 }
 
@@ -233,16 +214,6 @@ a {
   }
 }
 
-.pagenation {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  &-next {
-    margin-left: auto;
-  }
-}
-
 .blog-post {
 
   section {
@@ -255,20 +226,6 @@ a {
 
   p {
     margin-bottom: .5rem;
-  }
-
-
-  .sns-btn {
-    display: flex;
-    justify-content: flex-end;
-  
-    .react-share__ShareButton {
-      margin-right: 20px;
-    }
-  }
-
-  .profile {
-    margin-top: 20px;
   }
 
   .gatsby-resp-image-wrapper {
