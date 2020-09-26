@@ -1,11 +1,9 @@
 import React from "react"
-import { Link, graphql } from "gatsby"
+import { graphql } from "gatsby"
 import { Layout } from "../components/layout"
 import SEO from "../components/seo"
 import { Post } from "./post"
-import Helmet from "react-helmet"
 import { MarkdownRemark } from "../types/blog-post"
-import { ShareButtons } from "../components/share"
 
 type Props = {
   data: {
