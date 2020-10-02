@@ -20,7 +20,8 @@ const FCBlogItem: React.FC<Props> = ({
 }) => {
   const title = frontmatter.title || fields.slug
   return (
-    <article className={`${className}`}>
+    frontmatter.date ? (
+      <article className={`${className}`}>
       <header>
         <h3>
           <Link
@@ -41,6 +42,7 @@ const FCBlogItem: React.FC<Props> = ({
         </div>
       </header>
     </article>
+    ) : null
   )
 }
 

@@ -38,6 +38,11 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
         </Link>
       </h1>
       <nav className={`${className}__sns`}>
+        <Link to="/blog/about">
+          <FontAwesomeIcon
+            className={`${className}__sns-icon`} 
+            icon={["fas", "user-alt"]} />
+        </Link>
         <a
           href={`https://github.com/${social.github}`}
           target="_blank"
