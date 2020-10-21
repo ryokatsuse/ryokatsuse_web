@@ -1,4 +1,3 @@
-import * as React from "react"
 import Toggle from "../components/toggle";
 import { graphql, Link, useStaticQuery } from "gatsby"
 import styled from "styled-components"

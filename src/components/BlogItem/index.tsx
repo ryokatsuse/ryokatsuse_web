@@ -1,5 +1,5 @@
 import { graphql, Link } from "gatsby"
-import React from "react"
+
 import styled from "styled-components"
 import { MarkdownRemark } from "../../types/blog-post"
 import { Tags } from "../Tags"

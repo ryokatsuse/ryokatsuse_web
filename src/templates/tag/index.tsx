@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql } from "gatsby"
-import React from "react"
+
 import styled from "styled-components"
 import {
   BlogItem,

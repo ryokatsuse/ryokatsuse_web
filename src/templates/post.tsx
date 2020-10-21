@@ -1,6 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql, useStaticQuery } from "gatsby"
-import React from "react"
+
 import styled from "styled-components"
 import { MarkdownRemark } from "../types/blog-post"
 import { ShareButtons } from "../components/share"
