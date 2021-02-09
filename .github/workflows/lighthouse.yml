@@ -1,4 +1,4 @@
-name: run Lighthouse CI
+name: CI
 
 on:
   pull_request:
@@ -13,18 +13,20 @@ jobs:
         node-version: [12.x]
 
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
-      - name: npm install
+      - name: npm install, build
         run: |
-          npm install -g @lhci/cli
           npm install
+          npm run build
       - name: build
         run: npm run build
-      - name: lhci
-        run: lhci autorun --config=./lighthouse/lighthouserc.json
+      - name: run Lighthouse CI
+        run: |
+          npm install -g @lhci/cli@0.7.x
+          lhci autorun --config=./lighthouse/lighthouserc.json
         env:
           LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_APP_TOKEN }}
