@@ -1,4 +1,5 @@
 import Toggle from "../components/toggle";
+import React from "react"
 import { graphql, Link, useStaticQuery } from "gatsby"
 import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
