@@ -1,49 +1,62 @@
-import * as React from "react"
-import { graphql } from "gatsby"
-import { Layout } from "../components/layout"
-import {
-  BlogItem,
-  BlogItemData
-} from "../components/BlogItem"
-import SEO from "../components/seo"
-import styled from "styled-components"
+import React from "react"
+import Link from "next/link"
 
-type Props = {
-  data: {
-    allMarkdownRemark: {
-      edges: Array<{
-        node: BlogItemData
-      }>
-    }
+import { Layout } from "../components/layout"
+import SEO from "../components/seo"
+import { getAllPosts } from "../lib/blog"
+
+export async function getStaticProps() {
+  const posts = getAllPosts()
+
+  return {
+    props: {
+      posts,
+    },
   }
 }
 
-const BlogIndex: React.FC<Props> = ({data}) => {
-  const posts = data.allMarkdownRemark.edges
+const BlogIndex = ({ posts }) => {
+  if (posts.length === 0) {
+    return (
+      <Layout>
+        <SEO title="All posts" />
+        <Bio />
+        <p>No blog posts found. Add markdown posts to "content/blog".</p>
+      </Layout>
+    )
+  }
 
   return (
-    <Layout location="" title="">
-      <SEO title="ryokatsu.dev" />
-      {posts.map(({ node }) => {
-        return <BlogItem key={node.fields.slug} {...node} />
+    <Layout>
+      <SEO title="All posts" />
+      {posts.map(post => {
+        const title = post.frontmatter.title || post.slug
+        return (
+          <article
+            key={post.slug}
+            className="post-list-item"
+          >
+            <header>
+              <h2>
+                <Link href={post.slug}>
+                  <span>{title}</span>
+                </Link>
+              </h2>
+              <small>{post.frontmatter.date}</small>
+            </header>
+            <section>
+              <p
+                dangerouslySetInnerHTML={{
+                  __html: post.frontmatter.description || post.excerpt,
+                }}
+                itemProp="description"
+              />
+            </section>
+          </article>
+        )
       })}
     </Layout>
   )
 }
+
 export default BlogIndex
-
-export const pageQuery = graphql`
-  query {
-    allMarkdownRemark(
-      sort: { fields: [frontmatter___date], order: DESC }
-      filter: { fields: { sourceFileType: { eq: "blog" } } }
-      ) {
-      edges {
-        node {
-          ...BlogIncludeData
-        }
-      }
-    }
-  }
-`
-

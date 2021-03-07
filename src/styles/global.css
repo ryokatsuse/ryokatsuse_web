@@ -52,9 +52,6 @@ dd {
   --block-quote: #ddd;
   --table-border: #222;
 
-  // --regular-font: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji;
-  --regular-font: inherit;
-
   --code-font: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
 
   --icon-size: 30px;
@@ -88,7 +85,6 @@ body.dark {
   color: var(--font-color);
 }
 
-// TODO：グローバル過ぎるので修正する
 
 body h3 > a {
   --font-color: #222;
@@ -187,21 +183,21 @@ a {
   box-shadow: none;
   color: #007acc;
   word-break: break-all;
+}
 
-  &:hover {
-    text-decoration: underline;
-  }
+a:hover {
+  text-decoration: underline;
 }
 .toggle {
   display: none;
+}
 
-  &__fa {
-    position: relative;
-    vertical-align: middle;
-    font-size: 20px;
-    cursor: pointer;
-    top: -1px;
-  }
+.toggle__fa {
+  position: relative;
+  vertical-align: middle;
+  font-size: 20px;
+  cursor: pointer;
+  top: -1px;
 }
 .toggle + .toggle__fa:before {
   content: '🌞';

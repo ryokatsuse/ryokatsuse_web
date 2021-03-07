@@ -1,44 +1,23 @@
-import { graphql, useStaticQuery } from "gatsby"
 import React from "react"
 import { Header } from "../components/header"
 import { Footer } from "../components/footer"
 import styled from "styled-components"
-import { SiteMetaData } from "../types/siteMetaData"
+import { useRouter } from "next/router";
 import "./fa-default"
+import config from "../config"
 
 type Props = {
-  title?: string
   className?: string
 }
 
-const FCLayout : React.FC<Props> = ({title, className, children}) => {
-  const { site } = useStaticQuery<{
-    site: {
-      siteMetadata: Pick<SiteMetaData, "title" | "siteUrl">
-    }
-  }>(
-    graphql`
-      query {
-        site {
-          siteMetadata {
-            title
-            siteUrl
-          }
-        }
-      }
-    `
-  )
-
-  const pageTitle = title
-    ? `${title} - ${site.siteMetadata.title}`
-    : site.siteMetadata.title
+const FCLayout : React.FC<Props> = ({className, children}) => {
+  const isHome = useRouter().pathname === "/";
+  const blogTitle = config.title
 
   return (
     <>
-      <Header title={site.siteMetadata.title} />
-        <main className={`${className}`}>
-            {children}
-        </main>
+      <Header title={blogTitle} />
+        <main className={`${className}`}>{children}</main>
       <Footer />
     </>
   );

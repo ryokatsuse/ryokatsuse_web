@@ -1,8 +1,9 @@
-import Toggle from "../components/toggle";
+import Toggle from "./toggle";
 import React from "react"
-import { graphql, Link, useStaticQuery } from "gatsby"
 import styled from "styled-components"
+import Link from "next/link"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import config from "../config"
 
 type Props = {
   title: string
@@ -10,54 +11,41 @@ type Props = {
 }
 
 const FCHeader: React.FC<Props> = ({title, className}) => {
-  const {
-    site: {
-      siteMetadata: { author, social },
-    },
-  } = useStaticQuery(graphql`
-    query HeaderQuery {
-      site {
-        siteMetadata {
-          author
-          social {
-            twitter
-            github
-          }
-        }
-      }
-    }
-  `)
+  const author = config.author
+  const twitter = config.social.twitter
+  const github = config.social.github
 
   return (
     <header className={`${className}`}>
       <h1 className={`${className}__title`}>
         <Link 
-          className={`${className}__link`} 
-          to={`/`}>
-          {title}
+          href={`/`}>
+          <a 
+            href=""
+            className={`${className}__link`}>{title}</a>
         </Link>
       </h1>
       <nav className={`${className}__sns`}>
-        <Link to="/blog/about">
+        <Link href="/blog/about">
           <FontAwesomeIcon
             className={`${className}__sns-icon`} 
             icon={["fas", "user-alt"]} />
         </Link>
         <a
-          href={`https://github.com/${social.github}`}
+          href={`https://github.com/${github}`}
           target="_blank"
           rel="external noopener"
-          aria-label={`${author.name}のGitHub`}
+          aria-label={`${author}のGitHub`}
         >
           <FontAwesomeIcon
             className={`${className}__sns-icon`} 
             icon={["fab", "github"]} />
         </a>
         <a
-          href={`https://twitter.com/${social.twitter}`}
+          href={`https://twitter.com/${twitter}`}
           target="_blank"
           rel="external noopener"
-          aria-label={`${author.name}のTwitter`}
+          aria-label={`${author}のTwitter`}
         >
           <FontAwesomeIcon
             className={`${className}__sns-icon`}
@@ -100,6 +88,7 @@ export const Header = styled(FCHeader)`
     &-icon {
       margin: 0 0.45rem;
       color: #fff;
+      width: 1em;
     }
   }
 `

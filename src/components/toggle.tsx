@@ -1,24 +1,17 @@
 import React from "react"
-import { ThemeToggler } from 'gatsby-plugin-dark-mode'
 
 
-const Toggle : React.FC<Props> = () => {
+const Toggle : React.FC = () => {
 
   return (
     <>
-      <ThemeToggler>
-        {({ theme, toggleTheme }) => (
-          <label>
-            <input
-              className="toggle"
-              type="checkbox"
-              onChange={e => toggleTheme(e.target.checked ? 'dark' : 'light')}
-              checked={theme === 'dark'}
-            />{' '}
-            <span className="toggle__fa"></span>
-          </label>
-        )}
-      </ThemeToggler>
+      <label>
+        <input
+          className="toggle"
+          type="checkbox"
+        />{' '}
+        <span className="toggle__fa"></span>
+      </label>
     </>
   );
 };
