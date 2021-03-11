@@ -1,6 +1,6 @@
 import React from "react"
 import Link from "next/link"
-
+import { PostBody } from "../components/postBody";
 import {Layout} from "../components/layout"
 import SEO from "../components/seo"
 import markdownToHtml from "../lib/markdown"
@@ -36,27 +36,7 @@ export async function getStaticPaths() {
 const BlogPost = post => {
   return (
     <Layout>
-      <SEO
-        title={post.frontmatter.title}
-        description={post.frontmatter.description || post.excerpt}
-      />
-      <article
-        className="blog-post"
-        itemScope
-        itemType="http://schema.org/Article"
-      >
-        <header>
-          <h1 itemProp="headline">{post.frontmatter.title}</h1>
-          <p>{post.frontmatter.date}</p>
-        </header>
-        <section
-          dangerouslySetInnerHTML={{ __html: post.content }}
-          itemProp="articleBody"
-        />
-        <hr />
-        <footer>
-        </footer>
-      </article>
+      <PostBody frontmatter={post.frontmatter} content={post.content} />
     </Layout>
   )
 }

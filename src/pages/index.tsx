@@ -19,7 +19,6 @@ const BlogIndex = ({ posts }) => {
     return (
       <Layout>
         <SEO title="ryokatsu.dev" />
-        <Bio />
         <p>No blog posts found. Add markdown posts to "content/blog".</p>
       </Layout>
     )
