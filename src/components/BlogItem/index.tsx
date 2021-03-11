@@ -1,9 +1,8 @@
 import React from "react"
-import { graphql, Link } from "gatsby"
-
 import styled from "styled-components"
-import { MarkdownRemark } from "../../types/blog-post"
-import { Tags } from "../Tags"
+import { MarkdownRemark } from "../../../types/blog-post"
+import Link from "next/link"
+// import { Tags } from "../Tags"
 
 export type BlogItemData = Pick<
   MarkdownRemark<"title" | "date"| "tags">,
@@ -12,34 +11,40 @@ export type BlogItemData = Pick<
 
 type Props = {
   className?: string
-} & BlogItemData
+  frontmatter: string
+  slug: string
+}
 
 const FCBlogItem: React.FC<Props> = ({
   className,
-  fields,
+  slug,
   frontmatter
 }) => {
-  const title = frontmatter.title || fields.slug
+  const title = frontmatter.title || slug
+  console.table({slug})
   return (
     frontmatter.date ? (
       <article className={`${className}`}>
       <header>
         <h3>
-          <Link
-            className={`${className}__link`}
-            to={fields.slug}>{title}</Link>
+          <Link href={slug}>
+            <a
+              href=""
+              className={`${className}__link`}
+              >{title}</a>
+          </Link>
         </h3>
         <div className={`${className}__item`}>
           <div className={`${className}__date`}>
             {frontmatter.date}
           </div>
-          <div>
+          {/* <div>
             {frontmatter.tags ? (
                 <small>
                   <Tags tags={frontmatter.tags} />
                 </small>
               ) : null}
-          </div>
+          </div> */}
         </div>
       </header>
     </article>
@@ -63,15 +68,3 @@ export const BlogItem = styled(FCBlogItem)`
   }
 `
 
-export const query = graphql`
-  fragment BlogIncludeData on MarkdownRemark {
-    fields {
-      slug
-    }
-    frontmatter {
-      date
-      title
-      tags
-    }
-  }
-`
