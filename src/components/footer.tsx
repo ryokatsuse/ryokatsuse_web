@@ -14,7 +14,7 @@ const FCFooter : React.FC<Props> = ({className}) => {
       <p className={`${className}__copy-right`}>
         © {new Date().getFullYear()}
         {` `}
-        このサイトは、<a rel="external" href="https://www.gatsbyjs.org">Gatsby</a>で作られています。</p>
+        このサイトは、<a rel="external" href="https://nextjs.org/">Next.js</a>で作られています。</p>
       <p>ソースコードは
         <a 
           href={`https://github.com/${github}/ryokatsuse_web`}
@@ -29,8 +29,9 @@ export const Footer = styled(FCFooter)`
   text-align: center;
   background-color: var(--dark-color);
   color: #fff;
+  font-size: 0.8rem;
 
   &__copy-right {
-    font-size: 1rem;
+    font-size: 0.8rem;
   }
 `

@@ -21,7 +21,6 @@ const FCBlogItem: React.FC<Props> = ({
   frontmatter
 }) => {
   const title = frontmatter.title || slug
-  console.table({slug})
   return (
     frontmatter.date ? (
       <article className={`${className}`}>
