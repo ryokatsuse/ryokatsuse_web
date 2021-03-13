@@ -10,7 +10,7 @@ export function getPostBySlug(slug) {
   const fullPath = join(postsDirectory, `${realSlug}.md`)
   const fileContents = fs.readFileSync(fullPath, "utf8")
   const { data, content } = matter(fileContents)
-  const date = format(parseISO(data.date), "yyyy/mm/dd")
+  const date = format(parseISO(data.date), "yyyy/MM/dd")
 
   return { slug: realSlug, frontmatter: { ...data, date }, content }
 }

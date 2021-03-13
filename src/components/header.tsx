@@ -1,7 +1,6 @@
 import Toggle from "./toggle";
 import React from "react"
 import styled from "styled-components"
-import Link from "next/link"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import config from "../config"
 
@@ -18,19 +17,16 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
   return (
     <header className={`${className}`}>
       <h1 className={`${className}__title`}>
-        <Link 
-          href={`/`}>
-          <a 
-            href=""
-            className={`${className}__link`}>{title}</a>
-        </Link>
+        <a 
+          href="/"
+          className={`${className}__link`}>{title}</a>
       </h1>
       <nav className={`${className}__sns`}>
-        <Link href="/blog/about">
+        <a href="/blog/about">
           <FontAwesomeIcon
             className={`${className}__sns-icon`} 
             icon={["fas", "user-alt"]} />
-        </Link>
+        </a>
         <a
           href={`https://github.com/${github}`}
           target="_blank"
@@ -83,6 +79,7 @@ export const Header = styled(FCHeader)`
     }
   }
   &__sns {
+    margin-top: 6px;
     font-size: 1.41421rem;
     line-height: 1.75rem;
     &-icon {
