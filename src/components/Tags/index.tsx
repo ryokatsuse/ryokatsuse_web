@@ -51,6 +51,10 @@ export const Tags = styled(FCTags)`
     }
     &-icon {
       color: #007acc;
+      display: inline-block;
+      font-size: inherit;
+      height: 1em;
+      vertical-align: -.125em;
     }
   }
 `
