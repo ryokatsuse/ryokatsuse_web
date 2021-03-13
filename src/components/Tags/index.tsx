@@ -1,6 +1,5 @@
 import React from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { Link } from "gatsby"
 
 import styled from "styled-components"
 
@@ -9,7 +8,7 @@ type Props = {
   tags: string[]
 }
 
-const FCTags: React.FunctionComponent<Props> = ({ className, tags }) => {
+const FCTags: React.VFC<Props> = ({ className, tags }) => {
   return (
     <div className={`${className}`}>
       <ul className={`${className}__nav`}>
@@ -20,8 +19,8 @@ const FCTags: React.FunctionComponent<Props> = ({ className, tags }) => {
             <FontAwesomeIcon
               className={`${className}__nav-icon`}
               aria-label="タグ" icon={["fas", "hashtag"]} />
-            <Link
-              to={`/tag/${tag}`}>{tag}</Link>
+            <a
+              href={`/tag/${tag}`}>{tag}</a>
           </li>
         ))}
       </ul>

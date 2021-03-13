@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from "styled-components"
 import { ShareButtons } from "../components/share";
+import { Tags } from "../components/Tags/index"
 
 type Props = {
   className?: string
@@ -8,6 +9,7 @@ type Props = {
   frontmatter: {
     title: string
     date: string
+    tags: Array<string>
   }
 };
 
@@ -23,13 +25,13 @@ const FCPostBody: React.FC<Props> = ({ content, className, frontmatter }) => {
           <div className={`${className}__date`}>
             {frontmatter.date}
           </div>
-          {/* <small>
-            {post.frontmatter.tags ? (
+          <small>
+            {frontmatter.tags ? (
               <div>
-                <Tags tags={post.frontmatter.tags} />
+                <Tags tags={frontmatter.tags} />
               </div>
             ) : null}
-          </small> */}
+          </small>
         </div>
       </header>
       <section

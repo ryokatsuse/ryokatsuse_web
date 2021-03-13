@@ -2,7 +2,7 @@ import React from "react"
 import styled from "styled-components"
 import { MarkdownRemark } from "../../../types/blog-post"
 import Link from "next/link"
-// import { Tags } from "../Tags"
+import { Tags } from "../Tags/index"
 
 export type BlogItemData = Pick<
   MarkdownRemark<"title" | "date"| "tags">,
@@ -11,7 +11,11 @@ export type BlogItemData = Pick<
 
 type Props = {
   className?: string
-  frontmatter: string
+  frontmatter: {
+    title: string
+    date: string
+    tags: Array<string>
+  }
   slug: string
 }
 
@@ -35,13 +39,13 @@ const FCBlogItem: React.FC<Props> = ({
           <div className={`${className}__date`}>
             {frontmatter.date}
           </div>
-          {/* <div>
+          <div>
             {frontmatter.tags ? (
                 <small>
                   <Tags tags={frontmatter.tags} />
                 </small>
               ) : null}
-          </div> */}
+          </div>
         </div>
       </header>
     </article>

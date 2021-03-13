@@ -1,6 +1,7 @@
 import React from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import styled from "styled-components"
+import Link from "next/link"
 import HatenaBookMarkLogo from "./hatenabookmark.svg"
 
 type Props = {
@@ -20,20 +21,22 @@ const FCShareButtons: React.FC<Props> = ({
   const hatenaShareLink = `https://b.hatena.ne.jp/entry?url=${encodeURIComponent(
     url
   )}`
+  console.log(url)
   return (
     <div className={`${className}`}>
       <nav className={`${className}__nav`}>
-        <a
-          className={`${className}__sns`}
-          aria-label="Share on Twitter"
-          href={twitterShareLink}
-          rel="external noopener"
-          target="_blank"
-        >
-          <FontAwesomeIcon
-            className={`${className}__sns-link`}
-            icon={["fab", "twitter"]} />
-        </a>
+        <Link href={twitterShareLink}>
+          <a
+            className={`${className}__sns`}
+            aria-label="Share on Twitter"
+            rel="external noopener"
+            target="_blank"
+          >
+            <FontAwesomeIcon
+              className={`${className}__sns-link`}
+              icon={["fab", "twitter"]} />
+          </a>
+        </Link>
         <a
           className={`${className}__sns`}
           href={hatenaShareLink}
