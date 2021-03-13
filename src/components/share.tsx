@@ -20,7 +20,6 @@ const FCShareButtons: React.FC<Props> = ({
   const hatenaShareLink = `https://b.hatena.ne.jp/entry?url=${encodeURIComponent(
     url
   )}`
-  console.log(twitterShareLink, hatenaShareLink)
   return (
     <div className={`${className}`}>
       <nav className={`${className}__nav`}>
