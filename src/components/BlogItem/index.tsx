@@ -26,12 +26,10 @@ const FCBlogItem: React.FC<Props> = ({
       <article className={`${className}`}>
       <header>
         <h3>
-          <Link href={slug}>
-            <a
-              href=""
-              className={`${className}__link`}
-              >{title}</a>
-          </Link>
+          <a
+            href={slug}
+            className={`${className}__link`}
+            >{title}</a>
         </h3>
         <div className={`${className}__item`}>
           <div className={`${className}__date`}>

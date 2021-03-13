@@ -1,8 +1,6 @@
 import React from "react"
-import Link from "next/link"
 import { PostBody } from "../components/postBody";
 import {Layout} from "../components/layout"
-import SEO from "../components/seo"
 import markdownToHtml from "../lib/markdown"
 import { getPostBySlug, getAllPosts } from "../lib/blog"
 
