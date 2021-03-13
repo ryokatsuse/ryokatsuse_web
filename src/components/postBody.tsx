@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from "styled-components"
+import { ShareButtons } from "../components/share";
 
 type Props = {
   className?: string
@@ -11,6 +12,7 @@ type Props = {
 };
 
 const FCPostBody: React.FC<Props> = ({ content, className, frontmatter }) => {
+  const url = typeof window !== 'undefined' ? window.location.href : ''
   return (
     <article className={`${className}`}>
       <header>
@@ -34,7 +36,7 @@ const FCPostBody: React.FC<Props> = ({ content, className, frontmatter }) => {
         className={`${className}__section`}
         dangerouslySetInnerHTML={{ __html: content }} />
       <hr/>
-      {/* <ShareButtons text={post.frontmatter.title} url={url} /> */}
+      <ShareButtons text={frontmatter.title} url={url} />
     </article>
   );
 };
