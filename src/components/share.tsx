@@ -20,27 +20,27 @@ const FCShareButtons: React.FC<Props> = ({
   const hatenaShareLink = `https://b.hatena.ne.jp/entry?url=${encodeURIComponent(
     url
   )}`
+  console.log(twitterShareLink, hatenaShareLink)
   return (
     <div className={`${className}`}>
       <nav className={`${className}__nav`}>
         <a
-          className={`${className}__link`}
+          className={`${className}__sns`}
           aria-label="Share on Twitter"
           href={twitterShareLink}
           rel="external noopener"
           target="_blank"
         >
-          <FontAwesomeIcon icon={["fab", "twitter"]} />
+          <FontAwesomeIcon
+            className={`${className}__sns-link`}
+            icon={["fab", "twitter"]} />
         </a>
         <a
-          className={`${className}__link`}
+          className={`${className}__sns`}
           href={hatenaShareLink}
           rel="external noopener"
           target="_blank">
-          <img
-            className={`${className}__image`}
-            src={HatenaBookMarkLogo}
-            alt="はてなブックマーク" />
+          <HatenaBookMarkLogo className={`${className}__sns-link`} />
         </a>
       </nav>
     </div>
@@ -57,23 +57,26 @@ export const ShareButtons = styled(FCShareButtons)`
     display: flex;
     align-items: center;
   }
-  &__link {
+  &__sns {
+    color: rgb(29, 161, 242);
     display: block;
-    appearance: none;
     border: none;
     background: none;
     font-size: 2rem;
     line-height: 0;
 
-    &:first-child {
-      color: #1da1f2;
-      margin-right: 0.5em;
-    }
-  }
+    &-link {
+      overflow: visible;
+      width: 1em;
+      display: inline-block;
+      font-size: inherit;
+      height: 1em;
+      vertical-align: -.125em;
 
-  img {
-    width: 1em;
-    height: 1em;
-    margin: 0;
+      &:first-child {
+        color: #1da1f2;
+        margin-right: 0.5em;
+      }
+    }
   }
 `

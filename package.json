@@ -28,6 +28,7 @@
     "typeface-montserrat": "0.0.75"
   },
   "devDependencies": {
+    "@svgr/webpack": "^5.5.0",
     "@types/node": "^14.14.32",
     "@types/react": "^17.0.3",
     "prettier": "2.1.1",
