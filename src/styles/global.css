@@ -213,3 +213,9 @@ a:hover {
 .gatsby-highlight {
   margin-bottom: 1.5rem;
 }
+
+.toggle__button {
+  background: none;
+  cursor: pointer;
+  border: none;
+}

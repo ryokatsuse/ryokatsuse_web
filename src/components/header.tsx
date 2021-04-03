@@ -96,8 +96,7 @@ export const Header = styled(FCHeader)`
     display: flex;
     align-items: center;
     justify-content:space-between;
-    margin-top: 6px;
-    padding-bottom: 8px;
+    padding: 8px 0;
     font-size: 1.41421rem;
     line-height: 1.75rem;
 
@@ -110,9 +109,5 @@ export const Header = styled(FCHeader)`
       color: #fff;
       width: 1em;
     }
-  }
-
-  &__toggle {
-
   }
 `
