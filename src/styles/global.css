@@ -78,7 +78,7 @@ body {
   padding: 0;
 }
 
-body.dark {
+body.dark-mode {
   --background-color: #010101;
   --font-color: #fff;
   background-color: var(--background-color);
@@ -86,11 +86,11 @@ body.dark {
 }
 
 
-body h3 > a {
+body.light-mode h3 > a {
   --font-color: #222;
   color: var(--font-color);
 }
-body.dark h3 > a {
+body.dark-mode h3 > a {
   --font-color: #fff;
   color: var(--font-color);
 }

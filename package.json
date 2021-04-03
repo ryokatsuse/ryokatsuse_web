@@ -25,7 +25,8 @@
     "remark-html": "^12.0.0",
     "styled-components": "^5.0.0",
     "typeface-merriweather": "0.0.72",
-    "typeface-montserrat": "0.0.75"
+    "typeface-montserrat": "0.0.75",
+    "use-dark-mode": "^2.3.1"
   },
   "devDependencies": {
     "@svgr/webpack": "^5.5.0",

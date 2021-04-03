@@ -1,18 +1,18 @@
 import React from "react"
-
+import useDarkMode from 'use-dark-mode';
 
 const Toggle : React.FC = () => {
+  const darkMode = useDarkMode(false);
 
   return (
-    <>
-      <label>
-        <input
-          className="toggle"
-          type="checkbox"
-        />{' '}
-        <span className="toggle__fa"></span>
-      </label>
-    </>
+    <div>
+      <button type="button" onClick={darkMode.disable}>
+        🌞
+      </button>
+      <button type="button" onClick={darkMode.enable}>
+        🌛
+      </button>
+    </div>
   );
 };
 export default Toggle

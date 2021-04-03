@@ -16,57 +16,71 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
 
   return (
     <header className={`${className}`}>
-      <h1 className={`${className}__title`}>
-        <a 
-          href="/"
-          className={`${className}__link`}>{title}</a>
-      </h1>
-      <nav className={`${className}__sns`}>
-        <a href="/blog/about">
-          <FontAwesomeIcon
-            className={`${className}__sns-icon`} 
-            icon={["fas", "user-alt"]} />
-        </a>
-        <a
-          href={`https://github.com/${github}`}
-          target="_blank"
-          rel="external noopener"
-          aria-label={`${author}のGitHub`}
-        >
-          <FontAwesomeIcon
-            className={`${className}__sns-icon`} 
-            icon={["fab", "github"]} />
-        </a>
-        <a
-          href={`https://twitter.com/${twitter}`}
-          target="_blank"
-          rel="external noopener"
-          aria-label={`${author}のTwitter`}
-        >
-          <FontAwesomeIcon
-            className={`${className}__sns-icon`}
-            icon={["fab", "twitter"]} />
-        </a>
-        <Toggle />
-      </nav>
+      <div
+        className={`${className}__inner`}>
+        <h1 className={`${className}__title`}>
+          <a 
+            href="/"
+            className={`${className}__link`}>{title}</a>
+        </h1>
+        <nav className={`${className}__nav`}>
+          <ul className={`${className}__nav-inner`}>
+            <li className={`${className}__nav-inner__list`}>
+              <a href="/blog/about">
+                <FontAwesomeIcon
+                  className={`${className}__nav-icon`} 
+                  icon={["fas", "user-alt"]} />
+              </a>
+            </li>
+            <li className={`${className}__nav-inner__list`}>
+              <a
+                href={`https://github.com/${github}`}
+                target="_blank"
+                rel="external noopener"
+                aria-label={`${author}のGitHub`}
+              >
+                <FontAwesomeIcon
+                  className={`${className}__nav-icon`} 
+                  icon={["fab", "github"]} />
+              </a>
+            </li>
+            <li className={`${className}__nav-inner__list`}>
+              <a
+                href={`https://twitter.com/${twitter}`}
+                target="_blank"
+                rel="external noopener"
+                aria-label={`${author}のTwitter`}
+              >
+                <FontAwesomeIcon
+                  className={`${className}__nav-icon`}
+                  icon={["fab", "twitter"]} />
+              </a>
+            </li>
+          </ul>
+          <div className={`${className}__toggle`}>
+            <Toggle />
+          </div>
+        </nav>
+      </div>
     </header>
   );
 };
 
 export const Header = styled(FCHeader)`
-  z-index: 1;
   width: 100%;
-  position: fixed;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  position: sticky;
   top: 0;
-  box-sizing: border-box;
   margin: 0;
   z-index: 2;
   margin-bottom: 1rem;
-  padding: calc(var(--grid)/2);
   background-color: var(--dark-color);
+
+  &__inner {
+    display: block;
+    max-width: calc(600px + 10%);
+    margin: 0 auto;
+    padding: 0 2em 0 2rem;
+  }
 
   &__title{
     font-size: 1.6rem;
@@ -78,14 +92,27 @@ export const Header = styled(FCHeader)`
       text-decoration: none;
     }
   }
-  &__sns {
+  &__nav {
+    display: flex;
+    align-items: center;
+    justify-content:space-between;
     margin-top: 6px;
+    padding-bottom: 8px;
     font-size: 1.41421rem;
     line-height: 1.75rem;
+
+    &-inner {
+      display: flex;
+      list-style: none;
+    }
     &-icon {
       margin: 0 0.45rem;
       color: #fff;
       width: 1em;
     }
+  }
+
+  &__toggle {
+
   }
 `
