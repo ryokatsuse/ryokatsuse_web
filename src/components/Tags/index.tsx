@@ -1,5 +1,6 @@
 import React from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import Link from "next/link";
 
 import styled from "styled-components"
 
@@ -19,8 +20,9 @@ const FCTags: React.VFC<Props> = ({ className, tags }) => {
             <FontAwesomeIcon
               className={`${className}__nav-icon`}
               aria-label="タグ" icon={["fas", "hashtag"]} />
-            <a
-              href={`/tag/${tag}`}>{tag}</a>
+            <Link
+              href={`/tags/${tag}`}>{tag}
+            </Link>
           </li>
         ))}
       </ul>

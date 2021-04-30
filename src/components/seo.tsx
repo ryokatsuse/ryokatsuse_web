@@ -13,6 +13,7 @@ const SEO: React.FC<Props> = ({
 }) => {
   const metaDescription = description || config.description
   const defaultTitle = config.title
+  const url = typeof window !== 'undefined' ? window.location.href : ''
 
   return (
     <Head>
@@ -20,6 +21,7 @@ const SEO: React.FC<Props> = ({
       <meta name="robots" content="follow, index" />
       <meta content={metaDescription} name="description" />
       <meta property="og:type" content="website" />
+      <meta property="og:url" content={url} />
       <meta property="og:title" content={title} />
       <meta property="og:description" content={metaDescription} />
       <meta property="og:site_name" content={defaultTitle} />

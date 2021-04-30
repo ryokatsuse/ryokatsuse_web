@@ -15,21 +15,22 @@ const FCShareButtons: React.FC<Props> = ({
   text,
   url,
 }) => {
-  const twitterShareLink = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+  const encodeText = encodeURIComponent(`${text}`)
+  const encodeUrl = encodeURIComponent(`${url}`)
+  const twitterHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
     text
   )}&url=${encodeURIComponent(url)}`
-  const hatenaShareLink = `https://b.hatena.ne.jp/entry?url=${encodeURIComponent(
+  const hatenaHref = `https://b.hatena.ne.jp/entry?url=${encodeURIComponent(
     url
   )}`
-  console.log(url)
   return (
     <div className={`${className}`}>
       <nav className={`${className}__nav`}>
-        <Link href={twitterShareLink}>
+        <Link
+          href={twitterHref}>
           <a
             className={`${className}__sns`}
             aria-label="Share on Twitter"
-            rel="external noopener"
             target="_blank"
           >
             <FontAwesomeIcon
@@ -39,8 +40,7 @@ const FCShareButtons: React.FC<Props> = ({
         </Link>
         <a
           className={`${className}__sns`}
-          href={hatenaShareLink}
-          rel="external noopener"
+          href={hatenaHref}
           target="_blank">
           <HatenaBookMarkLogo className={`${className}__sns-link`} />
         </a>
