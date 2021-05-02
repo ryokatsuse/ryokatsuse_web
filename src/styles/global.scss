@@ -41,7 +41,7 @@ dd {
 :root {
   --background-color: #fefefe;
   --font-color: #222;
-  --dark-color: #222;
+  --dark-color: rgb(22, 27, 34);;
 
   --anchor-color: RoyalBlue;
   --anchor-visited-color: Brown;
@@ -82,7 +82,7 @@ body {
 }
 
 body.dark {
-  --background-color: #010101;
+  --background-color: rgb(13, 17, 23);
   --font-color: #fff;
   background-color: var(--background-color);
   color: var(--font-color);
