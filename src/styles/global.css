@@ -41,7 +41,7 @@ dd {
 :root {
   --background-color: #fefefe;
   --font-color: #222;
-  --dark-color: #222;
+  --dark-color: rgb(22, 27, 34);;
 
   --anchor-color: RoyalBlue;
   --anchor-visited-color: Brown;
@@ -176,6 +176,7 @@ hr {
 
 p {
   word-break: break-all;
+  line-height: 2;
 }
 
 a {
