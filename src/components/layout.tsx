@@ -5,6 +5,7 @@ import { Footer } from "../components/footer"
 import styled from "styled-components"
 import { SiteMetaData } from "../types/siteMetaData"
 import "./fa-default"
+import media from "styled-media-query";
 
 type Props = {
   title?: string
@@ -48,4 +49,8 @@ export const Layout = styled(FCLayout)`
   max-width: calc(600px + 10%);
   margin: 0 auto;
   padding: 5em 2em 0 2rem;
+
+  ${media.lessThan("medium")`
+  padding: 5em 1rem 0 1rem;
+  `}
 `
