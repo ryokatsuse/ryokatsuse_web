@@ -52,6 +52,10 @@ export const Post = styled(FCPost)`
     margin-bottom: 1.75rem;
   }
 
+  ul > li > p {
+    margin-bottom: 0;
+  }
+
   .gatsby-resp-image-wrapper {
     margin-top: 20px;
     margin-bottom: 20px;
