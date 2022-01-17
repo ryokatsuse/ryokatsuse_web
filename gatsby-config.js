@@ -11,7 +11,6 @@ module.exports = {
     repo: "https://github.com/ryokatsuse/ryokatsuse_web",
   },
   plugins: [
-    "gatsby-plugin-netlify-cache",
     `gatsby-plugin-sass`,
     {
       resolve: `gatsby-source-filesystem`,
@@ -65,7 +64,6 @@ module.exports = {
         trackingId: `UA-50098212-2`,
       },
     },
-    `gatsby-plugin-feed`,
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
