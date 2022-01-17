@@ -65,7 +65,6 @@ module.exports = {
         trackingId: `UA-50098212-2`,
       },
     },
-    `gatsby-plugin-feed`,
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
