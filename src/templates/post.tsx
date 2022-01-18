@@ -18,12 +18,22 @@ type Props = {
 const FCPost: React.FC<Props> = ({ className, post, slug }) => {
   const url = typeof window !== 'undefined' ? window.location.href : ''
 
+  const hostUrl = "https://placehold.jp/"
+  const size = {
+    horizontal: 740,
+    vertical: 457
+  }
+  const css = '{"background-color":" #fff","color":" #333","font-size":" 32px","word-break":" break-all","padding":" 10px"}'
+  const imageUrl =
+      hostUrl + size.horizontal + "x" + size.vertical + ".png?css=" + encodeURIComponent(css) + "&text=" + post.frontmatter.title
+
   return (
     <article className={`${className}`}>
       <header>
-        <h1 className={`${className}__title`}>
+        {/* <h1 className={`${className}__title`}>
           {post.frontmatter.title}
-        </h1>
+        </h1> */}
+        <Img src={imageUrl} alt="" />
         <div className={`${className}__item`}>
           <div className={`${className}__date`}>
             {post.frontmatter.date}
@@ -97,6 +107,8 @@ export const Post = styled(FCPost)`
   pre[class*="language-"] {
     padding: 12px;
   }
+`
 
-
+const Img = styled.img`
+  margin-bottom: 16px;
 `
