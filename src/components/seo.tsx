@@ -49,6 +49,15 @@ const SEO: React.FC<Props> = ({
 
   const metaDescription = description || site.siteMetadata.description
 
+  const hostUrl = "https://placehold.jp/"
+  const size = {
+    horizontal: 740,
+    vertical: 457
+  }
+  const css = '{"background-color":" #fff","color":" #333","font-size":" 32px","word-break":" break-all","padding":" 10px"}'
+  const imageUrl =
+      hostUrl + size.horizontal + "x" + size.vertical + ".png?css=" + encodeURIComponent(css) + "&text=" + title
+
   const titleDisp = title
     ? `${title} - ${site.siteMetadata.title}`
     : site.siteMetadata.title
@@ -79,7 +88,7 @@ const SEO: React.FC<Props> = ({
         },
         {
           property: `og:image`,
-          content: `${site.siteMetadata.siteUrl}/images/ryokatsu.jpg`,
+          content: imageUrl,
         },
         {
           name: `twitter:card`,
