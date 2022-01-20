@@ -30,10 +30,9 @@ const FCPost: React.FC<Props> = ({ className, post, slug }) => {
   return (
     <article className={`${className}`}>
       <header>
-        {/* <h1 className={`${className}__title`}>
-          {post.frontmatter.title}
-        </h1> */}
-        <Img src={imageUrl} alt="" />
+        <div className={`${className}__img_wrapper`}>
+          <Img src={imageUrl} alt="" />
+        </div>
         <div className={`${className}__item`}>
           <div className={`${className}__date`}>
             {post.frontmatter.date}
@@ -69,6 +68,11 @@ export const Post = styled(FCPost)`
   .gatsby-resp-image-wrapper {
     margin-top: 20px;
     margin-bottom: 20px;
+  }
+
+  &__img_wrapper {
+    aspect-ratio: 740/457;
+    overflow: hidden;
   }
 
   &__title {
