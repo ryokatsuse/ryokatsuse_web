@@ -6,12 +6,13 @@ import styled from "styled-components"
 import { MarkdownRemark } from "../types/blog-post"
 import { ShareButtons } from "../components/share"
 import { Tags } from "../components/Tags"
+import {ArticleDate} from '../components/ArticleDate/'
 
 type Props = {
   className?: string
   slug: string
   post: Pick<
-    MarkdownRemark<"title" | "date" | "tags">, | "frontmatter" | "html"
+    MarkdownRemark<"title" | "date" | "published" | "tags">, | "frontmatter" | "html"
   >
 }
 
@@ -35,7 +36,7 @@ const FCPost: React.FC<Props> = ({ className, post, slug }) => {
         </div>
         <div className={`${className}__item`}>
           <div className={`${className}__date`}>
-            {post.frontmatter.date}
+            <ArticleDate {...post.frontmatter} />
           </div>
           <small>
             {post.frontmatter.tags ? (
