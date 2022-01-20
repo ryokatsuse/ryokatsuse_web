@@ -31,7 +31,7 @@ const FCPost: React.FC<Props> = ({ className, post, slug }) => {
     <article className={`${className}`}>
       <header>
         <div className={`${className}__img_wrapper`}>
-          <Img src={imageUrl} alt="" />
+          <img src={imageUrl} alt="" />
         </div>
         <div className={`${className}__item`}>
           <div className={`${className}__date`}>
@@ -73,6 +73,7 @@ export const Post = styled(FCPost)`
   &__img_wrapper {
     aspect-ratio: 740/457;
     overflow: hidden;
+    margin-bottom: 16px;
   }
 
   &__title {
@@ -111,8 +112,4 @@ export const Post = styled(FCPost)`
   pre[class*="language-"] {
     padding: 12px;
   }
-`
-
-const Img = styled.img`
-  margin-bottom: 16px;
 `
