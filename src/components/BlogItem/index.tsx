@@ -4,9 +4,10 @@ import { graphql, Link } from "gatsby"
 import styled from "styled-components"
 import { MarkdownRemark } from "../../types/blog-post"
 import { Tags } from "../Tags"
+import { ArticleDate } from "../ArticleDate"
 
 export type BlogItemData = Pick<
-  MarkdownRemark<"title" | "date"| "tags">,
+  MarkdownRemark<"title" | "date"| 'updated' | "tags">,
   "fields" | "frontmatter"
 >
 
@@ -30,9 +31,7 @@ const FCBlogItem: React.FC<Props> = ({
             to={fields.slug}>{title}</Link>
         </h3>
         <div className={`${className}__item`}>
-          <div className={`${className}__date`}>
-            {frontmatter.date}
-          </div>
+          <ArticleDate {...frontmatter} />
           <div>
             {frontmatter.tags ? (
                 <small>
@@ -71,6 +70,7 @@ export const query = graphql`
     frontmatter {
       date
       title
+      updated
       tags
     }
   }
