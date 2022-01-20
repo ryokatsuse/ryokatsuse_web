@@ -1,6 +1,4 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import React from "react"
-import { graphql, useStaticQuery } from "gatsby"
 
 import styled from "styled-components"
 import { MarkdownRemark } from "../types/blog-post"
@@ -10,13 +8,12 @@ import {ArticleDate} from '../components/ArticleDate/'
 
 type Props = {
   className?: string
-  slug: string
   post: Pick<
     MarkdownRemark<"title" | "date" | "published" | "tags">, | "frontmatter" | "html"
   >
 }
 
-const FCPost: React.FC<Props> = ({ className, post, slug }) => {
+const FCPost: React.FC<Props> = ({ className, post }) => {
   const url = typeof window !== 'undefined' ? window.location.href : ''
 
   const hostUrl = "https://placehold.jp/"

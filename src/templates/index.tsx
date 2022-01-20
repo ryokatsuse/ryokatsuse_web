@@ -8,21 +8,15 @@ import { MarkdownRemark } from "../types/blog-post"
 
 type Props = {
   data: {
-    markdownRemark: MarkdownRemark<"title" | "date" | "updated" | "tags" | "mainVisual">
-  }
-  pageContext: {
-    slug: string
+    markdownRemark: MarkdownRemark<"title" | "date" | "updated" | "published" | "tags" | "mainVisual">
   }
 }
 
-const BlogPostTemplate: React.FC<Props> = ({ data, pageContext }) => {
+const BlogPostTemplate: React.FC<Props> = ({ data }) => {
   const post = data.markdownRemark
-  const { slug } = pageContext
 
   return (
-    <Layout
-    title={post.frontmatter.title}
-    slug={slug}>
+    <Layout title={post.frontmatter.title}>
       <SEO
         title={post.frontmatter.title}
         description={post.excerpt}
