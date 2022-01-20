@@ -8,7 +8,7 @@ import { MarkdownRemark } from "../types/blog-post"
 
 type Props = {
   data: {
-    markdownRemark: MarkdownRemark<"title" | "published" | "updated" | "tags">
+    markdownRemark: MarkdownRemark<"title" | "date" | "updated" | "tags" | "mainVisual">
   }
   pageContext: {
     slug: string
@@ -48,7 +48,13 @@ export const pageQuery = graphql`
       html
       frontmatter {
         title
-        date(formatString: "YYYY-MM-DD")
+        date
+        updated
+        # mainVisual {
+        #     childImageSharp {
+        #       gatsbyImageData(placeholder: BLURRED)
+        #     }
+        #   }
         tags
       }
     }

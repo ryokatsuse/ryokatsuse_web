@@ -9,7 +9,7 @@ type Props = {
   tags: string[]
 }
 
-const FCTags: React.FunctionComponent<Props> = ({ className, tags }) => {
+const FCTags = React.memo<Props>(({ className, tags }) => {
   return (
     <div className={`${className}`}>
       <ul className={`${className}__nav`}>
@@ -27,7 +27,7 @@ const FCTags: React.FunctionComponent<Props> = ({ className, tags }) => {
       </ul>
     </div>
   )
-}
+})
 
 export const Tags = styled(FCTags)`
   display: flex;

@@ -6,12 +6,13 @@ import styled from "styled-components"
 import { MarkdownRemark } from "../types/blog-post"
 import { ShareButtons } from "../components/share"
 import { Tags } from "../components/Tags"
+import {ArticleDate} from '../components/ArticleDate/'
 
 type Props = {
   className?: string
   slug: string
   post: Pick<
-    MarkdownRemark<"title" | "date" | "tags">, | "frontmatter" | "html"
+    MarkdownRemark<"title" | "date" | "published" | "tags">, | "frontmatter" | "html"
   >
 }
 
@@ -30,13 +31,12 @@ const FCPost: React.FC<Props> = ({ className, post, slug }) => {
   return (
     <article className={`${className}`}>
       <header>
-        {/* <h1 className={`${className}__title`}>
-          {post.frontmatter.title}
-        </h1> */}
-        <Img src={imageUrl} alt="" />
+        <div className={`${className}__img_wrapper`}>
+          <img src={imageUrl} alt="" />
+        </div>
         <div className={`${className}__item`}>
           <div className={`${className}__date`}>
-            {post.frontmatter.date}
+            <ArticleDate {...post.frontmatter} />
           </div>
           <small>
             {post.frontmatter.tags ? (
@@ -69,6 +69,12 @@ export const Post = styled(FCPost)`
   .gatsby-resp-image-wrapper {
     margin-top: 20px;
     margin-bottom: 20px;
+  }
+
+  &__img_wrapper {
+    aspect-ratio: 740/457;
+    overflow: hidden;
+    margin-bottom: 16px;
   }
 
   &__title {
@@ -107,8 +113,4 @@ export const Post = styled(FCPost)`
   pre[class*="language-"] {
     padding: 12px;
   }
-`
-
-const Img = styled.img`
-  margin-bottom: 16px;
 `
