@@ -9,7 +9,7 @@ type Props = {
 const FCFooter : React.FC<Props> = ({className}) => {
   const {
     site: {
-      siteMetadata: { author, social },
+      siteMetadata: { social },
     },
   } = useStaticQuery(graphql`
     query footerQuery {
@@ -32,7 +32,7 @@ const FCFooter : React.FC<Props> = ({className}) => {
         {` `}
         このサイトは、<a rel="external" href="https://www.gatsbyjs.org">Gatsby</a>で作られています。</p>
       <p>ソースコードは
-        <a 
+        <a
           href={`https://github.com/${social.github}/ryokatsuse_web`}
           target="_blank"
           rel="external noopener">こちらのリポジトリ</a>にあります。</p>

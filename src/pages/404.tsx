@@ -12,7 +12,7 @@ type Props = {
   }
 }
 
-const NotFoundPage: React.FC<Props> = ({ data }) => {
+const NotFoundPage: React.FC<Props> = () => {
   return (
     <Layout>
       <SEO title="404" />

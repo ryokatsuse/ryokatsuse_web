@@ -33,8 +33,8 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
     <header className={`${className}`}>
       <div className={`${className}__inner`}>
         <h1 className={`${className}__title`}>
-          <Link 
-            className={`${className}__link`} 
+          <Link
+            className={`${className}__link`}
             to={`/`}>
             {title}
           </Link>
@@ -42,7 +42,7 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
         <nav className={`${className}__sns`}>
           <Link to="/blog/about">
             <FontAwesomeIcon
-              className={`${className}__sns-icon`} 
+              className={`${className}__sns-icon`}
               icon={["fas", "user-alt"]} />
           </Link>
           <a
@@ -52,7 +52,7 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
             aria-label={`${author.name}のGitHub`}
           >
             <FontAwesomeIcon
-              className={`${className}__sns-icon`} 
+              className={`${className}__sns-icon`}
               icon={["fab", "github"]} />
           </a>
           <a
