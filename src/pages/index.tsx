@@ -1,4 +1,4 @@
-import * as React from "react"
+import React from "react"
 import { graphql } from "gatsby"
 import { Layout } from "../components/layout"
 import {
@@ -6,7 +6,6 @@ import {
   BlogItemData
 } from "../components/BlogItem"
 import SEO from "../components/seo"
-import styled from "styled-components"
 
 type Props = {
   data: {
@@ -22,7 +21,7 @@ const BlogIndex: React.FC<Props> = ({data}) => {
   const posts = data.allMarkdownRemark.edges
 
   return (
-    <Layout location="" title="">
+    <Layout title="">
       <SEO title="ryokatsu.dev" />
       {posts.map(({ node }) => {
         return <BlogItem key={node.fields.slug} {...node} />
