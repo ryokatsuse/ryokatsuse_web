@@ -18,8 +18,7 @@ const Wrapper = styled.div`
   }
 `
 
-export const Toc: VFC<Props> = ({ toc }) => {
-  console.log(toc)
+export const Toc: VFC<Props> = ({ toc }) => {)
   return (
     <Wrapper>
       <p>目次</p>
