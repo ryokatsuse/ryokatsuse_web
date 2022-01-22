@@ -4,16 +4,18 @@ import styled from "styled-components"
 import { MarkdownRemark } from "../types/blog-post"
 import { ShareButtons } from "../components/share"
 import { Tags } from "../components/Tags"
+import { Toc } from "../components/toc"
 import {ArticleDate} from '../components/ArticleDate/'
 
 type Props = {
   className?: string
+  tableOfContents: string
   post: Pick<
-    MarkdownRemark<"title" | "date" | "published" | "tags">, | "frontmatter" | "html"
+    MarkdownRemark<"title" | "date" | "published" | "tags" >, | "frontmatter" | "html"
   >
 }
 
-const FCPost: React.FC<Props> = ({ className, post }) => {
+const FCPost: React.FC<Props> = ({ className, post, tableOfContents }) => {
   const url = typeof window !== 'undefined' ? window.location.href : ''
 
   const hostUrl = "https://placehold.jp/"
@@ -44,6 +46,7 @@ const FCPost: React.FC<Props> = ({ className, post }) => {
           </small>
         </div>
       </header>
+      <Toc toc={tableOfContents} />
       <section
         className={`${className}__section`}
         dangerouslySetInnerHTML={{ __html: post.html }} />
@@ -66,6 +69,11 @@ export const Post = styled(FCPost)`
   .gatsby-resp-image-wrapper {
     margin-top: 20px;
     margin-bottom: 20px;
+  }
+
+  &__toc {
+    position: sticky;
+    top: 0;
   }
 
   &__img_wrapper {

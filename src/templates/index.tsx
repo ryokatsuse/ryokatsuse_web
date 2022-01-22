@@ -8,6 +8,7 @@ import { MarkdownRemark } from "../types/blog-post"
 
 type Props = {
   data: {
+    tableOfContents: string
     markdownRemark: MarkdownRemark<"title" | "date" | "updated" | "published" | "tags" | "mainVisual">
   }
 }
@@ -21,7 +22,7 @@ const BlogPostTemplate: React.FC<Props> = ({ data }) => {
         title={post.frontmatter.title}
         description={post.excerpt}
       />
-      <Post post={post}/>
+      <Post post={post} tableOfContents={data.markdownRemark.tableOfContents}/>
     </Layout>
   )
 
@@ -40,6 +41,7 @@ export const pageQuery = graphql`
       id
       excerpt(pruneLength: 160)
       html
+      tableOfContents
       frontmatter {
         title
         date
