@@ -9,19 +9,19 @@ const Wrapper = styled.div`
   border: 1px solid #ccc;
   padding: 10px;
 
-  p {
-    margin-bottom: 0;
-  }
-
   ul {
     margin: 0;
   }
 `
 
+const Title = styled.div`
+  margin-bottom: 0;
+`
+
 export const Toc: VFC<Props> = ({ toc }) => {
   return (
     <Wrapper>
-      <p>目次</p>
+      <Title>目次</Title>
       <div
         dangerouslySetInnerHTML={{
           __html: toc,
