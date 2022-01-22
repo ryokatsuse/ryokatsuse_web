@@ -71,10 +71,6 @@ export const Post = styled(FCPost)`
     margin-bottom: 20px;
   }
 
-  &__toc {
-    position: sticky;
-    top: 0;
-  }
 
   &__img_wrapper {
     aspect-ratio: 740/457;
