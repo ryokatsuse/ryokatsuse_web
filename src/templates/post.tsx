@@ -1,22 +1,21 @@
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import React from "react"
-import { graphql, useStaticQuery } from "gatsby"
 
 import styled from "styled-components"
 import { MarkdownRemark } from "../types/blog-post"
 import { ShareButtons } from "../components/share"
 import { Tags } from "../components/Tags"
+import { Toc } from "../components/toc"
 import {ArticleDate} from '../components/ArticleDate/'
 
 type Props = {
   className?: string
-  slug: string
+  tableOfContents: string
   post: Pick<
-    MarkdownRemark<"title" | "date" | "published" | "tags">, | "frontmatter" | "html"
+    MarkdownRemark<"title" | "date" | "published" | "tags" >, | "frontmatter" | "html"
   >
 }
 
-const FCPost: React.FC<Props> = ({ className, post, slug }) => {
+const FCPost: React.FC<Props> = ({ className, post, tableOfContents }) => {
   const url = typeof window !== 'undefined' ? window.location.href : ''
 
   const hostUrl = "https://placehold.jp/"
@@ -47,6 +46,7 @@ const FCPost: React.FC<Props> = ({ className, post, slug }) => {
           </small>
         </div>
       </header>
+      <Toc toc={tableOfContents} />
       <section
         className={`${className}__section`}
         dangerouslySetInnerHTML={{ __html: post.html }} />
@@ -71,6 +71,7 @@ export const Post = styled(FCPost)`
     margin-bottom: 20px;
   }
 
+
   &__img_wrapper {
     aspect-ratio: 740/457;
     overflow: hidden;
@@ -92,6 +93,7 @@ export const Post = styled(FCPost)`
   & h3,
   & h4 {
     margin: 1.5rem 0;
+    scroll-margin-top: 4rem;
   }
 
   & h2 {
