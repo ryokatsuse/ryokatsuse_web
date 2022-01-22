@@ -30,6 +30,7 @@ module.exports = {
       resolve: `gatsby-transformer-remark`,
       options: {
         plugins: [
+          `gatsby-remark-autolink-headers`,
           {
             resolve: "gatsby-remark-prismjs-title",
           },
@@ -64,12 +65,6 @@ module.exports = {
         trackingId: `UA-50098212-2`,
       },
     },
-    // {
-    //   resolve: `gatsby-transformer-remark`,
-    //   options: {
-    //     plugins: [`gatsby-remark-autolink-headers`],
-    //   },
-    // },
     {
       resolve: `gatsby-plugin-manifest`,
       options: {
