@@ -20,7 +20,7 @@ const FCPost: React.FC<Props> = ({ className, post, tableOfContents }) => {
 
   const hostUrl = "https://placehold.jp/"
   const size = {
-    horizontal: 740,
+    horizontal: 790,
     vertical: 457
   }
   const css = '{"background-color":" #fff","color":" #333","font-size":" 32px","word-break":" break-all","padding":" 10px"}'
