@@ -1,7 +1,7 @@
 ## Ryo Katsuse Blog
 
 ## URL
-https://ryokatsu.dev/
+https://ryokatsu.dev
 
 ## 起動
 
@@ -21,6 +21,6 @@ $ yarn build
 
 ## ホスティング
 
-Netfliyで行っています。masterにmergeされると自動デプロイになります。
+Netlifyで行っています。masterにmergeされると自動デプロイになります。
 
 
