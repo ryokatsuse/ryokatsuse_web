@@ -9,9 +9,6 @@ https://ryokatsu.dev
 // localhost
 $ yarn
 $ yarn develop
-
-// graphql
-$ open http://localhost:8000/___graphql
 ```
 
 ## デプロイ
