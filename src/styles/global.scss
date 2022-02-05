@@ -218,3 +218,8 @@ a {
 .gatsby-highlight {
   margin-bottom: 1.5rem;
 }
+
+/* src/styles/global.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
