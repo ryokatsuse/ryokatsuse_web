@@ -2,17 +2,10 @@ import { graphql, useStaticQuery } from "gatsby"
 import React from "react"
 import { Header } from "../components/header"
 import { Footer } from "../components/footer"
-import styled from "styled-components"
 import { SiteMetaData } from "../types/siteMetaData"
 import "./fa-default"
-import media from "styled-media-query";
 
-type Props = {
-  title?: string
-  className?: string
-}
-
-const FCLayout : React.FC<Props> = ({title, className, children}) => {
+export const Layout : React.FC = ({children}) => {
   const { site } = useStaticQuery<{
     site: {
       siteMetadata: Pick<SiteMetaData, "title" | "siteUrl">
@@ -30,27 +23,13 @@ const FCLayout : React.FC<Props> = ({title, className, children}) => {
     `
   )
 
-  const pageTitle = title
-    ? `${title} - ${site.siteMetadata.title}`
-    : site.siteMetadata.title
-
   return (
     <>
       <Header title={site.siteMetadata.title} />
-        <main className={`${className}`}>
+        <main className="block max-w-3xl my-0 mx-auto pt-20 px-8 pb-0">
             {children}
         </main>
       <Footer />
     </>
   );
 };
-export const Layout = styled(FCLayout)`
-  display: block;
-  max-width: calc(600px + 10%);
-  margin: 0 auto;
-  padding: 5em 2em 0 2rem;
-
-  ${media.lessThan("medium")`
-  padding: 5em 1rem 0 1rem;
-  `}
-`
