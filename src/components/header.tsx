@@ -1,16 +1,13 @@
 import Toggle from "../components/toggle";
 import React from "react"
 import { graphql, Link, useStaticQuery } from "gatsby"
-import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import media from "styled-media-query";
 
 type Props = {
   title: string
-  className?: string
 }
 
-const FCHeader: React.FC<Props> = ({title, className}) => {
+export const Header: React.FC<Props> = ({title}) => {
   const {
     site: {
       siteMetadata: { author, social },
@@ -30,19 +27,19 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
   `)
 
   return (
-    <header className={`${className}`}>
-      <div className={`${className}__inner`}>
-        <h1 className={`${className}__title`}>
+    <header className="z-10 w-full fixed top-0 m-0 mb-1 p-1 bg-gray-900">
+      <div className="flex justify-between max-w-3xl my-0 mx-auto md:py-2 py-0 md:px-6 px-2">
+        <h1 className="text-2xl">
           <Link
-            className={`${className}__link`}
+            className="text-white hover:no-underline"
             to={`/`}>
             {title}
           </Link>
         </h1>
-        <nav className={`${className}__sns`}>
+        <nav className="text-2xl flex justify-between gap-2">
           <Link to="/blog/about">
             <FontAwesomeIcon
-              className={`${className}__sns-icon`}
+              className="text-white"
               icon={["fas", "user-alt"]} />
           </Link>
           <a
@@ -52,7 +49,7 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
             aria-label={`${author.name}のGitHub`}
           >
             <FontAwesomeIcon
-              className={`${className}__sns-icon`}
+              className="text-white"
               icon={["fab", "github"]} />
           </a>
           <a
@@ -62,7 +59,7 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
             aria-label={`${author.name}のTwitter`}
           >
             <FontAwesomeIcon
-              className={`${className}__sns-icon`}
+              className="text-white"
               icon={["fab", "twitter"]} />
           </a>
           <Toggle />
@@ -72,49 +69,3 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
   );
 };
 
-export const Header = styled(FCHeader)`
-  z-index: 1;
-  width: 100%;
-  position: fixed;
-  top: 0;
-  box-sizing: border-box;
-  margin: 0;
-  z-index: 2;
-  margin-bottom: 1rem;
-  padding: calc(var(--grid)/2);
-  background-color: var(--dark-color);
-
-  &__inner {
-    margin: 0 auto;
-    padding: 0 2rem;
-    max-width: calc(600px + 10%);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    ${media.lessThan("medium")`
-    /* screen width is less than 768px (medium) */
-    padding: 0;
-  `}
-
-  }
-
-  &__title{
-    font-size: 1.6rem;
-  }
-  &__link {
-    color: #fff;
-
-    &:hover {
-      text-decoration: none;
-    }
-  }
-  &__sns {
-    font-size: 1.41421rem;
-    line-height: 1.75rem;
-    &-icon {
-      margin: 0 0.45rem;
-      color: #fff;
-    }
-  }
-`
