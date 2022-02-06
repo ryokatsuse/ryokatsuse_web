@@ -11,8 +11,8 @@ export const ArticleDate: React.FC<Props> = ({ updated, date }) => {
   const publishedDate = format(new Date(date))
   const updatedDate = updated ? format(new Date(updated)) : undefined
   return (
-    <>
+    <div className="text-sm">
       公開日:{publishedDate}{updatedDate ? ` / 更新日:${updatedDate}` : null}
-    </>
+    </div>
   )
 }

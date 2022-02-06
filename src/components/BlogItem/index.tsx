@@ -1,7 +1,5 @@
 import React from "react"
 import { graphql, Link } from "gatsby"
-
-import styled from "styled-components"
 import { MarkdownRemark } from "../../types/blog-post"
 import { Tags } from "../Tags"
 import { ArticleDate } from "../ArticleDate"
@@ -11,26 +9,22 @@ export type BlogItemData = Pick<
   "fields" | "frontmatter"
 >
 
-type Props = {
-  className?: string
-} & BlogItemData
+type Props = BlogItemData
 
-const FCBlogItem: React.FC<Props> = ({
-  className,
+export const BlogItem: React.FC<Props> = ({
   fields,
   frontmatter
 }) => {
   const title = frontmatter.title || fields.slug
   return (
     frontmatter.date ? (
-      <article className={`${className}`}>
+      <article className="mb-3">
       <header>
-        <h3>
+        <h3 className="text-lg">
           <Link
-            className={`${className}__link`}
             to={fields.slug}>{title}</Link>
         </h3>
-        <div className={`${className}__item`}>
+        <div className="flex flex-wrap items-center mt-1">
           <ArticleDate {...frontmatter} />
           <div>
             {frontmatter.tags ? (
@@ -45,22 +39,6 @@ const FCBlogItem: React.FC<Props> = ({
     ) : null
   )
 }
-
-export const BlogItem = styled(FCBlogItem)`
-  margin-bottom: 1rem;
-
-  &__item {
-    display: flex;
-    flex-flow: row wrap;
-    -webkit-box-align: center;
-    align-items: center;
-    margin-top: .5rem;
-  }
-
-  &__date {
-    margin-right: 20px;
-  }
-`
 
 export const query = graphql`
   fragment BlogIncludeData on MarkdownRemark {
