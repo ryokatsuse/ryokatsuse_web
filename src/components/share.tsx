@@ -1,16 +1,13 @@
 import React from "react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import styled from "styled-components"
 import HatenaBookMarkLogo from "./hatenabookmark.svg"
 
 type Props = {
-  className?: string
   text: string
   url: string
 }
 
-const FCShareButtons: React.FC<Props> = ({
-  className,
+export const ShareButtons: React.FC<Props> = ({
   text,
   url,
 }) => {
@@ -21,10 +18,11 @@ const FCShareButtons: React.FC<Props> = ({
     url
   )}`
   return (
-    <div className={`${className}`}>
-      <nav className={`${className}__nav`}>
+    <div>
+      <div className="mb-0 font-bold">Share</div>
+      <div className="pt-3 pr-3 pb-3 flex items-center gap-3">
         <a
-          className={`${className}__link`}
+          className="block appearance-none border-none bg-none text-3xl leading-none first:text-blue-400"
           aria-label="Share on Twitter"
           href={twitterShareLink}
           rel="external noopener"
@@ -33,47 +31,16 @@ const FCShareButtons: React.FC<Props> = ({
           <FontAwesomeIcon icon={["fab", "twitter"]} />
         </a>
         <a
-          className={`${className}__link`}
+          className="block appearance-none border-none bg-none text-3xl leading-none first:text-blue-400"
           href={hatenaShareLink}
           rel="external noopener"
           target="_blank">
           <img
-            className={`${className}__image`}
+            className="w-7 h-7 m-0"
             src={HatenaBookMarkLogo}
             alt="はてなブックマーク" />
         </a>
-      </nav>
+      </div>
     </div>
   )
 }
-
-export const ShareButtons = styled(FCShareButtons)`
-  &__title {
-    text-align: center;
-  }
-
-  &__nav {
-    padding: 10px;
-    display: flex;
-    align-items: center;
-  }
-  &__link {
-    display: block;
-    appearance: none;
-    border: none;
-    background: none;
-    font-size: 2rem;
-    line-height: 0;
-
-    &:first-child {
-      color: #1da1f2;
-      margin-right: 0.5em;
-    }
-  }
-
-  img {
-    width: 1em;
-    height: 1em;
-    margin: 0;
-  }
-`
