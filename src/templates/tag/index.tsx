@@ -1,8 +1,5 @@
 import React from "react"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { graphql } from "gatsby"
-
-import styled from "styled-components"
 import {
   BlogItem,
   BlogItemData
@@ -23,16 +20,15 @@ type Props = {
   }
   pageContext: {
     tag: string
-    slug: string
   }
 }
 
 const TagPageTemplate: React.FC<Props> = ({data, pageContext }) => {
   const posts = data.allMarkdownRemark.edges
-  const { tag, slug } = pageContext
+  const { tag } = pageContext
 
   return (
-    <Layout title={tag} slug={slug}>
+    <Layout>
       <SEO title={tag} />
       <div className="tag">
         <h1 className="tag__heading">
