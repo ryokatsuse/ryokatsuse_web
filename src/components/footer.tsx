@@ -1,12 +1,7 @@
 import { graphql, useStaticQuery } from "gatsby"
 import React from "react"
-import styled from "styled-components"
 
-type Props = {
-  className?: string
-}
-
-const FCFooter : React.FC<Props> = ({className}) => {
+export const Footer : React.VFC = () => {
   const {
     site: {
       siteMetadata: { social },
@@ -26,8 +21,8 @@ const FCFooter : React.FC<Props> = ({className}) => {
   `)
 
   return (
-    <footer className={`${className}`}>
-      <p className={`${className}__copy-right`}>
+    <footer className="p-4 text-center bg-gray-900 text-white">
+      <p className="text-base">
         © {new Date().getFullYear()}
         {` `}
         このサイトは、<a rel="external" href="https://www.gatsbyjs.org">Gatsby</a>で作られています。</p>
@@ -40,13 +35,4 @@ const FCFooter : React.FC<Props> = ({className}) => {
     </footer>
   );
 };
-export const Footer = styled(FCFooter)`
-  padding: var(--grid);
-  text-align: center;
-  background-color: var(--dark-color);
-  color: #fff;
 
-  &__copy-right {
-    font-size: 1rem;
-  }
-`
