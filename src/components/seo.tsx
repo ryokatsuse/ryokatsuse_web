@@ -100,7 +100,9 @@ const SEO: React.FC<Props> = ({
           content: metaDescription,
         },
       ].concat(meta)}
-    />
+    >
+      <script async src="//cdn.iframe.ly/embed.js" charSet="utf-8"></script>
+      </Helmet>
   )
 }
 
