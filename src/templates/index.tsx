@@ -5,6 +5,7 @@ import { Layout } from "../components/layout"
 import SEO from "../components/seo"
 import { Post } from "./post"
 import { MarkdownRemark } from "../types/blog-post"
+import Iframely from "../components/Iframe"
 
 type Props = {
   data: {
@@ -18,6 +19,7 @@ const BlogPostTemplate: React.FC<Props> = ({ data }) => {
 
   return (
     <Layout title={post.frontmatter.title}>
+      <Iframely />
       <SEO
         title={post.frontmatter.title}
         description={post.excerpt}

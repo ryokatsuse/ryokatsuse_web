@@ -101,10 +101,10 @@ const SEO: React.FC<Props> = ({
         },
       ].concat(meta)}
     >
-      <script
+      {/* <script
         type="text/javascript"
         src="https://cdn.iframe.ly/embed.js"
-      />
+      /> */}
       </Helmet>
   )
 }
