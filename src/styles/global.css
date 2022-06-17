@@ -87,6 +87,18 @@ body.dark {
   color: var(--font-color);
 }
 
+blockquote {
+  border-left: 5px solid #333;
+  padding-left: 1rem;
+  font-style: italic;
+}
+
+body.dark blockquote {
+  border-left: 5px solid white;
+  padding-left: 1rem;
+  font-style: italic;
+}
+
 body h3 > a {
   --font-color: #222;
   color: var(--font-color);
