@@ -18,6 +18,6 @@ $ yarn build
 
 ## ホスティング
 
-Netlifyで行っています。masterにmergeされると自動デプロイになります。
+Vercelで行っています。masterにmergeされると自動デプロイになります。
 
 
