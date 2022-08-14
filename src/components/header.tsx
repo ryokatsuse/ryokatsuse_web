@@ -60,7 +60,7 @@ const FCHeader: React.FC<Props> = ({title, className}) => {
               className={`${className}__sns-icon`}
               icon={["fab", "twitter"]} />
           </a>
-          <Toggle />
+          {/* <Toggle /> */}
         </nav>
       </div>
     </header>
