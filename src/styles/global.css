@@ -1,17 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 /*
   The CSS in this style tag is based off of Bear Blog's default CSS.
   https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
   License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
  */
+
 body {
   font-family: Verdana, sans-serif;
   margin: auto;
   padding: 20px;
-  max-width: 65ch;
+  max-width: 80vw;
   text-align: left;
   background-color: #fff;
   word-wrap: break-word;
@@ -19,16 +19,7 @@ body {
   line-height: 1.5;
   color: #444;
 }
-h1,
-h2,
-h3,
-h4,
-h5,
-h6,
-strong,
-b {
-  color: #222;
-}
+
 a {
   color: #3273dc;
 }

@@ -7,5 +7,10 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [image(), mdx(), sitemap(), tailwind()],
+  site: 'https://ryokatsu.dev/', // this line is required
+  integrations: [image(), mdx(), sitemap(), tailwind({
+    config: {
+      applyBaseStyles: false,
+    },
+  }),],
 });
