@@ -10,8 +10,7 @@
 body {
   font-family: Verdana, sans-serif;
   margin: auto;
-  padding: 20px;
-  max-width: 80vw;
+  /* max-width: 80vw; */
   text-align: left;
   background-color: #fff;
   word-wrap: break-word;
