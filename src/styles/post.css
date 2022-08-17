@@ -1,0 +1,69 @@
+.post {
+  @apply space-y-6;
+
+  * + :is(h2, hr, pre, figure, iframe, .twitter-tweet-rendered),
+  :is(hr, pre, figure, iframe, :is(.twitter-tweet-rendered) + script) + * {
+  @apply !mt-10;
+  }
+
+  h2 {
+    @apply flex gap-x-3 text-xl leading-tight;
+  }
+
+  h2::before {
+    @apply my-[calc((1.5em-1em)/2)] border-l-[6px] content-[""];
+  }
+
+  h3 {
+    @apply text-lg font-bold leading-tight;
+  }
+
+  h3 + * {
+    @apply !mt-2;
+  }
+
+  hr {
+    @apply h-auto border-0 pl-[2em];
+  }
+
+  hr::before {
+    @apply content-["\2042\2003\2042\2003\2042"];
+  }
+
+  pre {
+    @apply text-sm;
+  }
+
+  blockquote {
+    @apply ml-[2em] space-y-3;
+  }
+
+  :is(ol, ul) {
+    @apply list-[revert] pl-[2em];
+  }
+
+  li {
+    @apply mt-1;
+  }
+
+    > :is(ol, ul) > li:first-child {
+    @apply mt-0;
+  }
+
+  figure {
+    @apply space-y-3;
+  }
+
+  figcaption {
+    @apply text-sm;
+  }
+
+  pre > code::before,
+  pre > code::after {
+    @apply content-none;
+  }
+
+  img {
+    @apply ring-1;
+  }
+}

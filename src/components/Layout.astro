@@ -8,21 +8,14 @@ export interface Props {
   title?: string;
   description?: string;
   ogImageURL?: string;
-  ogType?: "website" | "article";
+  ogType?: 'website' | 'article';
 }
 
-const siteTitle = "ryokatsu.dev";
+const siteTitle = 'ryokatsu.dev';
 
-const {
-  title = siteTitle,
-  description,
-  ogType = "website",
-} = Astro.props as Props;
+const { title = siteTitle, description, ogType = 'website' } = Astro.props as Props;
 
-const ogImageURL = new URL(
-  (Astro.props as Props).ogImageURL || "/apple-touch-icon.png",
-  Astro.site
-);
+const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-icon.png', Astro.site);
 ---
 
 <html lang="ja">

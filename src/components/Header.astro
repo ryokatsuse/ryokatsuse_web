@@ -6,23 +6,15 @@ import { SITE_TITLE } from '../config';
   <div class="flex justify-between max-w-3xl m-auto p-4">
     <a
       class="flex items-center gap-x-2 w-fit text-slate-400"
-      href={Astro.url.pathname !== "/" ? "/" : null}
+      href={Astro.url.pathname !== '/' ? '/' : null}
       rel="prefetch"
-      >
-      <img
-        class="w-7 rounded-full bg-white"
-        src="/favicon.svg"
-        width="48"
-        height="48"
-        alt=""
-        decoding="async"
-      />
+    >
+      <img class="w-7 rounded-full bg-white" src="/favicon.svg" width="48" height="48" alt="" decoding="async" />
       {SITE_TITLE}
     </a>
     <!-- TODO:後でSNSアカウント入れるかも -->
-    <ul class="flex gap-x-2">
-      <li>
-      </li>
-    </ul>
+    <!-- <ul class="flex gap-x-2">
+      <li></li>
+    </ul> -->
   </div>
 </header>
