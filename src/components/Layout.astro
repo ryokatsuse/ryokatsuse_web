@@ -26,6 +26,7 @@ const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-ic
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="alternate" href="/posts-feed.xml" type="application/rss+xml" />
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
