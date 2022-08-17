@@ -10,9 +10,6 @@
     @apply flex gap-x-3 text-xl leading-tight;
   }
 
-  h2::before {
-    @apply my-[calc((1.5em-1em)/2)] border-l-[6px] content-[""];
-  }
 
   h3 {
     @apply text-lg font-bold leading-tight;
@@ -50,12 +47,8 @@
     @apply mt-0;
   }
 
-  figure {
-    @apply space-y-3;
-  }
-
-  figcaption {
-    @apply text-sm;
+  blockquote {
+    @apply border rounded text-black dark:text-white italic p-2
   }
 
   pre > code::before,

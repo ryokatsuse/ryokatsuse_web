@@ -23,6 +23,7 @@ const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-ic
     <!-- Global Metadata -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
@@ -43,9 +44,15 @@ const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-ic
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={Astro.url} />
+    <link rel="canonical" href={Astro.url} />
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={new URL(ogImageURL, Astro.url)} />
+    <!-- <meta property="twitter:image" content={new URL(ogImageURL, Astro.url)} /> -->
+    <meta name="twitter:site" content="@ryo__kts" />
+    <script
+    type="text/javascript"
+    src="https://cdn.iframe.ly/embed.js"
+  />
   </head>
   <body class="dark:bg-neutral-800 dark:text-gray-50">
     <Header title={SITE_TITLE} />
