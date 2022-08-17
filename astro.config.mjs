@@ -8,9 +8,14 @@ import sitemap from '@astrojs/sitemap';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://ryokatsu.dev/', // this line is required
-  integrations: [image(), mdx(), sitemap(), tailwind({
-    config: {
-      applyBaseStyles: false,
-    },
-  }),],
+  integrations: [
+    image(),
+    mdx(),
+    sitemap(),
+    tailwind({
+      config: {
+        applyBaseStyles: false,
+      },
+    }),
+  ],
 });
