@@ -20,7 +20,6 @@ body {
   line-height: 1.5;
   color: #444;
 }
-
 a {
   color: #3273dc;
 }
@@ -54,13 +53,6 @@ pre {
 }
 pre > code {
   all: unset;
-}
-blockquote {
-  /* border: 1px solid #999;
-  color: #222;
-  padding: 2px 0px 2px 20px;
-  margin: 0px;
-  font-style: italic; */
 }
 
 .post code::before, .post code::after {
