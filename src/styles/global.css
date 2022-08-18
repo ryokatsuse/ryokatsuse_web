@@ -1,229 +1,60 @@
-/*
-* modern-css-reset
-* @see https://hankchizljaw.com/wrote/a-modern-css-reset/
-*/
-
-/* Box sizing rules */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-/* Remove default padding */
-ul[class],
-ol[class] {
-  padding: 0;
-}
-
-/* Remove default margin */
-body,
-h1,
-h2,
-h3,
-h4,
-p,
-ul[class],
-ol[class],
-li,
-figure,
-figcaption,
-blockquote,
-dl,
-dd {
-  margin: 0;
-}
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+@import 'post';
 
 /*
-* root setting
-*
-*/
-:root {
-  --background-color: #fefefe;
-  --font-color: #222;
-  --dark-color: rgb(22, 27, 34);;
+  The CSS in this style tag is based off of Bear Blog's default CSS.
+  https://github.com/HermanMartinus/bearblog/blob/297026a877bc2ab2b3bdfbd6b9f7961c350917dd/templates/styles/blog/default.css
+  License MIT: https://github.com/HermanMartinus/bearblog/blob/master/LICENSE.md
+ */
 
-  --anchor-color: RoyalBlue;
-  --anchor-visited-color: Brown;
-
-  --code-block: #efefef;
-  --code-block-font: #222;
-
-  --block-quote: #ddd;
-  --table-border: #222;
-
-  --regular-font: inherit;
-
-  --code-font: SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
-
-  --icon-size: 30px;
-
-  --width: 80vw;
-  --grid: 1rem;
-
-  --radius: 3px;
-}
-
-/* Set core body defaults */
 body {
-  --background-color: #fefefe;
-  --tw-text-opacity: 1;
-  --font-color: rgba(55,65,81,var(--tw-text-opacity));
-  min-height: 100vh;
-  scroll-behavior: auto;
-  text-rendering: optimizeSpeed;
+  font-family: Verdana, sans-serif;
+  margin: auto;
+  /* max-width: 80vw; */
+  text-align: left;
+  background-color: #fff;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   line-height: 1.5;
-  font-family: var(--regular-font);
-  background-color: var(--background-color);
-  color: var(--font-color);
-  margin: 0;
-  padding: 0;
+  color: #444;
 }
-
-body.dark {
-  --background-color: #212122;
-  --font-color: #fff;
-  background-color: var(--background-color);
-  color: var(--font-color);
-}
-
-blockquote {
-  border-left: 5px solid #333;
-  padding-left: 1rem;
-  font-style: italic;
-}
-
-body.dark blockquote {
-  border-left: 5px solid white;
-  padding-left: 1rem;
-  font-style: italic;
-}
-
-body h3 > a {
-  --font-color: #222;
-  color: var(--font-color);
-}
-body.dark h3 > a {
-  --font-color: #fff;
-  color: var(--font-color);
-}
-
-/* Remove list styles on ul, ol elements with a class attribute */
-ul[class],
-ol[class] {
-  list-style: none;
-}
-
-/* A elements that don't have a class get default styles */
-a:not([class]) {
-  text-decoration-skip-ink: auto;
-}
-
-/* Make images easier to work with */
-img {
-  max-width: 100%;
-  display: block;
-}
-
-/* Natural flow and rhythm in articles by default */
-article > * + * {
-  margin-top: 1em;
-}
-
-/* Inherit fonts for inputs and buttons */
-input,
-button,
-textarea,
-select {
-  font: inherit;
-}
-
-/* Remove all animations and transitions for people that prefer not to see them */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
-}
-
-/* Mobile Theme */
-@media screen and (max-device-width: 800px) {
-  :root {
-    --width: 94vw;
-  }
-}
-
-/*
-* global
-* 
-*/
-
-html {
-  scroll-behavior: auto;
-}
-
-h1,
-h2,
-h3,
-h4 {
-  font-family: var(--regular-font);
-  font-weight: bold;
-}
-
-h1 {
-  font-size: 2rem;
-}
-
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-hr {
-  margin: 0 0 1rem 0;
-  padding: 0;
-}
-
-
-p {
-  word-break: break-all;
-  line-height: 2;
-}
-
 a {
-  text-decoration: none;
-  box-shadow: none;
-  color: #007acc;
-  word-break: break-all;
+  color: #3273dc;
+}
+nav a {
+  margin-right: 10px;
+}
+textarea {
+  width: 100%;
+  font-size: 16px;
+}
+input {
+  font-size: 16px;
+}
+content {
+  line-height: 1.6;
+}
+table {
+  width: 100%;
+}
+img {
+  max-width: 100%;
+}
+code {
+  padding: 2px 5px;
+  background-color: #f2f2f2;
+  border-radius: 0.3em;
+  color: #db4c69;
+}
+pre {
+  padding: 1rem;
+}
+pre > code {
+  all: unset;
 }
 
-a.hover {
-  text-decoration: underline;
-}
-.toggle {
-  display: none;
-}
-
-.toggle__fa {
-  position: relative;
-    vertical-align: middle;
-    font-size: 20px;
-    cursor: pointer;
-    top: -1px;
-}
-.toggle + .toggle__fa:before {
-  content: '🌞';
-}
-.toggle:checked + .toggle__fa:before {
-  content: '🌛';
-}
-
-.tag__heading {
-  margin-bottom: 2rem;
-}
-
-.gatsby-highlight {
-  margin-bottom: 1.5rem;
+.post code::before, .post code::after {
+  content: none;
 }
