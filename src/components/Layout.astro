@@ -1,0 +1,64 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { SITE_TITLE } from '../config';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  ogImageURL?: string;
+  ogType?: 'website' | 'article';
+}
+
+const siteTitle = 'ryokatsu.dev';
+
+const { title = siteTitle, description, ogType = 'website' } = Astro.props as Props;
+
+const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-icon.png', Astro.site);
+---
+
+<html lang="ja">
+  <head>
+    <!-- Global Metadata -->
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="alternate" href="/posts-feed.xml" type="application/rss+xml" />
+
+    <!-- Primary Meta Tags -->
+    <title>{title}</title>
+    <meta name="title" content={title} />
+    <meta name="description" content={description} />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={Astro.url} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImageURL, Astro.url)} />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <link rel="canonical" href={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <!-- <meta property="twitter:image" content={new URL(ogImageURL, Astro.url)} /> -->
+    <meta name="twitter:site" content="@ryo__kts" />
+    <script
+    type="text/javascript"
+    src="https://cdn.iframe.ly/embed.js"
+  />
+  </head>
+  <body class="dark:bg-neutral-800 dark:text-gray-50">
+    <Header title={SITE_TITLE} />
+    <main class="max-w-3xl mx-auto px-4">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

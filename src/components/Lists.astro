@@ -1,0 +1,26 @@
+---
+export interface Props {
+  items: {
+    title: string;
+    link: string;
+    meta?: string;
+    description?: string;
+  }[];
+}
+
+const { items } = Astro.props as Props;
+---
+
+<ul class="space-y-8">
+  {
+    items.map(item => (
+      <li class="space-y-[0.125rem]">
+        {item.meta && <p class="text-dynamic-muted text-sm" set:html={item.meta} />}
+        <p>
+          <a href={item.link} set:html={item.title} rel="prefetch" />
+        </p>
+        {item.description && <p class="text-dynamic-muted text-sm" set:html={item.description} />}
+      </li>
+    ))
+  }
+</ul>
