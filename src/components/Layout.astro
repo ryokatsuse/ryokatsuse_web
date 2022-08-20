@@ -59,8 +59,10 @@ let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body class="dark:bg-neutral-800 dark:text-gray-50">
     <Header title={SITE_TITLE} />
-    <main class="max-w-3xl mx-auto px-4">
-      <slot />
+    <main>
+      <div class="max-w-3xl mx-auto px-4">
+        <slot />
+      </div>
     </main>
     <Footer />
   </body>
