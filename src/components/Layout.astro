@@ -9,13 +9,17 @@ export interface Props {
   description?: string;
   ogImageURL?: string;
   ogType?: 'website' | 'article';
+  twitterCard?: "summary" | "summary_large_image";
 }
 
 const siteTitle = 'ryokatsu.dev';
 
-const { title = siteTitle, description, ogType = 'website' } = Astro.props as Props;
+const { title = siteTitle, description, ogType = 'website', twitterCard = "summary" } = Astro.props as Props;
 
 const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-icon.png', Astro.site);
+
+let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
+console.log(canonicalURL)
 ---
 
 <html lang="ja">
@@ -32,22 +36,22 @@ const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-ic
     <!-- Primary Meta Tags -->
     <title>{title}</title>
     <meta name="title" content={title} />
-    <meta name="description" content={description} />
+    {description && <meta name="description" content={description} />}
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content={ogType} />
-    <meta property="og:url" content={Astro.url} />
+    {canonicalURL && <meta property="og:url" content={canonicalURL} />}
     <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    {description && <meta property="og:description" content={description} />}
     <meta property="og:image" content={new URL(ogImageURL, Astro.url)} />
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content={twitterCard} />
     <meta property="twitter:url" content={Astro.url} />
-    <link rel="canonical" href={Astro.url} />
+    {canonicalURL && <link rel="canonical" href={canonicalURL} />}
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <!-- <meta property="twitter:image" content={new URL(ogImageURL, Astro.url)} /> -->
+    <meta property="twitter:image" content={new URL(ogImageURL, Astro.url)} />
     <meta name="twitter:site" content="@ryo__kts" />
     <script
     type="text/javascript"
