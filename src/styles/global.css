@@ -19,7 +19,15 @@ body {
   overflow-wrap: break-word;
   line-height: 1.5;
   color: #444;
+  display: flex;
+  flex-flow: column;
+  min-height: 100vh;
 }
+
+main {
+  flex: 1;
+}
+
 a {
   color: #3273dc;
 }

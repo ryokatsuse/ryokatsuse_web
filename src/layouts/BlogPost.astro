@@ -10,11 +10,12 @@ export interface Props {
     updatedDate?: string;
     heroImage?: string;
     ogImageURL?: string;
+    twitterCard?: "summary" | "summary_large_image";
   };
 }
 
 const {
-  content: { title, description, publishDate, updatedDate, ogImageURL },
+  content: { title, description, publishDate, updatedDate, ogImageURL, twitterCard },
 } = Astro.props as Props;
 
 // Match the `heroImage` frontmatter string to its correct
@@ -37,6 +38,7 @@ const ogImageURLAsset = assets.find(asset => {
   description={description}
   ogType="article"
   ogImageURL={ogImageURL!}
+  twitterCard={twitterCard!}
 >
   <article>
     {ogImageURLAsset && <Image class="mb-4" width={720} height={360} src={ogImageURLAsset.default} alt="" />}

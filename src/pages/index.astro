@@ -10,9 +10,11 @@ allPosts.sort(
   dayjs(a.frontmatter.publishDate).tz().valueOf()
 );
 
+const description = 'JavaScriptエンジニア。インターフェースデザインが好き。'
+
 ---
 
-<Layout>
+<Layout description={description}>
   <!-- <h1 class="mb-4 text-lg">最新の記事</h1> -->
   <Lists
     items={allPosts
