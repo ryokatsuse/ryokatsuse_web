@@ -19,7 +19,6 @@ const { title = siteTitle, description, ogType = 'website', twitterCard = "summa
 const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-icon.png', Astro.site);
 
 let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
-console.log(canonicalURL)
 ---
 
 <html lang="ja">
