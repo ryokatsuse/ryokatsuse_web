@@ -56,6 +56,10 @@
     @apply content-none;
   }
 
+  a {
+    @apply text-black dark:text-white underline hover:hover:no-underline
+  }
+
   img {
     @apply ring-1;
   }
