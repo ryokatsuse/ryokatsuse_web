@@ -15,7 +15,12 @@ const description = 'JavaScriptエンジニア。インターフェースデザ�
 ---
 
 <Layout description={description}>
-  <Lists
+  <section class="mb-12">
+    <p>都内でフロントエンドエンジニアをしています。インターフェースデザインなどが好き。日々のプログラミングについてだったり読んだ本の感想、日記などを発信しています。</p>
+  </section>
+  <h1 class="text-l font-bold mb-8">## 最近の記事</h1>
+  <section class="mb-12">
+    <Lists
     items={allPosts
     .map((post) => ({
       title: post.frontmatter.title,
@@ -23,6 +28,8 @@ const description = 'JavaScriptエンジニア。インターフェースデザ�
       meta: `<time datetime="${dayjs(post.frontmatter.publishDate).tz().toISOString()}">
         ${dayjs(post.frontmatter.publishDate).tz().format("LL")}
       </time>`,
-      }))}
+      })).slice(0, 10)}
   />
+  </section>
+  <div><a class="text-black dark:text-white underline hover:hover:no-underline" href="/blog">すべての記事一覧</a></div>
 </Layout>
