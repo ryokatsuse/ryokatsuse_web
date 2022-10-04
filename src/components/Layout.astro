@@ -42,15 +42,15 @@ let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
     {canonicalURL && <meta property="og:url" content={canonicalURL} />}
     <meta property="og:title" content={title} />
     {description && <meta property="og:description" content={description} />}
-    <meta property="og:image" content={new URL(ogImageURL, Astro.url)} />
+    <meta property="og:image" content={`https://res.cloudinary.com/dyk53nokb/image/upload/c_fit,h_600,l_text:Sawarabi%20Gothic_64:${title},co_rgb:fff,w_1080/v1664850371/OGPsample_hqipp7.png`} />
 
     <!-- Twitter -->
-    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={Astro.url} />
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
-    <meta property="twitter:image" content={new URL(ogImageURL, Astro.url)} />
+    <meta property="twitter:image" content={`https://res.cloudinary.com/dyk53nokb/image/upload/c_fit,h_600,l_text:Sawarabi%20Gothic_64:${title},co_rgb:fff,w_1080/v1664850371/OGPsample_hqipp7.png`} />
     <meta name="twitter:site" content="@ryo__kts" />
     <script
     type="text/javascript"
