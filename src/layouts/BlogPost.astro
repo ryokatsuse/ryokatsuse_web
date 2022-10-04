@@ -42,7 +42,7 @@ const ogImageURLAsset = assets.find(asset => {
 >
   <article>
     {ogImageURLAsset && <div class="flex justify-center items-center"><Image class="mb-4" src={ogImageURLAsset.default} alt="" /></div>}
-    <h1 class="text-2xl font-bold">{title}</h1>
+    <h1 class="text-2xl font-bold"><budoux-ja>{title}</budoux-ja></h1>
     {publishDate && <time>{publishDate}</time>}
     {
       updatedDate && (
