@@ -7,7 +7,7 @@
   }
 
   h2 {
-    @apply flex gap-x-3 text-xl leading-tight;
+    @apply flex gap-x-3 text-xl leading-tight font-bold;
   }
 
 
