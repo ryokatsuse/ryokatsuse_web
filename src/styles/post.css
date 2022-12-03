@@ -44,7 +44,7 @@
   }
 
   li {
-    @apply mt-1;
+    @apply mt-1 sm:text-lg text-base;
   }
 
     > :is(ol, ul) > li:first-child {
