@@ -1,6 +1,6 @@
 ---
 layout: "../../../layouts/BlogPost.astro"
-title: Trusted Testerに取り組んだ感想
+title: Trusted Testerに取り組んだ話
 publishDate: "2022-12-04"
 ---
 
