@@ -7,16 +7,20 @@
   }
 
   h2 {
-    @apply flex gap-x-3 text-xl leading-tight;
+    @apply flex gap-x-3 sm:text-2xl text-xl leading-tight font-bold;
   }
 
 
   h3 {
-    @apply text-lg font-bold leading-tight;
+    @apply sm:text-xl text-lg font-bold leading-tight;
   }
 
   h3 + * {
     @apply !mt-2;
+  }
+
+  p {
+    @apply leading-7 sm:text-lg text-base
   }
 
   hr {
@@ -40,11 +44,15 @@
   }
 
   li {
-    @apply mt-1;
+    @apply mt-1 sm:text-lg text-base;
   }
 
     > :is(ol, ul) > li:first-child {
     @apply mt-0;
+  }
+
+  b, strong {
+    @apply not-italic
   }
 
   blockquote {
