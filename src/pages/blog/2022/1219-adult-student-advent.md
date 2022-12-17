@@ -12,7 +12,6 @@ publishDate: "2022-12-19"
 
 <div class="iframely-embed"><div class="iframely-responsive" style="height: 140px; padding-bottom: 0;"><a href="https://ryokatsu.dev/blog/2021/1203" data-iframely-url="//iframely.net/daDZK7f?card=small"></a></div></div>
 
-## 学んだ教科/学んでいる教科
 
 ## 授業の受け方
 放送大学では、通常の大学と同じように前期/後期があります。それぞれの学期の途中に提出する課題と学期末にある単位認定試験に合格すると単位が取れます。課題と認定試験についてはWEBから行うことができます。
