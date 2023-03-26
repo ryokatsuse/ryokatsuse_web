@@ -2,13 +2,14 @@
 export interface Props {
   items: {
     title: string;
-    link: string;
+    slug: string;
     meta?: string;
     description?: string;
   }[];
 }
 
-const { items } = Astro.props as Props;
+const { items } = Astro.props;
+
 ---
 
 <ul class="space-y-12">
@@ -17,7 +18,7 @@ const { items } = Astro.props as Props;
       <li class="space-y-[0.125rem]">
         {item.meta && <p class="text-dynamic-muted text-sm" set:html={item.meta} />}
         <p>
-          <a class="text-black dark:text-white underline hover:hover:no-underline" href={item.link} rel="prefetch"><budoux-ja>{item.title}</budoux-ja></a>
+          <a class="text-black dark:text-white underline hover:hover:no-underline" href={`/blog/${item.slug}`} rel="prefetch"><budoux-ja>{item.title}</budoux-ja></a>
         </p>
         {item.description && <p class="text-dynamic-muted text-sm"><budoux-ja>{item.description}</budoux-ja></p>}
       </li>

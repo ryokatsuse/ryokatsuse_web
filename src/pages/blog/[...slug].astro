@@ -1,0 +1,51 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../components/Layout.astro";
+import { Image } from '@astrojs/image/components';
+
+export async function getStaticPaths() {
+	return (await getCollection("blog")).map((entry) => ({
+		params: { slug: entry.slug },
+		props: { entry },
+	}));
+}
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+const assets = await Astro.glob('../../assets/**/*');
+const ogImageURLAsset = assets.find(asset => {
+  if (!entry.data.ogImageURL) {
+    return false;
+  }
+  if (!asset.default?.src) {
+    return false;
+  }
+  const index = asset.default.src.indexOf('/assets/');
+  return asset.default.src.slice(index) === entry.data.ogImageURL;
+});
+---
+
+<Layout
+  title={entry.data.title}
+  description={entry.description}
+  ogType="article"
+  ogImageURL={entry.data.ogImageURL!}
+  twitterCard={entry.data.twitterCard!}
+>
+  <article>
+    {ogImageURLAsset && <div class="flex justify-center items-center"><Image class="mb-4" src={ogImageURLAsset.default} alt="" /></div>}
+    <h1 class="text-2xl font-bold"><budoux-ja>{entry.data.title}</budoux-ja></h1>
+    {entry.data.publishDate && <time>{entry.data.publishDate}</time>}
+    {
+      entry.data.updatedDate && (
+        <div>
+         更新日 <time>{entry.data.updatedDate}</time>
+        </div>
+      )
+    }
+    <hr class="my-4" />
+    <div class="container post">
+      <Content />
+    </div>
+  </article>
+</Layout>
