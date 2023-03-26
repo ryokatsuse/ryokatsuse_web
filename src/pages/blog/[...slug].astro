@@ -1,6 +1,6 @@
 ---
 import { getCollection } from "astro:content";
-import Layout from "../components/Layout.astro";
+import Layout from "../../components/Layout.astro";
 import { Image } from '@astrojs/image/components';
 
 export async function getStaticPaths() {
@@ -12,7 +12,7 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content } = await entry.render();
 
-const assets = await Astro.glob('../assets/**/*');
+const assets = await Astro.glob('../../assets/**/*');
 const ogImageURLAsset = assets.find(asset => {
   if (!entry.data.ogImageURL) {
     return false;

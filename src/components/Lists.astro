@@ -10,7 +10,6 @@ export interface Props {
 
 const { items } = Astro.props;
 
-console.log('items', items)
 ---
 
 <ul class="space-y-12">
@@ -19,7 +18,7 @@ console.log('items', items)
       <li class="space-y-[0.125rem]">
         {item.meta && <p class="text-dynamic-muted text-sm" set:html={item.meta} />}
         <p>
-          <a class="text-black dark:text-white underline hover:hover:no-underline" href={`/${item.slug}`} rel="prefetch"><budoux-ja>{item.title}</budoux-ja></a>
+          <a class="text-black dark:text-white underline hover:hover:no-underline" href={`/blog/${item.slug}`} rel="prefetch"><budoux-ja>{item.title}</budoux-ja></a>
         </p>
         {item.description && <p class="text-dynamic-muted text-sm"><budoux-ja>{item.description}</budoux-ja></p>}
       </li>
