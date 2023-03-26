@@ -1,14 +1,11 @@
 ---
+import { getCollection } from "astro:content";
 import Layout from "../components/Layout.astro";
 import dayjs from "../lib/dayjs";
 import Lists from "../components/Lists.astro";
 
-const allPosts = await Astro.glob<{ frontmatter: {title: string; publishDate: string}, url: string }>('./blog/*/*.{md,mdx}');
-allPosts.sort(
-  (a, b) =>
-  dayjs(b.frontmatter.publishDate).tz().valueOf() -
-  dayjs(a.frontmatter.publishDate).tz().valueOf()
-);
+const allBlogEntries = (await getCollection("blog")).sort(
+  (a, b) => dayjs(b.data.publishDate).tz().valueOf() - dayjs(a.data.publishDate).tz().valueOf());
 ---
 
 <Layout
@@ -17,12 +14,12 @@ allPosts.sort(
 >
   <h1 class="text-l font-bold mb-8">##記事一覧</h1>
   <Lists
-    items={allPosts
+    items={allBlogEntries
     .map((post) => ({
-      title: post.frontmatter.title,
-      link: post.url!,
-      meta: `<time datetime="${dayjs(post.frontmatter.publishDate).tz().toISOString()}">
-        ${dayjs(post.frontmatter.publishDate).tz().format("LL")}
+      title: post.data.title,
+      slug: post.slug!,
+      meta: `<time datetime="${dayjs(post.data.publishDate).tz().toISOString()}">
+        ${dayjs(post.data.publishDate).tz().format("LL")}
       </time>`,
       }))}
   />
