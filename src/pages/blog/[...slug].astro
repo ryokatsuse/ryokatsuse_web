@@ -23,7 +23,6 @@ const ogImageURLAsset = assets.find(asset => {
   const index = asset.default.src.indexOf('/assets/');
   return asset.default.src.slice(index) === entry.data.ogImageURL;
 });
-console.log(entry);
 ---
 
 <Layout
