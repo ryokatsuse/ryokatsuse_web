@@ -3,6 +3,7 @@ import image from '@astrojs/image';
 import mdx from '@astrojs/mdx';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
+import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
@@ -16,5 +17,9 @@ export default defineConfig({
         applyBaseStyles: false,
       },
     }),
+    react(),
   ],
+  vite: {
+    optimizeDeps: { exclude: ['@resvg/resvg-js'] },
+  },
 });
