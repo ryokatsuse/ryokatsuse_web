@@ -23,13 +23,14 @@ const ogImageURLAsset = assets.find(asset => {
   const index = asset.default.src.indexOf('/assets/');
   return asset.default.src.slice(index) === entry.data.ogImageURL;
 });
+console.log(entry);
 ---
 
 <Layout
   title={entry.data.title}
   description={entry.description}
   ogType="article"
-  ogImageURL={entry.data.ogImageURL!}
+  image={`/og/${entry.slug.replace(/\//g, '-')}.png`}
   twitterCard={entry.data.twitterCard!}
 >
   <article>

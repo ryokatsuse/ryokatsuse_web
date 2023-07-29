@@ -7,16 +7,17 @@ import { SITE_TITLE } from '../config';
 export interface Props {
   title?: string;
   description?: string;
-  ogImageURL?: string;
+  image?: string;
   ogType?: 'website' | 'article';
   twitterCard?: "summary" | "summary_large_image";
 }
 
 const siteTitle = 'ryokatsu.dev';
 
-const { title = siteTitle, description, ogType = 'website', twitterCard = "summary" } = Astro.props as Props;
+const { title = siteTitle, description, ogType = 'website', image} = Astro.props as Props;
+console.log(Astro.props);
 
-const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-icon.png', Astro.site);
+// const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-icon.png', Astro.site);
 
 let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -38,16 +39,18 @@ let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
     {description && <meta name="description" content={description} />}
 
     <!-- Open Graph / Facebook -->
-    <meta name="twitter:card" content="summary" />
-    <meta name="twitter:site" content="@ryo__kts" />
-    <meta property="twitter:title" content={title} />
-    {canonicalURL && <meta property="og:url" content={canonicalURL} />}
+    <meta property="og:url" content={Astro.url} />
     <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
     <meta property="og:type" content={ogType} />
-    <meta property="og:image" content={`https://res.cloudinary.com/dyk53nokb/image/upload/c_fit,h_600,l_text:Sawarabi%20Gothic_64:${encodeURIComponent(title)},co_rgb:fff,w_1080/v1664850371/OGPsample_hqipp7.png`} />
-    
+    {image && <meta property="og:image" content={new URL(image, Astro.url)} />}
     <!-- Twitter -->
-    {description && <meta property="og:description" content={description} />}
+    <meta name="twitter:site" content="@ryo__kts" />
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={Astro.url} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    {image && <meta property="og:image" content={new URL(image, Astro.url)} />}
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
     <script
     type="text/javascript"
