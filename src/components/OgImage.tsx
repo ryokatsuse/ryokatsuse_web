@@ -18,7 +18,7 @@ export async function getOgImage(text: string) {
         height: '100%',
         width: '100%',
         backgroundColor: '#fff',
-        padding: '20px',
+        padding: '26px',
         fontFamily: `"${fontFamily}", sans-serif`,
       }}
     >
