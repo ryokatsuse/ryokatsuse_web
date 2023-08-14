@@ -15,10 +15,6 @@ export interface Props {
 const siteTitle = 'ryokatsu.dev';
 
 const { title = siteTitle, description, ogType = 'website', image} = Astro.props as Props;
-console.log(Astro.props);
-
-// const ogImageURL = new URL((Astro.props as Props).ogImageURL || '/apple-touch-icon.png', Astro.site);
-
 let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
 ---
 
