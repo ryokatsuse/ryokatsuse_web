@@ -15,6 +15,14 @@ export default defineConfig({
     }),
     react(),
   ],
+  image: {
+    service: {
+      entrypoint: 'astro/assets/services/sharp',
+    },
+  },
+  prefetch: {
+    prefetchAll: true,
+  },
   vite: {
     optimizeDeps: { exclude: ['@resvg/resvg-js'] },
   },

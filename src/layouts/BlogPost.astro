@@ -1,6 +1,6 @@
 ---
 import Layout from "../components/Layout.astro";
-import { Image } from '@astrojs/image/components';
+import { Image } from 'astro:assets';
 
 export interface Props {
   content: {
@@ -17,11 +17,14 @@ export interface Props {
 const {
   content: { title, description, publishDate, updatedDate, ogImageURL, twitterCard },
 } = Astro.props as Props;
+type Asset = {
+  default?: {
+    src: string;
+  };
+};
 
-// Match the `heroImage` frontmatter string to its correct
-// Astro.glob() import of the file in the src/ directory.
-const assets = await Astro.glob('../assets/**/*');
-const ogImageURLAsset = assets.find(asset => {
+const posts = Object.values(import.meta.glob<Asset>('./posts/*.md', { eager: true }));
+const ogImageURLAsset = posts.find(asset => {
   if (!ogImageURL) {
     return false;
   }
@@ -37,12 +40,22 @@ const ogImageURLAsset = assets.find(asset => {
   title={title}
   description={description}
   ogType="article"
-  ogImageURL={ogImageURL!}
-  twitterCard={twitterCard!}
+  image={ogImageURL}
+  twitterCard={twitterCard}
 >
   <article>
-    {ogImageURLAsset && <div class="flex justify-center items-center"><Image class="mb-4" src={ogImageURLAsset.default} alt="" /></div>}
-    <h1 class="text-2xl font-bold"><budoux-ja>{title}</budoux-ja></h1>
+    {ogImageURLAsset?.default && (
+      <div class="flex justify-center items-center">
+        <Image 
+          class="mb-4" 
+          src={ogImageURLAsset.default.src} 
+          width={800}
+          height={400}
+          alt={title} 
+        />
+      </div>
+    )}
+    <h1 class="text-2xl font-bold">{title}</h1>
     {publishDate && <time>{publishDate}</time>}
     {
       updatedDate && (
