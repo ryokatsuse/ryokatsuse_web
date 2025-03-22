@@ -18,9 +18,9 @@ const { items } = Astro.props;
       <li class="space-y-[0.125rem]">
         {item.meta && <p class="text-dynamic-muted text-sm" set:html={item.meta} />}
         <p>
-          <a class="text-black dark:text-white underline hover:hover:no-underline" href={`/blog/${item.slug}`} rel="prefetch"><budoux-ja>{item.title}</budoux-ja></a>
+          <a class="text-black dark:text-white underline hover:hover:no-underline" href={`/blog/${item.slug}`} rel="prefetch">{item.title}</a>
         </p>
-        {item.description && <p class="text-dynamic-muted text-sm"><budoux-ja>{item.description}</budoux-ja></p>}
+        {item.description && <p class="text-dynamic-muted text-sm">{item.description}</p>}
       </li>
     ))
   }

@@ -11,18 +11,18 @@
     "format": "prettier . --write"
   },
   "dependencies": {
-    "@astrojs/react": "^3.0.9",
-    "@astrojs/rss": "^4.0.1",
-    "@astrojs/sitemap": "^3.0.4",
-    "@astrojs/tailwind": "^5.1.0",
+    "@astrojs/react": "^4.2.1",
+    "@astrojs/rss": "^4.0.11",
+    "@astrojs/sitemap": "^3.3.0",
+    "@astrojs/tailwind": "^6.0.1",
     "@resvg/resvg-js": "^2.4.1",
-    "astro": "^4.0.9",
+    "astro": "^5.5.4",
     "dayjs": "^1.11.4",
     "postcss": ">=8.4.29 <9.0.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "satori": "^0.10.3",
-    "vite": "^5.0.11"
+    "vite": "^6.2.2"
   },
   "devDependencies": {
     "@types/react": "^18.2.48",
