@@ -2,7 +2,7 @@ import rss from '@astrojs/rss';
 import dayjs from '../lib/dayjs';
 import { getCollection } from 'astro:content';
 
-export async function get(context) {
+export async function GET(context) {
   const allBlogEntries = (await getCollection('blog')).sort(
     (a, b) => dayjs(b.data.publishDate).tz().valueOf() - dayjs(a.data.publishDate).tz().valueOf(),
   );
