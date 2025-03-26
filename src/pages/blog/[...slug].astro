@@ -1,32 +1,16 @@
 ---
-import { getCollection, getEntry } from "astro:content";
+import { getCollection } from "astro:content";
 import Layout from "../../components/Layout.astro";
 import { Image } from "astro:assets"
 
-// prerender = falseを設定してサーバーサイドレンダリングを有効化
-export const prerender = false;
-
-// ServerモードではgetStaticPathsは不要
-// パラメータからslugを取得し、コンテンツを動的に取得
-const { slug } = Astro.params;
-if (!slug) {
-  return Astro.redirect('/404');
+export async function getStaticPaths() {
+	return (await getCollection("blog")).map((entry) => ({
+		params: { slug: entry.slug },
+		props: { entry },
+	}));
 }
-
-// スラッグからブログエントリを取得
-const entry = await getEntry("blog", slug);
-if (!entry) {
-  return Astro.redirect('/404');
-}
-
-// コンテンツをレンダリング
-// Astro v5ではレンダリング方法が変更されています
-const Content = await entry.render();
-
-// OGP画像URLを生成
-const formattedSlug = slug.replace(/\//g, '-');
-const ogImageUrl = `/og/${formattedSlug}.png`;
-console.log(`OGP画像のURL: ${ogImageUrl}`);
+const { entry } = Astro.props;
+const { Content } = await entry.render();
 
 const assets = await Astro.glob('../../assets/**/*');
 const ogImageURLAsset = assets.find(asset => {
@@ -43,13 +27,13 @@ const ogImageURLAsset = assets.find(asset => {
 
 <Layout
   title={entry.data.title}
-  description={entry.data.description}
+  description={entry.description}
   ogType="article"
-  image={ogImageUrl}
-  twitterCard={entry.data.twitterCard || "summary_large_image"}
+  image={`/og/${entry.slug.replace(/\//g, '-')}.png`}
+  twitterCard={entry.data.twitterCard!}
 >
   <article>
-    {ogImageURLAsset?.default && <div class="flex justify-center items-center"><Image class="mb-4" src={ogImageURLAsset.default} alt="" /></div>}
+    {ogImageURLAsset && <div class="flex justify-center items-center"><Image class="mb-4" src={ogImageURLAsset.default} alt="" /></div>}
     <h1 class="text-2xl font-bold"><budoux-ja>{entry.data.title}</budoux-ja></h1>
     {entry.data.publishDate && <time>{entry.data.publishDate}</time>}
     {
@@ -61,7 +45,7 @@ const ogImageURLAsset = assets.find(asset => {
     }
     <hr class="my-4" />
     <div class="container post">
-      <Content.Content />
+      <Content />
     </div>
   </article>
 </Layout>
