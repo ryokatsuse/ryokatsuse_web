@@ -16,6 +16,13 @@ const siteTitle = 'ryokatsu.dev';
 
 const { title = siteTitle, description, ogType = 'website', image} = Astro.props as Props;
 let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
+
+// Prism型定義
+declare global {
+  interface Window {
+    Prism: any;
+  }
+}
 ---
 
 <html lang="ja">
@@ -48,10 +55,31 @@ let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
     <meta property="twitter:description" content={description} />
     {image && <meta property="og:image" content={new URL(image, Astro.url)} />}
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
+    
+    <!-- iframeスクリプト -->
     <script
-    type="text/javascript"
-    src="https://cdn.iframe.ly/embed.js"
-  />
+      type="text/javascript"
+      src="https://cdn.iframe.ly/embed.js"
+    />
+    
+    <!-- PrismJSのスタイルとスクリプト -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-jsx.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-tsx.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js" is:inline></script>
+    <script is:inline>
+      // ページロード後にシンタックスハイライトを実行
+      document.addEventListener('DOMContentLoaded', () => {
+        if (typeof window.Prism !== 'undefined') {
+          window.Prism.highlightAll();
+        }
+      });
+    </script>
   </head>
   <body class="dark:bg-neutral-800 dark:text-gray-50">
     <Header title={SITE_TITLE} />

@@ -3,8 +3,7 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
-// import { markdownComponents } from './src/integrations/markdown-components';
-// import { components } from './src/markdownComponents';
+import { markdownComponents } from './src/integrations/markdown-components';
 
 // https://astro.build/config
 export default defineConfig({
@@ -18,7 +17,7 @@ export default defineConfig({
     }),
     react(),
     mdx(),
-    // markdownComponents(),
+    markdownComponents(),
   ],
   image: {
     service: {
@@ -56,7 +55,13 @@ export default defineConfig({
   markdown: {
     // マークダウンのシンタックスハイライト
     syntaxHighlight: 'prism',
+    // シンタックスハイライト用のテーマを指定
+    shikiConfig: {
+      theme: 'github-dark',
+    },
     // リハイドレーションを有効化（マークダウン内のコンポーネントを使用可能に）
     rehypePlugins: [],
+    // コンポーネントを設定（PrismJSを使用するため）
+    remarkPlugins: [],
   },
 });
