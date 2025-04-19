@@ -5,21 +5,30 @@ export interface Props {
 
 const { url } = Astro.props;
 
-// URLからメタデータを取得する関数
-async function fetchSiteMetadata(targetUrl: string) {
-  try {
-    const response = await fetch(targetUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; LinkCardBot/1.0)',
-      },
-    });
+// URLからドメイン情報取得
+const domain = new URL(url).hostname;
 
-    if (!response.ok) {
-      throw new Error(`取得できませんでした: ${response.status} ${response.statusText}`);
-    }
+// サーバーサイドでメタデータ取得
+let title = domain;
+let description = "";
+let thumbnail = null;
+let siteName = domain;
+let faviconUrl = null;
 
+try {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 2000);
+  
+  const response = await fetch(url, {
+    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LinkCardBot/1.0)' },
+    signal: controller.signal
+  });
+  
+  clearTimeout(timeout);
+  
+  if (response.ok) {
     const html = await response.text();
-
+    
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
     const descriptionMatch =
       html.match(/<meta[^>]*name=['"]description['"][^>]*content=['"]([^'"]+)['"]/i) ||
@@ -27,32 +36,16 @@ async function fetchSiteMetadata(targetUrl: string) {
     const ogImageMatch = html.match(/<meta[^>]*property=['"]og:image['"][^>]*content=['"]([^'"]+)['"]/i);
     const siteNameMatch = html.match(/<meta[^>]*property=['"]og:site_name['"][^>]*content=['"]([^'"]+)['"]/i);
     const faviconMatch = html.match(/<link[^>]*rel=['"](?:shortcut )?icon['"][^>]*href=['"]([^'"]+)['"]/i);
-
-    const domain = new URL(targetUrl).hostname;
-
-    return {
-      title: titleMatch ? titleMatch[1].trim() : domain,
-      description: descriptionMatch ? descriptionMatch[1].trim() : '',
-      thumbnail: ogImageMatch ? ogImageMatch[1] : null,
-      siteName: siteNameMatch ? siteNameMatch[1].trim() : domain,
-      faviconUrl: faviconMatch ? new URL(faviconMatch[1], targetUrl).toString() : null,
-    };
-  } catch (error) {
-    console.error('メタデータ取得エラー:', error);
-
-    const domain = targetUrl.replace(/^https?:\/\//, '').replace(/\/.*$/, '');
-    return {
-      title: domain,
-      description: 'このサイトの情報を取得できませんでした',
-      thumbnail: null,
-      siteName: domain,
-      faviconUrl: null,
-    };
+    
+    title = titleMatch ? titleMatch[1].trim() : domain;
+    description = descriptionMatch ? descriptionMatch[1].trim() : "";
+    thumbnail = ogImageMatch ? ogImageMatch[1] : null;
+    siteName = siteNameMatch ? siteNameMatch[1].trim() : domain;
+    faviconUrl = faviconMatch ? new URL(faviconMatch[1], url).toString() : null;
   }
+} catch (error) {
+  console.error('リンクカード取得エラー:', error);
 }
-
-// メタデータを取得
-const metadata = await fetchSiteMetadata(url);
 ---
 
 <div class="my-6 w-full">
@@ -62,40 +55,35 @@ const metadata = await fetchSiteMetadata(url);
     rel="noopener noreferrer"
     class="linkcard-container block w-full mx-auto rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-200 overflow-hidden bg-white dark:bg-gray-800"
   >
-    <!-- サムネイル画像（左側） -->
     <div class="w-[35%] bg-gray-100 dark:bg-gray-700 h-full flex justify-center items-center overflow-hidden">
       <img 
-        src={metadata.thumbnail || "/images/ryokatsu.jpg"} 
+        src={thumbnail || "/images/ryokatsu.jpg"} 
         alt="" 
         class="w-full h-full object-contain p-2"
         loading="lazy"
       />
     </div>
     
-    <!-- テキスト情報（右側） -->
     <div class="w-[65%] p-5 flex flex-col justify-between h-full">
-      <!-- タイトル -->
       <div class="text-lg font-bold text-gray-900 dark:text-gray-100 line-clamp-2 mb-2">
-        {metadata.title}
+        {title}
       </div>
       
-      <!-- 説明 -->
       <div class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 mb-auto">
-        {metadata.description}
+        {description || `${domain}のページ`}
       </div>
       
-      <!-- サイト情報 -->
       <div class="flex items-center mt-3 text-xs text-gray-500 dark:text-gray-400">
-        {metadata.faviconUrl && 
+        {faviconUrl && 
           <img 
-            src={metadata.faviconUrl} 
+            src={faviconUrl} 
             alt="" 
             class="w-4 h-4 mr-2 rounded"
             width="16"
             height="16"
           />
         }
-        <span>{metadata.siteName}</span>
+        <span>{siteName}</span>
       </div>
     </div>
   </a>
