@@ -16,7 +16,12 @@ export default defineConfig({
       },
     }),
     react(),
-    mdx(),
+    mdx({
+      // MDXファイルでグローバルに使用できるコンポーネントを設定
+      components: {
+        LinkCard: './src/components/LinkCard.astro',
+      },
+    }),
     markdownComponents(),
   ],
   image: {
