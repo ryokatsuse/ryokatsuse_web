@@ -1,0 +1,151 @@
+---
+type Heading = {
+  depth: number;
+  slug: string;
+  text: string;
+};
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+---
+
+{headings.length > 0 && (
+  <nav class="my-8 rounded-lg border border-gray-200 bg-gray-100 dark:bg-gray-700 dark:border-gray-600">
+    <details open class="w-full">
+      <summary class="font-bold px-4 py-3 cursor-pointer focus:outline-none hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+        目次
+      </summary>
+      <div class="px-4 py-2">
+        <ul class="list-none pl-0">
+          {headings.map((heading) => (
+            <li class={`mb-2 ${heading.depth === 2 ? "" : heading.depth === 3 ? "ml-4" : "ml-8"}`}>
+              <a 
+                href={`#${heading.slug}`} 
+                class="text-black dark:text-white no-underline border-b border-transparent hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
+              >
+                {heading.text}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </details>
+  </nav>
+)}
+
+<script>
+  // 現在のスクロール位置に基づいて、表示中の見出しのリンクをハイライト
+  document.addEventListener('DOMContentLoaded', () => {
+    // 目次の全てのリンク
+    const tocLinks = document.querySelectorAll('nav a[href^="#"]');
+    
+    // 記事内の全ての見出しを取得
+    const headings = Array.from(document.querySelectorAll('.post h2, .post h3, .post h4'));
+    
+    if (headings.length === 0) return;
+    
+    // 全ての見出しにリンクを追加
+    headings.forEach(heading => {
+      // 見出しのIDが存在することを確認
+      if (!heading.id) {
+        // テキストコンテンツからIDを生成（必要に応じて）
+        const headingText = heading.textContent || '';
+        heading.id = headingText
+          .toLowerCase()
+          .replace(/\s+/g, '-')
+          .replace(/[^\w\-]+/g, '')
+          .replace(/\-\-+/g, '-')
+          .replace(/^-+/, '')
+          .replace(/-+$/, '');
+      }
+      
+      // 見出しの内容を取得
+      const headingContent = heading.innerHTML;
+      
+      // 見出しレベルを取得（h2, h3, h4）
+      const headingLevel = parseInt(heading.tagName.substring(1));
+      
+      // 元の内容を置き換え
+      heading.innerHTML = '';
+      
+      // リンクラッパーを作成
+      const wrapper = document.createElement('a');
+      wrapper.href = `#${heading.id}`;
+      wrapper.className = 'heading-link';
+      wrapper.style.textDecoration = 'none';
+      heading.appendChild(wrapper);
+      
+      // マークダウン風の見出し記号とテキストを内部divに配置
+      const container = document.createElement('div');
+      container.className = 'flex items-center border-b border-gray-300 dark:border-gray-600 pb-1';
+      wrapper.appendChild(container);
+      
+      // マークダウン風の見出し記号を追加
+      const mdSymbol = document.createElement('span');
+      mdSymbol.className = 'text-gray-500 dark:text-gray-400 mr-2 font-mono';
+      mdSymbol.textContent = '#'.repeat(headingLevel);
+      container.appendChild(mdSymbol);
+      
+      // テキスト部分を作成
+      const textSpan = document.createElement('span');
+      textSpan.innerHTML = headingContent;
+      container.appendChild(textSpan);
+    });
+    
+    // スクロール位置に基づいてアクティブな見出しを特定
+    const setActiveLink = () => {
+      const scrollPosition = window.scrollY;
+      
+      // 表示中の見出しを特定
+      let currentHeading = headings[0];
+      
+      for (const heading of headings) {
+        if ((heading as HTMLElement).offsetTop - 100 <= scrollPosition) {
+          currentHeading = heading;
+        } else {
+          break;
+        }
+      }
+      
+      // すべてのリンクからアクティブクラスを削除
+      tocLinks.forEach(link => {
+        link.classList.remove('font-bold', 'border-gray-400', 'dark:border-gray-400');
+      });
+      
+      // 現在の見出しに対応するリンクにアクティブクラスを追加
+      const id = currentHeading.id;
+      const activeLink = document.querySelector(`a[href="#${id}"]`);
+      if (activeLink) {
+        activeLink.classList.add('font-bold', 'border-gray-400', 'dark:border-gray-400');
+      }
+    };
+    
+    window.addEventListener('scroll', setActiveLink);
+    setActiveLink(); // 初期状態でも実行
+  });
+</script>
+
+<style>
+  .heading-link {
+    color: inherit;
+    text-decoration: none !important;
+    display: inline-block;
+    width: 100%;
+  }
+  
+  .heading-link:hover {
+    text-decoration: none !important;
+  }
+
+  /* 特定の見出しリンクのスタイルを強制的に上書き */
+  .post h2 a, .post h3 a, .post h4 a {
+    text-decoration: none !important;
+  }
+  
+  .post h2 a:hover, .post h3 a:hover, .post h4 a:hover {
+    text-decoration: none !important;
+  }
+</style> 
