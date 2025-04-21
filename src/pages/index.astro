@@ -62,15 +62,16 @@ console.log(allBlogEntries);
   <section class="mb-12 text-lg">
     <p>都内でソフトウェアエンジニアをしています。技術系はフロントエンドネタが多めです。</p>
   </section>
-  <h1 class="text-2xl font-bold mb-8">## ブログの記事</h1>
+  <h2 class="text-2xl font-bold mb-8">## ブログの記事</h2>
   <section class="mb-12">
     <Lists items={blogEntries.slice(0, 10)} />
   </section>
   <div><a class="text-black dark:text-white underline hover:hover:no-underline" href="/blog">すべての記事一覧</a></div>
-  
-  <h1 class="text-2xl font-bold mb-8 mt-12">## Cosenseの最近の投稿</h1>
+  <h2 class="text-2xl font-bold mb-8 mt-12">## Cosenseの最近の投稿</h2>
   <p class="mb-8">Cosenseで日記を書いたり知識のデータベースとして活用しています。直近更新された10件を表示しています。</p>
   <section class="mb-12">
     <Lists items={scrapboxEntries} />
   </section>
+  <h2 class="text-2xl font-bold mb-8 mt-12">## 作ったもの・登壇資料</h2>
+  <p class="mb-8">作ったものや、登壇資料などは<a class="text-black dark:text-white underline hover:hover:no-underline" href="https://scrapbox.io/ryokatsu/%E6%88%90%E6%9E%9C%E7%89%A9">成果物</a>にまとめています。</p>
 </Layout>
