@@ -3,31 +3,74 @@ import { getCollection } from "astro:content";
 import Layout from "../components/Layout.astro";
 import dayjs from "../lib/dayjs";
 import Lists from "../components/Lists.astro";
+import { fetchRssData } from "../lib/fetchRssData";
 
 const allBlogEntries = (await getCollection("blog")).sort(
   (a, b) => dayjs(b.data.publishDate).tz().valueOf() - dayjs(a.data.publishDate).tz().valueOf());
 
+// ScrapboxのRSSフィードからデータを取得
+const scrapboxEntries = await fetchRssData("https://scrapbox.io/api/feed/ryokatsu");
+
 const description = 'JavaScriptエンジニア。インターフェースデザインが好き。'
+
+// Astroコンテンツコレクションの型に対応
+type BlogEntry = {
+  title: string;
+  slug: string;
+  meta: string;
+  description?: string;
+};
+
+const blogEntries: BlogEntry[] = allBlogEntries.map((post) => {
+  const parts = post.id.split('/');
+  const slug = parts.length >= 2 ? `${parts[parts.length - 2]}/${parts[parts.length - 1].replace(/\.(md|mdx)$/, '')}` : '';
+  
+  let description = '';
+  if (post.body) {
+    const cleanText = post.body
+      .replace(/^import.*?;$/gm, '')
+      .replace(/!\[.*?\]\(.*?\)/g, '')
+      .replace(/<LinkCard.*?\/>/g, '')
+      .replace(/<.*?>/g, '')
+      .replace(/```[\s\S]*?```/g, '')
+      .replace(/#+\s+.*?\n/g, '')
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/\n\s*\n/g, '\n')
+      .trim();
+    
+    // 100文字以内に切り詰め
+    description = cleanText.length > 100 
+      ? cleanText.substring(0, 100) + '...' 
+      : cleanText;
+  }
+  
+  return {
+    title: post.data.title,
+    slug,
+    meta: `<time datetime="${dayjs(post.data.publishDate).tz().toISOString()}">
+      ${dayjs(post.data.publishDate).tz().format("LL")}
+    </time>`,
+    description
+  };
+});
+
+console.log(allBlogEntries);
 
 ---
 
 <Layout description={description}>
-  <section class="mb-12">
-    <p><budoux-ja>都内でフロントエンドエンジニアをしています。インターフェースデザインなどが好き。日々のプログラミングについてだったり読んだ本の感想、日記などを発信しています。</budoux-ja></p>
-    <p>最近は<a href="https://scrapbox.io/ryokatsu/">cosense(旧scrapbox)</a>で日記を書いたりしています。</p>
+  <section class="mb-12 text-lg">
+    <p>都内でソフトウェアエンジニアをしています。技術系はフロントエンドネタが多めです。</p>
   </section>
-  <h1 class="text-l font-bold mb-8">## 最近の記事</h1>
+  <h1 class="text-2xl font-bold mb-8">## ブログの記事</h1>
   <section class="mb-12">
-    <Lists
-    items={allBlogEntries
-    .map((post) => ({
-      title: post.data.title,
-      slug: post.slug!,
-      meta: `<time datetime="${dayjs(post.data.publishDate).tz().toISOString()}">
-        ${dayjs(post.data.publishDate).tz().format("LL")}
-      </time>`,
-      })).slice(0, 10)}
-  />
+    <Lists items={blogEntries.slice(0, 10)} />
   </section>
   <div><a class="text-black dark:text-white underline hover:hover:no-underline" href="/blog">すべての記事一覧</a></div>
+  
+  <h1 class="text-2xl font-bold mb-8 mt-12">## Cosenseの最近の投稿</h1>
+  <p class="mb-8">Cosenseで日記を書いたり知識のデータベースとして活用しています。直近更新された10件を表示しています。</p>
+  <section class="mb-12">
+    <Lists items={scrapboxEntries} />
+  </section>
 </Layout>

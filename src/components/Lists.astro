@@ -5,6 +5,7 @@ export interface Props {
     slug: string;
     meta?: string;
     description?: string;
+    isExternal?: boolean;
   }[];
 }
 
@@ -18,9 +19,16 @@ const { items } = Astro.props;
       <li class="space-y-[0.125rem]">
         {item.meta && <p class="text-dynamic-muted text-sm" set:html={item.meta} />}
         <p>
-          <a class="text-black dark:text-white underline hover:hover:no-underline" href={`/blog/${item.slug}`} rel="prefetch">{item.title}</a>
+          <a 
+            class="text-black dark:text-white underline hover:hover:no-underline" 
+            href={item.isExternal ? item.slug : `/blog/${item.slug}`} 
+            rel={item.isExternal ? "external nofollow" : "prefetch"}
+            target={item.isExternal ? "_blank" : undefined}
+          >
+            {item.title}
+          </a>
         </p>
-        {item.description && <p class="text-dynamic-muted text-sm">{item.description}</p>}
+        {item.description && <p class="text-dynamic-muted text-sm text-gray-600 dark:text-gray-400 mt-2">{item.description}</p>}
       </li>
     ))
   }
