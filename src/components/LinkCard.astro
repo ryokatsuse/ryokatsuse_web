@@ -92,16 +92,11 @@ const initialMetadata = isBlogPost
 const metadata = await fetchMetadata(url)
   .then(fetchedData => ({
     ...fetchedData,
-    // 内部ブログ記事の場合は生成したOGP画像URLを優先
     thumbnail: isBlogPost ? initialMetadata.thumbnail : fetchedData.thumbnail
   }));
 
 const { title, description, thumbnail, siteName, faviconUrl } = metadata;
 
-// デバッグ情報
-console.log(`LinkCard処理: ${url}`);
-console.log(`- 内部リンク: ${isInternalLink}, ブログ記事: ${isBlogPost}`);
-console.log(`- サムネイルURL: ${thumbnail}`);
 ---
 
 <div class="my-6 w-full">
