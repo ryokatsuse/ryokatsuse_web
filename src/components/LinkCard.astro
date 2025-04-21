@@ -1,0 +1,184 @@
+---
+export interface Props {
+  url: string;
+}
+
+const { url } = Astro.props;
+
+// URLからドメイン情報取得
+const domain = new URL(url).hostname;
+const pathname = new URL(url).pathname;
+const currentHost = Astro.url.host;
+
+// 内部リンクかどうかを判定
+const isInternalLink = domain === currentHost || domain === 'ryokatsu.dev' || domain === 'www.ryokatsu.dev';
+// ブログ記事へのリンクかどうかを判定
+const isBlogPost = isInternalLink && pathname.startsWith('/blog/');
+// ブログ記事のスラグを取得
+const blogSlug = isBlogPost ? pathname.replace('/blog/', '').replace(/\/$/, '') : '';
+
+// HTMLからメタデータを抽出する純粋関数
+const extractMetadata = (html: string, baseUrl: string) => {
+  const getMatch = (regex: RegExp): string | null => {
+    const match = html.match(regex);
+    return match ? match[1].trim() : null;
+  };
+
+  const titleMatch = getMatch(/<title[^>]*>([^<]+)<\/title>/i);
+  const descriptionMatch = 
+    getMatch(/<meta[^>]*name=['"]description['"][^>]*content=['"]([^'"]+)['"]/i) || 
+    getMatch(/<meta[^>]*property=['"]og:description['"][^>]*content=['"]([^'"]+)['"]/i);
+  const ogImageMatch = getMatch(/<meta[^>]*property=['"]og:image['"][^>]*content=['"]([^'"]+)['"]/i);
+  const siteNameMatch = getMatch(/<meta[^>]*property=['"]og:site_name['"][^>]*content=['"]([^'"]+)['"]/i);
+  const faviconMatch = getMatch(/<link[^>]*rel=['"](?:shortcut )?icon['"][^>]*href=['"]([^'"]+)['"]/i);
+
+  return {
+    title: titleMatch || domain,
+    description: descriptionMatch || "",
+    thumbnail: ogImageMatch || null,
+    siteName: siteNameMatch || domain,
+    faviconUrl: faviconMatch ? new URL(faviconMatch, baseUrl).toString() : null
+  };
+};
+
+// メタデータを非同期で取得する関数
+const fetchMetadata = async (url: string, timeout = 2000): Promise<{ 
+  title: string; 
+  description: string; 
+  thumbnail: string | null; 
+  siteName: string; 
+  faviconUrl: string | null;
+}> => {
+  const defaultMetadata = {
+    title: domain,
+    description: "",
+    thumbnail: null,
+    siteName: domain,
+    faviconUrl: null
+  };
+  
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LinkCardBot/1.0)' },
+      signal: controller.signal
+    });
+    
+    clearTimeout(timeoutId);
+    
+    if (!response.ok) {
+      return defaultMetadata;
+    }
+    
+    const html = await response.text();
+    return extractMetadata(html, url);
+  } catch (error) {
+    console.error('リンクカード取得エラー:', error);
+    return defaultMetadata;
+  }
+};
+
+// ブログ記事のOGP画像URLを生成する関数
+const getBlogPostThumbnail = (slug: string): string => 
+  `/og/${slug.replace(/\//g, '-')}.png?t=${Date.now()}`;
+
+// メタデータ取得の実行
+const initialMetadata = isBlogPost 
+  ? { thumbnail: getBlogPostThumbnail(blogSlug) }
+  : {};
+
+const metadata = await fetchMetadata(url)
+  .then(fetchedData => ({
+    ...fetchedData,
+    // 内部ブログ記事の場合は生成したOGP画像URLを優先
+    thumbnail: isBlogPost ? initialMetadata.thumbnail : fetchedData.thumbnail
+  }));
+
+const { title, description, thumbnail, siteName, faviconUrl } = metadata;
+
+// デバッグ情報
+console.log(`LinkCard処理: ${url}`);
+console.log(`- 内部リンク: ${isInternalLink}, ブログ記事: ${isBlogPost}`);
+console.log(`- サムネイルURL: ${thumbnail}`);
+---
+
+<div class="my-6 w-full">
+  <a 
+    href={url} 
+    target="_blank" 
+    rel="noopener noreferrer"
+    class="linkcard-container block w-full mx-auto rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow duration-200 overflow-hidden bg-white dark:bg-gray-800"
+  >
+    <div class="w-[35%] bg-gray-100 dark:bg-gray-700 h-full flex justify-center items-center overflow-hidden">
+      {thumbnail ? (
+        <img 
+          src={thumbnail} 
+          alt="" 
+          class="w-full h-full object-contain p-2"
+          loading="lazy"
+        />
+      ) : (
+        <div class="text-gray-400 dark:text-gray-500 font-medium">noImage</div>
+      )}
+    </div>
+    
+    <div class="w-[65%] p-5 flex flex-col justify-between h-full">
+      <div class="text-lg font-bold text-gray-900 dark:text-gray-100 line-clamp-2 mb-2">
+        {title}
+      </div>
+      
+      <div class="text-sm text-gray-600 dark:text-gray-300 line-clamp-3 mb-auto">
+        {description || `${domain}のページ`}
+      </div>
+      
+      <div class="flex items-center mt-3 text-xs text-gray-500 dark:text-gray-400">
+        {faviconUrl && 
+          <img 
+            src={faviconUrl} 
+            alt="" 
+            class="w-4 h-4 mr-2 rounded"
+            width="16"
+            height="16"
+            onerror="this.style.display='none'"
+          />
+        }
+        <span>{siteName}</span>
+      </div>
+    </div>
+  </a>
+</div>
+
+<style>
+  .linkcard-container {
+    display: flex;
+    text-decoration: none !important;
+    color: inherit;
+    height: 180px;
+    max-height: 180px;
+  }
+  
+  .linkcard-container:hover {
+    text-decoration: none !important;
+    color: inherit;
+  }
+  
+  .linkcard-container * {
+    text-decoration: none !important;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+  }
+</style> 

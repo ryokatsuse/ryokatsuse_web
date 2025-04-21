@@ -1,0 +1,183 @@
+---
+title: type-challenges初級からの学び
+publishDate: "2022-10-17"
+---
+
+import LinkCard from '../../../components/LinkCard.astro';
+
+いつかやろうと思って全然できていなかったtype-challengesの初級を終えました。
+
+<LinkCard url="https://github.com/type-challenges/type-challenges" />
+
+全体通しての感想としては、「これ初級なの？」というものから初級らしくイージーなものまで幅広くありました。初級は、全13問あります。自分で解けなかった問題もありましたが、順番にやってみました。
+
+## Pick
+
+```ts
+type MyPick<T, K extends keyof T> = {[P in K]:T[P] } // Pick<T,K>を使用した時に推論される型
+// or
+type MyPick<T, K extends keyof T> = { [key in K] : T[key] };// 上記をヒントに作った型
+```
+
+TypeScriptの組み込み```Pick<T,K>```を使わずに、指定した型を抽出する型を自作する問題でした。普段Pickを使って実装してきたので、どうやるのか調べながらやらないと解けませんでした。
+ここで知らないといけない知識は、Generics、keyof演算子、extends、Mapped Typesあたりでしょうか。（Genericsの説明は割愛します）
+
+### keyof演算
+
+[ドキュメント](https://www.typescriptlang.org/docs/handbook/2/keyof-types.html)によるとオブジェクトのkeyとして含まれるstringまたはnumberのユニオン型を返します。普段の業務でもよく使います。
+
+```ts
+type Point = { x: number; y: string };
+type P = keyof Point; // x | y
+```
+
+### extends
+
+説明は以下が分かりやすいです。説明どおりで、Genericsの型引数を特定の型に制限できます。
+<LinkCard url="https://typescriptbook.jp/reference/generics/type-parameter-constraint" />
+
+### Mapped Types
+
+こちらも以下が分かりやすい。inを使うとオブジェクトのキーをユニオン型で定義した値に限定することができます、
+<LinkCard url="https://typescriptbook.jp/reference/type-reuse/mapped-types" />
+
+これらを使って今回の問題に取り組むとKは、オブジェクトTが持つキーの値のいずれかであることが判別できます。
+
+## readonly
+
+```ts
+type MyReadonly<T> = { readonly [P in keyof T]: T[P]}
+// or
+type MyReadonly<T> = {readonly [key in keyof T]: T[key]};
+
+```
+Pickが分かればほとんどできてあとはreadonly修飾子をつければ完成です。readonlyは、プロパティへの代入を禁止することができます。これと良く似たconst assertion(```as const```)もありますが、const assertionは、再帰的にreadonlyしてくれます。つまりオブジェクトの内のすべてのプロパティを固定することができます。
+
+余談ですが、[プロを目指す人のためのTypeScript入門](https://gihyo.jp/book/2022/978-4-297-12747-3)の中で第4章のコラム18でreadonlyの部分型についてコンパイラーによる型チェックが不完全な例があるので、読んでみると面白いです。
+
+## Tuple to Object
+
+```ts
+type TupleArrayData = string | number;
+type TupleToObject<T extends readonly TupleArrayData[]> = {
+  [key in T[number]]: key
+}
+```
+多分もっとスマートな書き方があると思います... タプルを受け取りそのままオブジェクトにする型です。（TupleArrayDataとか定義しなくてもany[]でいいかもです。）
+
+## First of Array
+
+```ts
+type First<T extends unknown[]> = T[number] extends never ? never : T[0]
+```
+
+配列を受け取って最初のプロパティを返す型です。ここでconditional typesの知識が必要です。
+
+### conditional types
+構文を見れば分かると思いますが、三項演算子を型定義で利用できるものです。trueだった場合に、型Aが決定してfalseだった場合は型Bに決まります。
+
+```
+T extends U ? A : B
+```
+
+今回のケースでは、テストケースにneverがあったので条件分岐を続けてnever以外だった場合はT[0]を取得するようにしました。ただこの時は気づきませんでしたが、後述するinferを使うともう少しいい感じに書けそうだなと感じました。
+
+ちなみにnever型を改めて確認しようとしたとき、uhyoさんの[この記事](https://qiita.com/uhyo/items/e2fdef2d3236b9bfe74a#never%E5%9E%8B)が神すぎたので参照として載せておきます。
+
+
+## Length of Tuple
+
+```ts
+type Length<T extends readonly unknown[]> = T['length']
+```
+
+```T['length']```と書くことで、lengthが取れるのは知りませんでした。T[number]とかを雰囲気で書いてましたが、この書き方自体は[Indexed Access Types
+](https://www.typescriptlang.org/docs/handbook/2/indexed-access-types.html)という書き方なのもこの時に調べて理解ができました。
+
+
+## Exclude
+
+```ts
+type MyExclude<T, U> = T extends U ? never : T
+```
+Exclude`<T, U>`自体は、ユニオン型のTからUで指定した値を取り除いたユニオン型を返します。先程のFirst of Arrayに近いです。
+
+参照：[Distributive Conditional Types](https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types)
+
+
+## Awaited
+
+```ts
+type MyAwaited<T extends Promise<unknown>> = T extends Promise<infer P>
+  ? P extends Promise<unknown>
+  ? MyAwaited<P>
+  : P : T
+```
+
+この問題は、自分では解けなかったため解答を見ました。そもそも型を作る時に再帰をうまく使う方法の知見がなかったことや、inferについて若干理解が乏しかったことが理由になります。
+上記の型は、Promiseで内包している型を取得する型ですが、MyAwaitedを再帰しているのがわかります。
+
+### infer
+
+やめ太郎さんの[こちらの記事](https://qiita.com/Yametaro/items/9b2f0ab2037450004816#infer%E3%82%92%E4%BD%BF%E3%81%86)が概要を掴むのには、かなり分かりやすいです。動的に型の値を変形することができるのでこれを使って、条件分岐をすると割と簡単に問題を解くことができます。
+
+
+## If
+
+```ts
+type If<C extends boolean, T, F> = C extends true ? T : F
+```
+
+これはextendsを理解できていればすぐに解ける問題です。
+
+## Concat
+
+```ts
+type Concat<T extends unknown[], U extends unknown[]> = [...T, ...U]
+```
+
+特に説明は不要ですが、スプレッド構文を使ってUをTと同様に配列に制限すれば解けます。
+
+## Includes
+
+```ts
+type Includes<T extends readonly any[], U> = T extends [infer F,...infer Rest]
+  ? Equal<F,U> extends true
+  ? true : Includes<Rest,U> : false;
+
+```
+初級の中でも最難関でした。自力では解けずに解答を見ました。最初は、以下のようにすれば簡単じゃんと思っていたら全然駄目でした。
+```ts
+type Includes<T extends readonly unknown[], U> = U extends T[number] ? true : false;
+```
+
+テストケースで使われているEqual型をまず理解することが必要です。さらにinferと、再帰を上手く理解して解くことになっています。再帰的に配列の要素とUが一致するかどうかを確認して、一致したらtrueを一致しなければ、順番に配列の要素を探していtrueになるまで再帰するという流れです。これはテストケースでboolean型が入ってきた時に```boolean extends false ```が成り立つためにこのような記述になっています。
+
+## Push
+
+
+```ts
+type Push<T extends unknown[], U> = [...T, U]
+```
+
+これは説明不要ですね。
+
+
+## Unshift
+
+```ts
+type Unshift<T extends unknown[], U> = [U, ...T]
+```
+
+これも説明不要でPushの逆のことをすれば良いです。
+
+## Parameters
+
+```ts
+type MyParameters<T extends (...args: any[]) => any> =T extends (...args:infer U) => unknown ? U: []
+```
+
+組み込みのParametersは、関数Tの引数をタプルとして抽出してくれます。Parameters`<T>`自体は、使ったことがあったのですが、いざ型を作るとなると一瞬難しいと感じましたが、```infer U```とすることができれば跡は仕様通りに作れます。
+
+## まとめ
+初級の内容が正しく実装できて説明できていると、普段の業務では問題なくTypeScriptが使用できるレベルなのかなと感じました。次は中級をチャレンジしてみますが、初級で結構詰まった箇所もあったので、多分挫折するんだろうな... ただTypeScriptに関する記事はドキュメント含めて理解しやすく良質な記事も沢山あるので（特にサバイバルTypeScript）時間を掛けて調べながらゆっくりやっていこうと思います。

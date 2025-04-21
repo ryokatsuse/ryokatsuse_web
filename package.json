@@ -11,6 +11,7 @@
     "format": "prettier . --write"
   },
   "dependencies": {
+    "@astrojs/mdx": "^4.2.1",
     "@astrojs/react": "^4.2.1",
     "@astrojs/rss": "^4.0.11",
     "@astrojs/sitemap": "^3.3.0",
@@ -19,12 +20,14 @@
     "astro": "^5.5.4",
     "dayjs": "^1.11.4",
     "postcss": ">=8.4.29 <9.0.0",
+    "prismjs": "^1.30.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "satori": "^0.10.3",
     "vite": "^6.2.2"
   },
   "devDependencies": {
+    "@astrojs/vercel": "^8.1.3",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "postcss-import": "^15.1.0",

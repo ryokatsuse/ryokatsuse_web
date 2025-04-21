@@ -1,0 +1,63 @@
+---
+title: BudouXがいい感じだった
+publishDate: "2022-10-04"
+---
+
+import LinkCard from '../../../components/LinkCard.astro';
+
+[BudouX](https://github.com/google/budoux)をブログに入れてみました。
+
+適用箇所は以下です。（ブラウザの幅を縮めたりしてご確認ください）
+
+- TOPページ上部の、自己紹介
+- 記事タイトル部分
+
+BudouXは、日本語と中国語の改行を自動でいい感じにしてくれるライブラリです。以下のzennの記事がよくまとまっています。（僕もこれで知りました。）
+<LinkCard url="https://zenn.dev/junseinagao/articles/f4fd3bf790ef189f8c74" />
+
+日本語の改行問題は、WEB業界では悩みのタネでレスポンシブサイトなどではSPのレイアウト時に、区切りの良いところで改行させたいというオーダーがよくあります。この時改行させたい箇所で、```<br class="sp-only"></br>```みたいなクラス（もしくは```span```タグとかで```display:inline-block```をつける）を表示してSP時にだけ改行させるみたいなことを、行っていました。
+
+しかし、これは本質的な解決ではありません。ユーザーのデバイスの幅はそれぞれ異なるので、自然に改行されることが望ましいです。この自然な改行がしてくれるのがBudouXなのです。機械学習で実行されしかもバンドルサイズも小さく使いやすいです。
+
+### 使い方
+
+CDN or YarnなどのパッケージマネージャでBudouXを読み込みます。自分は、最初yarnでインストールしたのですが、何故かいい感じに動いてくれなかったので、ひとまずCDNから使用しました。
+
+
+```html
+<script type="module" src="https://unpkg.com/budoux/bundle/budoux-ja.min.js"></script>
+
+```
+
+あとは、自動改行を適用した箇所に専用のタグで囲います。
+
+```jsx
+
+<ul class="space-y-12">
+  {
+    items.map(item => (
+      <li class="space-y-[0.125rem]">
+        {item.meta && <p class="text-dynamic-muted text-sm" set:html={item.meta} />}
+        <p>
+          <a class="text-black dark:text-white underline hover:hover:no-underline" href={item.link} rel="prefetch"><budoux-ja>{item.title}</budoux-ja></a>
+        </p>
+        {item.description && <p class="text-dynamic-muted text-sm"><budoux-ja>{item.description}</budoux-ja></p>}
+      </li>
+    ))
+  }
+</ul>
+
+```
+
+```<budoux-ja>```タグで囲うと、ライブラリからWeb Componentが提供されており文節の途中で```<wbr>```タグが生成されます。
+
+![budoux](/images/budoux.png)
+
+詳しい使い方は[こちら](https://github.com/google/budoux/blob/main/javascript/README.md#web-components)に書かれています。もちろんnode.jsからも扱えるので、色々なシーンで使えそうです。
+
+- OGP画像をcanvasから出力するときにいい感じ改行された状態で画像を生成できる
+- ドキュメントとかをプログラムから生成する時にフォーマット用にいい感じで見やすく出力してくれる
+
+自分のブログは、mdxでも書けるようになっているので若干面倒ですが、mdx内でいい感じに改行したい箇所がでてきたら```<budoux-ja>```で囲えば文章中でも使えるも良いです。
+
+Next.jsとかで使用する場合も```loadDefaultJapaneseParser```をimportしてきて文節を改行する用のHooksを作れば、汎用的に使えますし、「改行は全てbudouxに任せます！！」という調整ができれば普通に、プロダクトとかでも使えそうな雰囲気は感じます。

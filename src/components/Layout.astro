@@ -16,6 +16,13 @@ const siteTitle = 'ryokatsu.dev';
 
 const { title = siteTitle, description, ogType = 'website', image} = Astro.props as Props;
 let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
+
+// Prism型定義
+declare global {
+  interface Window {
+    Prism: any;
+  }
+}
 ---
 
 <html lang="ja">
@@ -28,6 +35,11 @@ let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     <link rel="alternate" href="/posts-feed.xml" type="application/rss+xml" />
+
+    <!-- Google Fonts - Noto Sans JP -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- Primary Meta Tags -->
     <title>{title}</title>
@@ -48,14 +60,35 @@ let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
     <meta property="twitter:description" content={description} />
     {image && <meta property="og:image" content={new URL(image, Astro.url)} />}
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
+    
+    <!-- iframeスクリプト -->
     <script
-    type="text/javascript"
-    src="https://cdn.iframe.ly/embed.js"
-  />
+      type="text/javascript"
+      src="https://cdn.iframe.ly/embed.js"
+    />
+    
+    <!-- PrismJSのスタイルとスクリプト -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-jsx.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-tsx.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js" is:inline></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js" is:inline></script>
+    <script is:inline>
+      // ページロード後にシンタックスハイライトを実行
+      document.addEventListener('DOMContentLoaded', () => {
+        if (typeof window.Prism !== 'undefined') {
+          window.Prism.highlightAll();
+        }
+      });
+    </script>
   </head>
-  <body class="dark:bg-neutral-800 dark:text-gray-50">
+  <body class="dark:bg-neutral-800 dark:text-gray-50 font-noto-sans">
     <Header title={SITE_TITLE} />
-    <main>
+    <main class="dark:bg-neutral-800">
       <div class="max-w-3xl mx-auto p-4">
         <slot />
       </div>
