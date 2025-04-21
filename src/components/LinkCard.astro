@@ -7,6 +7,15 @@ const { url } = Astro.props;
 
 // URLからドメイン情報取得
 const domain = new URL(url).hostname;
+const pathname = new URL(url).pathname;
+const currentHost = Astro.url.host;
+
+// 内部リンクかどうかを判定
+const isInternalLink = domain === currentHost || domain === 'ryokatsu.dev' || domain === 'www.ryokatsu.dev';
+// ブログ記事へのリンクかどうかを判定
+const isBlogPost = isInternalLink && pathname.startsWith('/blog/');
+// ブログ記事のスラグを取得
+const blogSlug = isBlogPost ? pathname.replace('/blog/', '').replace(/\/$/, '') : '';
 
 // サーバーサイドでメタデータ取得
 let title = domain;
@@ -16,6 +25,14 @@ let siteName = domain;
 let faviconUrl = null;
 
 try {
+  // 内部ブログ記事の場合はOGP画像エンドポイントを使用
+  if (isBlogPost) {
+    // OGP画像のURLを設定
+    thumbnail = `/og/${blogSlug.replace(/\//g, '-')}.png?t=${Date.now()}`;
+    
+    // 以下、通常のメタデータ取得処理も実行（タイトルなど）
+  }
+  
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 2000);
   
@@ -39,13 +56,19 @@ try {
     
     title = titleMatch ? titleMatch[1].trim() : domain;
     description = descriptionMatch ? descriptionMatch[1].trim() : "";
-    thumbnail = ogImageMatch ? ogImageMatch[1] : null;
+    // 内部ブログ記事の場合は上で設定したOGP画像URLを優先
+    thumbnail = isBlogPost ? thumbnail : (ogImageMatch ? ogImageMatch[1] : null);
     siteName = siteNameMatch ? siteNameMatch[1].trim() : domain;
     faviconUrl = faviconMatch ? new URL(faviconMatch[1], url).toString() : null;
   }
 } catch (error) {
   console.error('リンクカード取得エラー:', error);
 }
+
+// デバッグ情報
+console.log(`LinkCard処理: ${url}`);
+console.log(`- 内部リンク: ${isInternalLink}, ブログ記事: ${isBlogPost}`);
+console.log(`- サムネイルURL: ${thumbnail}`);
 ---
 
 <div class="my-6 w-full">
@@ -61,6 +84,7 @@ try {
         alt="" 
         class="w-full h-full object-contain p-2"
         loading="lazy"
+        onerror="this.onerror=null; this.src='/images/ryokatsu.jpg';"
       />
     </div>
     
@@ -81,6 +105,7 @@ try {
             class="w-4 h-4 mr-2 rounded"
             width="16"
             height="16"
+            onerror="this.style.display='none'"
           />
         }
         <span>{siteName}</span>

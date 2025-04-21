@@ -1,0 +1,195 @@
+---
+import Layout from '../components/Layout.astro';
+import { getOgImage } from '../components/OgImage';
+
+// OGP画像生成のテスト結果
+let testResult = {
+  success: false,
+  error: '',
+  imageUrl: '',
+  processTime: 0,
+  debugInfo: ''
+};
+
+try {
+  const startTime = Date.now();
+  // テスト用のテキストでOGP画像生成を試みる
+  const testText = 'これはOGP画像生成テストです';
+  
+  // OGP画像生成を試みる
+  await getOgImage(testText);
+  
+  // 成功の場合、テスト結果を更新
+  const endTime = Date.now();
+  testResult = {
+    success: true,
+    error: '',
+    imageUrl: `/og/${encodeURIComponent(testText)}.png?t=${Date.now()}`, // キャッシュバスティング用のパラメータを追加
+    processTime: endTime - startTime,
+    debugInfo: `フォント取得成功、画像生成完了`
+  };
+} catch (error) {
+  // エラーの場合、エラー情報を記録
+  testResult = {
+    success: false,
+    error: error instanceof Error ? error.message : String(error),
+    imageUrl: '',
+    processTime: 0,
+    debugInfo: '画像生成処理中にエラーが発生しました'
+  };
+}
+
+// 現在のホストURLを取得
+const currentHost = Astro.url.origin;
+---
+
+<Layout title="OGP画像生成テスト">
+  <main class="container mx-auto p-4 max-w-4xl">
+    <h1 class="text-3xl font-bold mb-6">OGP画像生成テスト</h1>
+    
+    <div class="bg-slate-50 p-6 rounded-lg shadow-md mb-8">
+      <h2 class="text-2xl font-semibold mb-4">テスト結果</h2>
+      
+      <div class="mb-4">
+        <span class="font-medium">ステータス:</span> 
+        {testResult.success ? 
+          <span class="text-green-600 font-semibold">成功</span> : 
+          <span class="text-red-600 font-semibold">失敗</span>
+        }
+      </div>
+      
+      {testResult.processTime > 0 && (
+        <div class="mb-4">
+          <span class="font-medium">処理時間:</span> {testResult.processTime}ms
+        </div>
+      )}
+      
+      {testResult.debugInfo && (
+        <div class="mb-4">
+          <span class="font-medium">デバッグ情報:</span> {testResult.debugInfo}
+        </div>
+      )}
+      
+      {testResult.error && (
+        <div class="mb-4">
+          <span class="font-medium">エラー:</span>
+          <pre class="bg-red-50 p-3 rounded mt-2 overflow-auto text-sm">{testResult.error}</pre>
+        </div>
+      )}
+    </div>
+    
+    {testResult.success && (
+      <div class="bg-slate-50 p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-semibold mb-4">生成されたOGP画像</h2>
+        <div class="border border-slate-200 rounded-lg overflow-hidden">
+          <img 
+            src={testResult.imageUrl} 
+            alt="生成されたOGP画像" 
+            class="w-full"
+            id="ogp-image"
+          />
+          <div id="image-error" class="hidden text-red-600 p-4"></div>
+        </div>
+        
+        <div class="mt-4">
+          <p class="text-sm text-slate-600">画像URL: <code class="bg-slate-100 px-2 py-1 rounded">{testResult.imageUrl}</code></p>
+        </div>
+        
+        <div class="mt-4">
+          <p class="text-sm text-slate-600">完全なURL: <code class="bg-slate-100 px-2 py-1 rounded">{currentHost}{testResult.imageUrl}</code></p>
+        </div>
+        
+        <div class="mt-6 flex gap-4">
+          <a href={testResult.imageUrl} target="_blank" class="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            新しいタブで画像を開く
+          </a>
+          
+          <button id="reload-image" class="inline-block bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700">
+            画像を再読み込み
+          </button>
+        </div>
+      </div>
+    )}
+    
+    <div class="mt-8">
+      <h2 class="text-2xl font-semibold mb-4">デバッグ情報</h2>
+      
+      <div class="bg-slate-50 p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-medium mb-3">OGP画像生成の手順</h3>
+        <ol class="list-decimal pl-6 space-y-2">
+          <li>フォントキャッシュディレクトリの確認</li>
+          <li>フォントの取得または読み込み</li>
+          <li>アバター画像の読み込み</li>
+          <li>SVG画像の生成</li>
+          <li>PNG画像への変換</li>
+        </ol>
+        
+        <div class="mt-6">
+          <h3 class="text-xl font-medium mb-3">よくある問題</h3>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>フォントキャッシュディレクトリが存在しない</li>
+            <li>フォントの取得に失敗する</li>
+            <li>アバター画像が見つからない</li>
+            <li>動的エンドポイントが設定されていない</li>
+            <li>CORSの設定が不適切</li>
+          </ul>
+        </div>
+        
+        <div class="mt-6">
+          <h3 class="text-xl font-medium mb-3">OGP画像を表示するページの例</h3>
+          <pre class="bg-slate-100 p-3 rounded overflow-auto text-sm">
+&lt;meta property="og:image" content="https://yourdomain.com/og/your-title.png" /&gt;
+&lt;meta property="og:image:width" content="1200" /&gt;
+&lt;meta property="og:image:height" content="630" /&gt;
+&lt;meta property="og:image:alt" content="記事タイトル" /&gt;</pre>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // クライアントサイドのエラーハンドリング
+  document.addEventListener('DOMContentLoaded', () => {
+    const ogpImage = document.getElementById('ogp-image');
+    const errorMsg = document.getElementById('image-error');
+    const reloadBtn = document.getElementById('reload-image');
+    
+    // 画像読み込みエラーハンドリング
+    if (ogpImage) {
+      ogpImage.addEventListener('error', () => {
+        if (ogpImage instanceof HTMLImageElement) {
+          ogpImage.onerror = null;
+          ogpImage.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwMCIgaGVpZ2h0PSI2MzAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHJlY3Qgd2lkdGg9IjEyMDAiIGhlaWdodD0iNjMwIiBmaWxsPSIjZjFmNWY5Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJzYW5zLXNlcmlmIiBmb250LXNpemU9IjMycHgiIGZpbGw9IiM2NDc0OGIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGRvbWluYW50LWJhc2VsaW5lPSJtaWRkbGUiPuOCpOODoeODvOOCuOOBjOiqreOBv+i+vOOBvuOCjOOBvuOBm+OCk+OBp+OBl+OBnzwvdGV4dD48L3N2Zz4=';
+        }
+        
+        if (errorMsg) {
+          errorMsg.textContent = '画像の読み込みに失敗しました。OGP画像の生成は成功しましたが、表示できません。';
+          errorMsg.classList.remove('hidden');
+        }
+        
+        console.error('OGP画像の読み込みに失敗しました');
+      });
+      
+      // 画像読み込み成功時
+      ogpImage.addEventListener('load', () => {
+        if (errorMsg) {
+          errorMsg.classList.add('hidden');
+        }
+        console.log('OGP画像の読み込みに成功しました');
+      });
+    }
+    
+    // 再読み込みボタンのイベントハンドラ
+    if (reloadBtn) {
+      reloadBtn.addEventListener('click', () => {
+        if (ogpImage instanceof HTMLImageElement) {
+          // キャッシュをバイパスするためにタイムスタンプパラメータを追加
+          const currentSrc = ogpImage.src.split('?')[0];
+          ogpImage.src = `${currentSrc}?t=${Date.now()}`;
+          console.log('画像を再読み込みします:', ogpImage.src);
+        }
+      });
+    }
+  });
+</script> 

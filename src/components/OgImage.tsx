@@ -4,10 +4,36 @@ import { SITE_TITLE } from '../config';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-const fontFamily = 'IBM Plex Sans JP';
+// 日本語対応フォント - IBMよりもっと一般的なNoto Sansを使用
+const fontFamily = 'Noto Sans JP';
 
 // アバター画像のパス
 const AVATAR_PATH = path.join(process.cwd(), 'public', 'images', 'ryokatsu.jpg');
+// フォントキャッシュディレクトリ
+const FONT_CACHE_DIR = path.join(process.cwd(), '.font-cache');
+
+// 最初の起動時にフォントキャッシュをクリアする（開発中のトラブルシューティング用）
+async function clearFontCache(): Promise<void> {
+  try {
+    const files = await fs.readdir(FONT_CACHE_DIR);
+    for (const file of files) {
+      await fs.unlink(path.join(FONT_CACHE_DIR, file));
+    }
+    console.log('フォントキャッシュをクリアしました');
+  } catch (error) {
+    // ディレクトリが存在しない場合は無視
+  }
+}
+
+// フォントキャッシュディレクトリを確保する関数
+async function ensureFontCacheDir(): Promise<void> {
+  try {
+    await fs.mkdir(FONT_CACHE_DIR, { recursive: true });
+    console.log(`フォントキャッシュディレクトリを確認: ${FONT_CACHE_DIR}`);
+  } catch (error) {
+    console.error('フォントキャッシュディレクトリの作成エラー:', error);
+  }
+}
 
 // 画像ファイルをBase64エンコードして読み込む関数
 async function loadImageAsBase64(filePath: string): Promise<string> {
@@ -26,8 +52,15 @@ export async function getOgImage(text: string) {
   try {
     console.log(`OGP画像生成開始: "${text}"`);
 
-    const fontNormal = await fetchFont(SITE_TITLE, fontFamily, 400);
-    const fontBold = await fetchFont(text, fontFamily, 700);
+    // フォントキャッシュディレクトリを確保
+    await ensureFontCacheDir();
+
+    // タイトルとテキスト全体に必要な文字をまとめる
+    const allChars = [...new Set([...SITE_TITLE, ...text])].join('');
+
+    // フォントを取得
+    const fontNormal = await fetchFont(allChars, fontFamily, 400);
+    const fontBold = await fetchFont(allChars, fontFamily, 700);
 
     // アバター画像をBase64形式で読み込み
     const avatarImageBase64 = await loadImageAsBase64(AVATAR_PATH);
@@ -147,47 +180,88 @@ export async function getOgImage(text: string) {
   }
 }
 
-async function fetchFont(text: string, font: string, weight: number): Promise<ArrayBuffer> {
-  try {
-    console.log(`フォント取得開始: "${font}", weight: ${weight}`);
+// satoriに対応するArrayBufferの型
+type SatoriArrayBuffer = ArrayBuffer;
 
-    const API = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(font)}:wght@${weight}&text=${encodeURIComponent(text)}`;
+// 指定されたURLからTTFフォントを直接取得する関数
+async function fetchTtfFont(fontName: string, weight: number): Promise<ArrayBuffer> {
+  // CDNから直接Noto Sans JPのTTFファイルを取得するURL
+  // 注: 実際には適切なライセンスを持つフォントを使用してください
+  const ttfUrls: Record<string, Record<number, string>> = {
+    'Noto Sans JP': {
+      400: 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-jp@4.5.0/files/noto-sans-jp-japanese-400-normal.woff',
+      700: 'https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-jp@4.5.0/files/noto-sans-jp-japanese-700-normal.woff',
+    },
+    'IBM Plex Sans JP': {
+      400: 'https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-jp@4.5.0/files/ibm-plex-sans-jp-japanese-400-normal.woff',
+      700: 'https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-sans-jp@4.5.0/files/ibm-plex-sans-jp-japanese-700-normal.woff',
+    },
+  };
 
-    const response = await fetch(API, {
-      headers: {
-        'User-Agent':
-          'Mozilla/5.0 (Macintosh; U; Intel Mac OS X 10_6_8; de-at) AppleWebKit/533.21.1 (KHTML, like Gecko) Version/5.0.5 Safari/533.21.1',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`フォントCSS取得エラー: ${response.status} ${response.statusText}`);
-    }
-
-    const css = await response.text();
-    console.log(`CSS取得: ${css.length} 文字`);
-
-    const match = css.match(/src: url\((.+)\) format\('(opentype|truetype)'\)/);
-
-    if (!match || !match[1]) {
-      throw new Error('フォントURLの抽出に失敗しました');
-    }
-
-    const fontUrl = match[1];
-    console.log(`フォントURL: ${fontUrl.substring(0, 50)}...`);
-
-    const fontResponse = await fetch(fontUrl);
-
-    if (!fontResponse.ok) {
-      throw new Error(`フォントファイル取得エラー: ${fontResponse.status} ${fontResponse.statusText}`);
-    }
-
-    const fontBuffer = await fontResponse.arrayBuffer();
-    console.log(`フォント取得完了: ${fontBuffer.byteLength} バイト`);
-
-    return fontBuffer;
-  } catch (error) {
-    console.error('フォント取得エラー:', error);
-    throw error;
+  // フォント名と重みに基づいてURLを取得
+  const url = ttfUrls[fontName]?.[weight];
+  if (!url) {
+    throw new Error(`指定されたフォント（${fontName} - ${weight}）のURLが見つかりません`);
   }
+
+  console.log(`TTFフォントを直接取得: ${url}`);
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`TTFフォント取得エラー: ${response.status} ${response.statusText}`);
+  }
+
+  return await response.arrayBuffer();
+}
+
+async function fetchFont(text: string, font: string, weight: number): Promise<SatoriArrayBuffer> {
+  const MAX_RETRIES = 3;
+  let retries = 0;
+
+  // フォントキャッシュのファイル名
+  const cacheFileName = `${font.replace(/\s+/g, '_')}-${weight}.ttf`;
+  const cachePath = path.join(FONT_CACHE_DIR, cacheFileName);
+
+  // キャッシュをチェック
+  try {
+    const cachedFont = await fs.readFile(cachePath);
+    console.log(`キャッシュからフォントを読み込みました: ${cacheFileName}`);
+    // ArrayBufferに変換して返す
+    return cachedFont.buffer.slice(cachedFont.byteOffset, cachedFont.byteOffset + cachedFont.byteLength) as ArrayBuffer;
+  } catch (error) {
+    console.log(`キャッシュにフォントがありません: ${cacheFileName}`);
+  }
+
+  while (retries < MAX_RETRIES) {
+    try {
+      console.log(`フォント取得試行 (${retries + 1}/${MAX_RETRIES}): "${font}", weight: ${weight}`);
+
+      // CDNから直接TTF/WOFF形式のフォントを取得（Google Fontsを回避）
+      const fontBuffer = await fetchTtfFont(font, weight);
+      console.log(`フォント取得完了: ${fontBuffer.byteLength} バイト`);
+
+      // キャッシュに保存
+      try {
+        await fs.writeFile(cachePath, new Uint8Array(fontBuffer));
+        console.log(`フォントをキャッシュに保存しました: ${cacheFileName}`);
+      } catch (cacheError) {
+        console.error('フォントキャッシュの保存に失敗:', cacheError);
+      }
+
+      return fontBuffer as SatoriArrayBuffer;
+    } catch (error) {
+      console.error(`フォント取得エラー (試行 ${retries + 1}/${MAX_RETRIES}):`, error);
+      retries++;
+
+      if (retries < MAX_RETRIES) {
+        // 再試行前に少し待機
+        await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+      } else {
+        const err = error as Error;
+        throw new Error(`フォント取得に${MAX_RETRIES}回失敗しました: ${err.message}`);
+      }
+    }
+  }
+
+  throw new Error('フォント取得に失敗しました');
 }
