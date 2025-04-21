@@ -12,15 +12,39 @@ const allBlogEntries = (await getCollection("blog")).sort(
   title={'記事一覧'}
   ogType="article"
 >
-  <h1 class="text-l font-bold mb-8">##記事一覧</h1>
+  <h1 class="text-lg font-bold mb-8">##記事一覧</h1>
   <Lists
     items={allBlogEntries
-    .map((post) => ({
-      title: post.data.title,
-      slug: post.slug!,
-      meta: `<time datetime="${dayjs(post.data.publishDate).tz().toISOString()}">
-        ${dayjs(post.data.publishDate).tz().format("LL")}
-      </time>`,
-      }))}
+    .map((post) => {
+      let description = '';
+      if (post.body) {
+        const cleanText = post.body
+          .replace(/^import.*?;$/gm, '')
+          .replace(/!\[.*?\]\(.*?\)/g, '')
+          .replace(/<LinkCard.*?\/>/g, '')
+          .replace(/<.*?>/g, '')
+          .replace(/```[\s\S]*?```/g, '')
+          .replace(/#+\s+.*?\n/g, '')
+          .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+          .replace(/\n\s*\n/g, '\n')
+          .trim();
+        
+        description = cleanText.length > 100 
+          ? cleanText.substring(0, 100) + '...' 
+          : cleanText;
+      }
+
+      const parts = post.id.split('/');
+      const slug = parts.length >= 2 ? `${parts[parts.length - 2]}/${parts[parts.length - 1].replace(/\.(md|mdx)$/, '')}` : '';
+
+      return {
+        title: post.data.title,
+        slug,
+        meta: `<time datetime="${dayjs(post.data.publishDate).tz().toISOString()}">
+          ${dayjs(post.data.publishDate).tz().format("LL")}
+        </time>`,
+        description
+      };
+    })}
   />
 </Layout>
