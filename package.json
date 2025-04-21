@@ -16,7 +16,6 @@
     "@astrojs/rss": "^4.0.11",
     "@astrojs/sitemap": "^3.3.0",
     "@astrojs/tailwind": "^6.0.1",
-    "@astrojs/vercel": "^8.1.3",
     "@resvg/resvg-js": "^2.4.1",
     "astro": "^5.5.4",
     "dayjs": "^1.11.4",
@@ -28,6 +27,7 @@
     "vite": "^6.2.2"
   },
   "devDependencies": {
+    "@astrojs/vercel": "^8.1.3",
     "@types/react": "^18.2.48",
     "@types/react-dom": "^18.2.18",
     "postcss-import": "^15.1.0",

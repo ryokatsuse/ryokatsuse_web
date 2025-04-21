@@ -19,7 +19,6 @@ async function clearFontCache(): Promise<void> {
     for (const file of files) {
       await fs.unlink(path.join(FONT_CACHE_DIR, file));
     }
-    console.log('フォントキャッシュをクリアしました');
   } catch (error) {
     // ディレクトリが存在しない場合は無視
   }
@@ -29,7 +28,6 @@ async function clearFontCache(): Promise<void> {
 async function ensureFontCacheDir(): Promise<void> {
   try {
     await fs.mkdir(FONT_CACHE_DIR, { recursive: true });
-    console.log(`フォントキャッシュディレクトリを確認: ${FONT_CACHE_DIR}`);
   } catch (error) {
     console.error('フォントキャッシュディレクトリの作成エラー:', error);
   }
@@ -50,8 +48,6 @@ async function loadImageAsBase64(filePath: string): Promise<string> {
 
 export async function getOgImage(text: string) {
   try {
-    console.log(`OGP画像生成開始: "${text}"`);
-
     // フォントキャッシュディレクトリを確保
     await ensureFontCacheDir();
 
@@ -64,9 +60,6 @@ export async function getOgImage(text: string) {
 
     // アバター画像をBase64形式で読み込み
     const avatarImageBase64 = await loadImageAsBase64(AVATAR_PATH);
-    console.log('アバター画像読み込み完了');
-
-    console.log('フォント取得完了');
 
     // SVG生成
     const svg = await satori(
@@ -161,8 +154,6 @@ export async function getOgImage(text: string) {
       },
     );
 
-    console.log('SVG生成完了');
-
     const resvg = new Resvg(svg, {
       fitTo: {
         mode: 'width',
@@ -171,7 +162,6 @@ export async function getOgImage(text: string) {
     });
 
     const pngBuffer = resvg.render().asPng();
-    console.log(`PNG生成完了: ${pngBuffer.byteLength} バイト`);
 
     return pngBuffer;
   } catch (error) {
@@ -204,8 +194,6 @@ async function fetchTtfFont(fontName: string, weight: number): Promise<ArrayBuff
     throw new Error(`指定されたフォント（${fontName} - ${weight}）のURLが見つかりません`);
   }
 
-  console.log(`TTFフォントを直接取得: ${url}`);
-
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`TTFフォント取得エラー: ${response.status} ${response.statusText}`);
@@ -225,7 +213,6 @@ async function fetchFont(text: string, font: string, weight: number): Promise<Sa
   // キャッシュをチェック
   try {
     const cachedFont = await fs.readFile(cachePath);
-    console.log(`キャッシュからフォントを読み込みました: ${cacheFileName}`);
     // ArrayBufferに変換して返す
     return cachedFont.buffer.slice(cachedFont.byteOffset, cachedFont.byteOffset + cachedFont.byteLength) as ArrayBuffer;
   } catch (error) {
@@ -234,23 +221,17 @@ async function fetchFont(text: string, font: string, weight: number): Promise<Sa
 
   while (retries < MAX_RETRIES) {
     try {
-      console.log(`フォント取得試行 (${retries + 1}/${MAX_RETRIES}): "${font}", weight: ${weight}`);
-
       // CDNから直接TTF/WOFF形式のフォントを取得（Google Fontsを回避）
       const fontBuffer = await fetchTtfFont(font, weight);
-      console.log(`フォント取得完了: ${fontBuffer.byteLength} バイト`);
-
       // キャッシュに保存
       try {
         await fs.writeFile(cachePath, new Uint8Array(fontBuffer));
-        console.log(`フォントをキャッシュに保存しました: ${cacheFileName}`);
       } catch (cacheError) {
         console.error('フォントキャッシュの保存に失敗:', cacheError);
       }
 
       return fontBuffer as SatoriArrayBuffer;
     } catch (error) {
-      console.error(`フォント取得エラー (試行 ${retries + 1}/${MAX_RETRIES}):`, error);
       retries++;
 
       if (retries < MAX_RETRIES) {

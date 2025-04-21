@@ -8,6 +8,7 @@ import { markdownComponents } from './src/integrations/markdown-components';
 // https://astro.build/config
 export default defineConfig({
   site: 'https://ryokatsu.dev',
+  output: 'static',
   integrations: [
     sitemap(),
     tailwind({

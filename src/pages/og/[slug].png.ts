@@ -2,8 +2,8 @@ import type { APIContext } from 'astro';
 import { getCollection, getEntryBySlug } from 'astro:content';
 import { getOgImage } from '../../components/OgImage';
 
-// 開発環境では動的ルーティングを使用
-export const prerender = false;
+// 静的ビルド用に設定を変更
+export const prerender = true;
 
 // SSGの場合に使用するパス設定
 export async function getStaticPaths() {
@@ -20,8 +20,6 @@ export async function getStaticPaths() {
 }
 
 export async function GET({ params, request }: APIContext) {
-  console.log(`OG画像リクエスト: ${params.slug}`);
-
   if (!params.slug) {
     console.error('slugパラメータがありません');
     throw new Error('slugパラメータが指定されていません');
@@ -29,7 +27,6 @@ export async function GET({ params, request }: APIContext) {
 
   try {
     // リクエストURLをログ出力
-    console.log(`リクエストURL: ${request.url}`);
 
     // キャッシュバスティング用のクエリパラメータを取得
     const url = new URL(request.url);
@@ -42,7 +39,6 @@ export async function GET({ params, request }: APIContext) {
 
     // 単純なテキスト文字列のケース（テストページからのリクエスト）
     if (params.slug.startsWith('これは') || params.slug.includes('テスト')) {
-      console.log(`テキストからOG画像を生成: "${params.slug}"`);
       const body = await getOgImage(decodeURIComponent(params.slug));
       return new Response(body, {
         status: 200,
@@ -56,7 +52,6 @@ export async function GET({ params, request }: APIContext) {
     // ブログ記事のケース
     try {
       const originalSlug = params.slug.replace(/-/g, '/');
-      console.log(`ブログ記事のslugを処理: ${originalSlug}`);
 
       const post = await getEntryBySlug('blog', originalSlug);
 
@@ -65,7 +60,6 @@ export async function GET({ params, request }: APIContext) {
         throw new Error(`記事が見つかりません: ${originalSlug}`);
       }
 
-      console.log(`記事からOG画像を生成: "${post.data.title}"`);
       const body = await getOgImage(post.data.title || 'No title');
 
       return new Response(body, {
@@ -86,7 +80,6 @@ export async function GET({ params, request }: APIContext) {
           const dateId = dateMatch[2];
           const formattedSlug = `${year}/${dateId}`;
 
-          console.log(`日付形式のslugで再試行: ${formattedSlug}`);
           const post = await getEntryBySlug('blog', formattedSlug);
 
           if (post) {
@@ -105,8 +98,6 @@ export async function GET({ params, request }: APIContext) {
         }
       }
 
-      // ブログ記事が見つからない場合は、直接テキストとして処理
-      console.log(`ブログ記事が見つからないため、テキストとして処理: ${params.slug}`);
       const body = await getOgImage(decodeURIComponent(params.slug.replace(/-/g, ' ')));
       return new Response(body, {
         status: 200,
