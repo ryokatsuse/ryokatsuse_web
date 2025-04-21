@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE } from '../config';
+import { getCollection } from 'astro:content';
 ---
 
 <header class="bg-neutral-800">
@@ -12,16 +13,86 @@ import { SITE_TITLE } from '../config';
       <img class="w-7 rounded-full bg-white" src="/images/ryokatsu.jpg" width="48" height="48" alt="" decoding="async" />
       {SITE_TITLE}
     </a>
-    <ul class="flex gap-x-2">
-      <li>
-        <a class="text-white hover:text-gray-300 flex items-center" href="/posts-feed.xml" title="RSS Feed">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss">
-            <path d="M4 11a9 9 0 0 1 9 9"></path>
-            <path d="M4 4a16 16 0 0 1 16 16"></path>
-            <circle cx="5" cy="19" r="1"></circle>
-          </svg>
-        </a>
-      </li>
-    </ul>
+    <div class="flex gap-x-4 items-center">
+      <div class="relative search-container">
+        <input 
+          type="text" 
+          id="search-input" 
+          placeholder="記事を検索..." 
+          class="px-3 py-1 rounded text-sm bg-neutral-700 text-white border border-neutral-600 focus:outline-none focus:border-neutral-500"
+        />
+        <div id="search-results" class="absolute z-10 mt-1 w-64 right-0 bg-neutral-700 rounded shadow-lg hidden max-h-80 overflow-y-auto"></div>
+      </div>
+      <ul class="flex gap-x-2">
+        <li>
+          <a class="text-white hover:text-gray-300 flex items-center" href="/posts-feed.xml" title="RSS Feed">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss">
+              <path d="M4 11a9 9 0 0 1 9 9"></path>
+              <path d="M4 4a16 16 0 0 1 16 16"></path>
+              <circle cx="5" cy="19" r="1"></circle>
+            </svg>
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
 </header>
+
+<script>
+  // 分離したロジックを使用する
+  import { fetchBlogPosts, searchPosts, generateSearchResultsHtml, type BlogPost } from '../lib/search';
+
+  const searchInput = document.getElementById('search-input') as HTMLInputElement;
+  const searchResultsElement = document.getElementById('search-results') as HTMLDivElement;
+  
+  let blogPosts: BlogPost[] = [];
+  let isDataLoaded = false;
+
+  // 検索結果を表示
+  const showSearchResults = (query: string): void => {
+    if (!query.trim()) {
+      searchResultsElement.innerHTML = '';
+      searchResultsElement.classList.add('hidden');
+      return;
+    }
+
+    if (!isDataLoaded) {
+      searchResultsElement.innerHTML = '<div class="p-3 text-white">データを読み込み中...</div>';
+      searchResultsElement.classList.remove('hidden');
+      return;
+    }
+
+    // 分離したロジックを使用して検索を実行
+    const filteredPosts = searchPosts(blogPosts, query);
+    
+    // 検索結果からHTMLを生成
+    searchResultsElement.innerHTML = generateSearchResultsHtml(filteredPosts);
+    searchResultsElement.classList.remove('hidden');
+  };
+
+  // イベントリスナーの設定
+  const initSearch = async (): Promise<void> => {
+    if (!isDataLoaded) {
+      blogPosts = await fetchBlogPosts();
+      isDataLoaded = true;
+    }
+    showSearchResults(searchInput.value);
+  };
+
+  searchInput.addEventListener('focus', initSearch);
+  searchInput.addEventListener('input', () => showSearchResults(searchInput.value));
+
+  // クリック以外の場所をクリックしたら結果を非表示にする
+  document.addEventListener('click', (event) => {
+    const target = event.target as HTMLElement;
+    if (!searchInput.contains(target) && !searchResultsElement.contains(target)) {
+      searchResultsElement.classList.add('hidden');
+    }
+  });
+</script>
+
+<style>
+  #search-results {
+    max-height: 80vh;
+  }
+</style>
