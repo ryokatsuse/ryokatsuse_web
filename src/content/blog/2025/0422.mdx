@@ -1,0 +1,152 @@
+---
+title: Astro Sessionsを使ってお気に入り機能を実装した
+publishDate: "2025-04-22"
+---
+
+import LinkCard from '../../../components/LinkCard.astro';
+
+Astro5.7.4で安定版となったSessionsを使ってお気に入り機能を実装した。
+
+<LinkCard url="https://docs.astro.build/en/guides/sessions/" />
+
+## Sessionsとは
+
+特定のユーザーに紐づいた一時的なデータを保持するための仕組みである。これらはCookieやLocal Storageを使って行うのだがAstro組み込みのセッションを使い実現することが可能だ。セッションはサーバーサイドで管理されるので、クライアントにはセッションIDのみがCookieとして保存されるのでセキュリティ的にも良いらしい。
+
+実際に、ブラウザのdevtoolsから確認しても値は見れなくなっている。（Cookieをみると`astro-session`があり、中身は見れないが手動でデリートは可能）
+
+実装自体は[session.ts](https://github.com/withastro/astro/blob/main/packages/astro/src/core/session.ts)で行われている。このファイルでセッションの取得、破棄、再生成、永続化などが行われている。Cookieに関する処理は、[cookies.ts](https://github.com/withastro/astro/blob/main/packages/astro/src/core/cookies/cookies.ts)で行われている。
+
+
+## お気に入り機能の実装
+
+この機能を使うために、当ブログにお気に入り記事の登録機能を実装した。
+
+
+<LinkCard url="https://github.com/ryokatsuse/ryokatsuse_web/pull/57" />
+
+
+<blockquote class="twitter-tweet"><p lang="ja" dir="ltr">Astro Sessionsでお気に入り記事を追加する実装できた <a href="https://t.co/zLegJSYThX">pic.twitter.com/zLegJSYThX</a></p>&mdash; infixer (@ryo__kts) <a href="https://twitter.com/ryo__kts/status/1914533564592628097?ref_src=twsrc%5Etfw">April 22, 2025</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+
+
+ブログ記事ページの上にお気に入りボタンを配置して、クリックするとお気に入りに追加されるようにした。今回はWeb Componentsでボタンを実装してみた
+
+```ts
+const fetchAPI = async <T>(url: string, options?: RequestInit): Promise<T> => {
+  const response = await fetch(url, options);
+  if (!response.ok) {
+    throw new Error(`API request failed: ${response.status}`);
+  }
+  return response.json() as Promise<T>;
+};
+
+export const getFavoriteStatus = (slug: string): Promise<boolean> =>
+  fetchAPI<{ isFavorite: boolean }>(`/api/favorites/check?slug=${encodeURIComponent(slug)}`)
+    .then(data => data.isFavorite)
+    .catch(() => false);
+
+export const toggleFavorite = (slug: string): Promise<boolean> =>
+  fetchAPI<{ isFavorite: boolean }>('/api/favorites/toggle', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ slug }),
+  })
+    .then(data => data.isFavorite)
+    .catch(() => false);
+
+export const getFavoriteUIClasses = (isFavorite: boolean) => ({
+  containerAdd: isFavorite ? ['bg-red-100', 'dark:bg-red-900'] : [],
+  containerRemove: isFavorite ? [] : ['bg-red-100', 'dark:bg-red-900'],
+  iconAdd: isFavorite ? ['text-red-500', 'fill-red-500'] : ['text-gray-500', 'dark:text-gray-400'],
+  iconRemove: isFavorite ? ['text-gray-500', 'dark:text-gray-400'] : ['text-red-500', 'fill-red-500'],
+});
+
+export const updateFavoriteUI = (element: HTMLElement, isFavorite: boolean): void => {
+  const icon = element.querySelector('.favorite-icon');
+  if (!icon) return;
+
+  const classes = getFavoriteUIClasses(isFavorite);
+
+  classes.containerAdd.forEach(cls => element.classList.add(cls));
+  classes.containerRemove.forEach(cls => element.classList.remove(cls));
+
+  classes.iconAdd.forEach(cls => (icon as Element).classList.add(cls));
+  classes.iconRemove.forEach(cls => (icon as Element).classList.remove(cls));
+};
+
+export const initializeFavoriteButton = (element: HTMLElement): Promise<void> => {
+  const slug = element.dataset.slug || '';
+
+  const handleClick = () => {
+    toggleFavorite(slug).then(isFavorite => updateFavoriteUI(element, isFavorite));
+  };
+
+  return getFavoriteStatus(slug).then(isFavorite => {
+    updateFavoriteUI(element, isFavorite);
+    element.addEventListener('click', handleClick);
+  });
+};
+
+export const registerFavoriteButton = (): void => {
+  customElements.define(
+    'favorite-button',
+    class extends HTMLElement {
+      connectedCallback(): void {
+        initializeFavoriteButton(this).catch(err => console.error('Failed to initialize favorite button:', err));
+      }
+    },
+  );
+};
+```
+
+ボタンを押したときのトリガー、現在のお気に入りの取得は外部から受け取るようにした。詳しくは、[実装コード](https://github.com/ryokatsuse/ryokatsuse_web/blob/7fa59225c6acd1664dacfd8ce7dde3f03f538710/src/pages/api/favorites)を参照されたい。
+
+`context.session`というAstroのサーバーサイド機能でセッションデータにアクセスしている。
+
+お気に入りしたページは[一覧ページ](/favorites)からも確認ができるようにした。UIなどについて今後改修予定
+
+```ts
+
+const favorites = await Astro.session?.get('article_favorites') ?? [];
+
+function getSlugFromEntry(entry: CollectionEntry<"blog">): string {
+  return entry.slug;
+}
+
+const favoriteArticles = allBlogEntries.filter((entry: CollectionEntry<"blog">) => {
+  return favorites.includes(getSlugFromEntry(entry));
+}).sort((a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) => 
+  dayjs(b.data.publishDate).tz().valueOf() - dayjs(a.data.publishDate).tz().valueOf()
+);
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action');
+  
+  if (action === 'clear_favorites') {
+    await Astro.session?.set('article_favorites', []);
+    return Astro.redirect(Astro.url.pathname);
+  } else if (action === 'remove_favorite') {
+    const articleSlug = formData.get('slug');
+    if (typeof articleSlug === 'string') {
+      const newFavorites = favorites.filter(f => f !== articleSlug);
+      await Astro.session?.set('article_favorites', newFavorites);
+      return Astro.redirect(Astro.url.pathname);
+    }
+  }
+}
+
+```
+
+
+`Astro.session?.get('article_favorites')`でセッションからお気に入り記事のを取得しつつ、`favoriteArticles`で全記事からお気に入りに登録されている記事だけをフィルタリングしている。アクションごとに該当のお気に入りを削除するかすべてのお気に入りを削除するかを行っている。
+
+## まとめ
+
+localStorageとかCookieを操作するよりもセキュリティ的に良いっぽいので、使ってみた。確かに値が見えないのは良いのかもしれないなと思った。（雑な感想）あとはクライアントサイドでJSなしで実行できるのも嬉しいかもしれない。
+
+ただこの機能ダレトクなんだ。。。。？って感じはある。
+
+
+
+
