@@ -3,12 +3,17 @@ import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
+import vercel from '@astrojs/vercel/serverless';
 import { markdownComponents } from './src/integrations/markdown-components';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://ryokatsu.dev',
-  output: 'static',
+  output: 'server',
+  adapter: vercel(),
+  session: {
+    driver: 'memory',
+  },
   integrations: [
     sitemap(),
     tailwind({
