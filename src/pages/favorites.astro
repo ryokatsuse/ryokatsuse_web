@@ -1,0 +1,218 @@
+---
+import { getCollection, type CollectionEntry } from "astro:content";
+import Layout from "../components/Layout.astro";
+import dayjs from "../lib/dayjs";
+export const prerender = false;
+
+const favorites = await Astro.session?.get('article_favorites') ?? [];
+const allBlogEntries = await getCollection("blog");
+
+function getSlugFromEntry(entry: CollectionEntry<"blog">): string {
+  return entry.slug;
+}
+
+const favoriteArticles = allBlogEntries.filter((entry: CollectionEntry<"blog">) => {
+  return favorites.includes(getSlugFromEntry(entry));
+}).sort((a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) => 
+  dayjs(b.data.publishDate).tz().valueOf() - dayjs(a.data.publishDate).tz().valueOf()
+);
+
+if (Astro.request.method === 'POST') {
+  const formData = await Astro.request.formData();
+  const action = formData.get('action');
+  
+  if (action === 'clear_favorites') {
+    await Astro.session?.set('article_favorites', []);
+    return Astro.redirect(Astro.url.pathname);
+  } else if (action === 'remove_favorite') {
+    const articleSlug = formData.get('slug');
+    if (typeof articleSlug === 'string') {
+      const newFavorites = favorites.filter(f => f !== articleSlug);
+      await Astro.session?.set('article_favorites', newFavorites);
+      return Astro.redirect(Astro.url.pathname);
+    }
+  }
+}
+---
+
+<Layout title="お気に入り記事" description="お気に入りに追加した記事の一覧です">
+  <div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold mb-6">お気に入り記事</h1>
+    
+    <div class="mb-8">
+      <a href="/" class="text-black dark:text-white underline hover:hover:no-underline flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+          <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+        </svg>
+        ホームに戻る
+      </a>
+    </div>
+    
+    <div id="favorites-container">
+      {favorites.length === 0 ? (
+        <div class="p-6 bg-gray-100 dark:bg-gray-800 rounded">
+          <p class="text-lg">お気に入りに追加された記事はありません。</p>
+          <p class="mt-2">記事ページでハートアイコンをクリックして、お気に入りに追加できます。</p>
+        </div>
+      ) : (
+        <>
+          <p class="mb-4 favorites-count">全 {favorites.length} 件のお気に入り記事があります。</p>
+          
+          <ul class="space-y-4 mb-8 favorites-list">
+            {favoriteArticles.map((article) => {
+              const slug = getSlugFromEntry(article);
+              return (
+                <li class="p-4 border rounded flex items-center justify-between" data-slug={slug}>
+                  <div>
+                    <a 
+                      href={`/blog/${slug}`} 
+                      class="text-xl font-medium text-black dark:text-white underline hover:hover:no-underline"
+                    >
+                      {article.data.title}
+                    </a>
+                    <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      {article.data.publishDate && (
+                        <time>{dayjs(article.data.publishDate).tz().format("LL")}</time>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <button 
+                    type="button" 
+                    class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/30 rounded remove-favorite"
+                    aria-label="お気に入りから削除"
+                    data-slug={slug}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+          
+          <button 
+            type="button" 
+            id="clear-favorites"
+            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+          >
+            すべてのお気に入りを削除
+          </button>
+        </>
+      )}
+    </div>
+  </div>
+</Layout>
+
+<div id="confirm-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center">
+  <div class="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-sm mx-auto">
+    <h3 class="text-xl font-semibold mb-4">確認</h3>
+    <p class="mb-6">すべてのお気に入りを削除してもよろしいですか？</p>
+    <div class="flex justify-end space-x-3">
+      <button id="cancel-delete" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded hover:bg-gray-100 dark:hover:bg-gray-700">
+        キャンセル
+      </button>
+      <button id="confirm-delete" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+        削除する
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const removeButtons = document.querySelectorAll('.remove-favorite');
+    removeButtons.forEach(button => {
+      button.addEventListener('click', async (e) => {
+        const slug = (e.currentTarget as HTMLButtonElement).dataset.slug;
+        if (!slug) return;
+        
+        try {
+          const response = await fetch('/api/favorites/toggle', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ slug }),
+          });
+          
+          if (response.ok) {
+            const item = document.querySelector(`li[data-slug="${slug}"]`);
+            if (item) {
+              item.remove();
+              const favorites = document.querySelectorAll('.favorites-list li');
+              const countElement = document.querySelector('.favorites-count');
+              if (countElement) {
+                countElement.textContent = `全 ${favorites.length} 件のお気に入り記事があります。`;
+              }
+              if (favorites.length === 0) {
+                const container = document.getElementById('favorites-container');
+                if (container) {
+                  container.innerHTML = `
+                    <div class="p-6 bg-gray-100 dark:bg-gray-800 rounded">
+                      <p class="text-lg">お気に入りに追加された記事はありません。</p>
+                      <p class="mt-2">記事ページでハートアイコンをクリックして、お気に入りに追加できます。</p>
+                    </div>
+                  `;
+                }
+              }
+            }
+          } else {
+            console.error('お気に入りの削除に失敗しました');
+          }
+        } catch (error) {
+          console.error('エラーが発生しました:', error);
+        }
+      });
+    });
+    
+    const clearButton = document.getElementById('clear-favorites');
+    const modal = document.getElementById('confirm-modal');
+    const cancelButton = document.getElementById('cancel-delete');
+    const confirmButton = document.getElementById('confirm-delete');
+    
+    if (clearButton && modal && cancelButton && confirmButton) {
+      clearButton.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+      });
+      
+      cancelButton.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+      
+      confirmButton.addEventListener('click', async () => {
+        try {
+          const slugs = Array.from(document.querySelectorAll('li[data-slug]'))
+            .map(el => (el as HTMLElement).dataset.slug || '');
+            
+          for (const slug of slugs) {
+            if (!slug) continue;
+            
+            await fetch('/api/favorites/toggle', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ slug }),
+            });
+          }
+          
+          const container = document.getElementById('favorites-container');
+          if (container) {
+            container.innerHTML = `
+              <div class="p-6 bg-gray-100 dark:bg-gray-800 rounded">
+                <p class="text-lg">お気に入りに追加された記事はありません。</p>
+                <p class="mt-2">記事ページでハートアイコンをクリックして、お気に入りに追加できます。</p>
+              </div>
+            `;
+          }
+          
+          modal.classList.add('hidden');
+        } catch (error) {
+          console.error('エラーが発生しました:', error);
+        }
+      });
+    }
+  });
+</script> 
