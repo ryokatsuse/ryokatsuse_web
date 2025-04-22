@@ -1,4 +1,4 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
@@ -57,6 +57,16 @@ export default defineConfig({
     resolve: {
       dedupe: ['react', 'react-dom'],
     },
+  },
+  experimental: {
+    fonts: [
+      {
+        provider: fontProviders.google(),
+        name: 'Noto Sans JP',
+        cssVariable: '--font-noto-sans-jp',
+        weights: ['400', '500', '700'],
+      },
+    ],
   },
   markdown: {
     // マークダウンのシンタックスハイライト
