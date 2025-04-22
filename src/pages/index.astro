@@ -1,12 +1,13 @@
 ---
-import { getCollection } from "astro:content";
+import { getCollection, type CollectionEntry } from "astro:content";
 import Layout from "../components/Layout.astro";
 import dayjs from "../lib/dayjs";
 import Lists from "../components/Lists.astro";
 import { fetchRssData } from "../lib/fetchRssData";
 
 const allBlogEntries = (await getCollection("blog")).sort(
-  (a, b) => dayjs(b.data.publishDate).tz().valueOf() - dayjs(a.data.publishDate).tz().valueOf());
+  (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) => 
+    dayjs(b.data.publishDate).tz().valueOf() - dayjs(a.data.publishDate).tz().valueOf());
 
 // ScrapboxのRSSフィードからデータを取得
 const scrapboxEntries = await fetchRssData("https://scrapbox.io/api/feed/ryokatsu");
@@ -21,7 +22,7 @@ type BlogEntry = {
   description?: string;
 };
 
-const blogEntries: BlogEntry[] = allBlogEntries.map((post) => {
+const blogEntries: BlogEntry[] = allBlogEntries.map((post: CollectionEntry<"blog">) => {
   const parts = post.id.split('/');
   const slug = parts.length >= 2 ? `${parts[parts.length - 2]}/${parts[parts.length - 1].replace(/\.(md|mdx)$/, '')}` : '';
   
