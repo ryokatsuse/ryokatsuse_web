@@ -2,6 +2,19 @@ import type { APIContext } from 'astro';
 import { getCollection, getEntryBySlug } from 'astro:content';
 import { getOgImage } from '../../components/OgImage';
 
+// ブログ記事の型を定義
+type BlogEntry = {
+  slug: string;
+  data: {
+    title: string;
+    publishDate: string;
+    ogImageURL?: string;
+    twitterCard?: string;
+    description?: string;
+    updatedDate?: string;
+  };
+};
+
 // 静的ビルド用に設定を変更
 export const prerender = true;
 
@@ -10,7 +23,7 @@ export async function getStaticPaths() {
   try {
     const posts = await getCollection('blog');
 
-    return posts.map((post: any) => ({
+    return posts.map(post => ({
       params: { slug: post.slug.replace(/\//g, '-') },
     }));
   } catch (error) {
@@ -26,8 +39,6 @@ export async function GET({ params, request }: APIContext) {
   }
 
   try {
-    // リクエストURLをログ出力
-
     // キャッシュバスティング用のクエリパラメータを取得
     const url = new URL(request.url);
     const forceRefresh = url.searchParams.has('t');
@@ -49,64 +60,111 @@ export async function GET({ params, request }: APIContext) {
       });
     }
 
-    // ブログ記事のケース
+    // ブログ記事のケースを処理
+    const originalSlug = params.slug.replace(/-/g, '/');
+
     try {
-      const originalSlug = params.slug.replace(/-/g, '/');
-
-      const post = await getEntryBySlug('blog', originalSlug);
-
-      if (!post) {
-        console.error(`記事が見つかりません: ${originalSlug}`);
-        throw new Error(`記事が見つかりません: ${originalSlug}`);
-      }
-
-      const body = await getOgImage(post.data.title || 'No title');
-
-      return new Response(body, {
-        status: 200,
-        headers: {
-          'Content-Type': 'image/png',
-          ...cacheHeaders,
-        },
-      });
-    } catch (blogError) {
-      console.error(`ブログ記事取得エラー: ${blogError}`);
-
-      // 日付形式のスラグの場合（例: 2022/1219）
-      const dateMatch = params.slug.match(/^(\d{4})[/-](\d{2,4})$/);
-      if (dateMatch) {
-        try {
-          const year = dateMatch[1];
-          const dateId = dateMatch[2];
-          const formattedSlug = `${year}/${dateId}`;
-
-          const post = await getEntryBySlug('blog', formattedSlug);
-
-          if (post) {
-            console.log(`記事が見つかりました: ${formattedSlug}, タイトル: ${post.data.title}`);
-            const body = await getOgImage(post.data.title || 'No title');
-            return new Response(body, {
-              status: 200,
-              headers: {
-                'Content-Type': 'image/png',
-                ...cacheHeaders,
-              },
-            });
-          }
-        } catch (retryError) {
-          console.error(`日付形式での再試行エラー: ${retryError}`);
+      // まず通常のスラグでの検索
+      let post: BlogEntry | null = null;
+      try {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const result = await (getEntryBySlug as any)('blog', originalSlug);
+        if (result) {
+          post = result as BlogEntry;
         }
+      } catch (error) {
+        post = null;
       }
 
-      const body = await getOgImage(decodeURIComponent(params.slug.replace(/-/g, ' ')));
-      return new Response(body, {
-        status: 200,
-        headers: {
-          'Content-Type': 'image/png',
-          ...cacheHeaders,
-        },
-      });
+      if (post) {
+        console.log(`記事が見つかりました: ${originalSlug}, タイトル: ${post.data.title}`);
+        const body = await getOgImage(post.data.title || 'No title');
+        return new Response(body, {
+          status: 200,
+          headers: {
+            'Content-Type': 'image/png',
+            ...cacheHeaders,
+          },
+        });
+      }
+    } catch (error) {
+      console.error(`通常スラグでの検索エラー: ${error}`);
     }
+
+    // 日付形式のスラグの場合（例: 2022-1219 → 2022/1219）
+    const dateMatch = params.slug.match(/^(\d{4})[/-](.+)$/);
+    if (dateMatch) {
+      try {
+        const year = dateMatch[1];
+        const restSlug = dateMatch[2];
+        const formattedSlug = `${year}/${restSlug}`;
+
+        let post: BlogEntry | null = null;
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const result = await (getEntryBySlug as any)('blog', formattedSlug);
+          if (result) {
+            post = result as BlogEntry;
+          }
+        } catch (error) {
+          post = null;
+        }
+
+        if (post) {
+          console.log(`記事が見つかりました: ${formattedSlug}, タイトル: ${post.data.title}`);
+          const body = await getOgImage(post.data.title || 'No title');
+          return new Response(body, {
+            status: 200,
+            headers: {
+              'Content-Type': 'image/png',
+              ...cacheHeaders,
+            },
+          });
+        }
+      } catch (error) {
+        console.error(`日付形式での検索エラー: ${error}`);
+      }
+    }
+
+    // 記事が見つからない場合は、すべての記事を取得して類似のスラグを探す
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const allPosts = (await (getCollection as any)('blog')) as BlogEntry[];
+
+      // スラグの一部が一致する記事を検索
+      const searchSlug = originalSlug.replace(/^(\d{4})\//, '$1/');
+      const matchingPost = allPosts.find(
+        post =>
+          post.slug.includes(searchSlug) ||
+          searchSlug.includes(post.slug) ||
+          post.slug.endsWith(originalSlug.split('/').pop() || ''),
+      );
+
+      if (matchingPost) {
+        console.log(`類似スラグで記事が見つかりました: ${matchingPost.slug}, タイトル: ${matchingPost.data.title}`);
+        const body = await getOgImage(matchingPost.data.title || 'No title');
+        return new Response(body, {
+          status: 200,
+          headers: {
+            'Content-Type': 'image/png',
+            ...cacheHeaders,
+          },
+        });
+      }
+    } catch (error) {
+      console.error(`類似スラグ検索エラー: ${error}`);
+    }
+
+    // それでも見つからない場合はスラグからタイトルを生成
+    console.log(`記事が見つかりません。スラグからタイトルを生成: ${params.slug}`);
+    const body = await getOgImage(decodeURIComponent(params.slug.replace(/-/g, ' ')));
+    return new Response(body, {
+      status: 200,
+      headers: {
+        'Content-Type': 'image/png',
+        ...cacheHeaders,
+      },
+    });
   } catch (error) {
     console.error('OG画像生成エラー:', error);
     // エラーが発生した場合でもレスポンスを返す
