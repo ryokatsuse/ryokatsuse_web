@@ -1,0 +1,131 @@
+---
+title: エラトステネスのふるい
+publishDate: "2025-05-07"
+---
+
+エラトステネスのふるいを実装してみました。
+
+## エラトステネスのふるいって何？
+
+エラトステネスのふるいは、ある数から素数を見つけるためのアルゴリズムである。
+0と1を最初に除外したのちに、小さい順にその数と倍数を順番に除外していき、Nの平方根以下のすべての素数まで繰り返し、残った数が素数である。
+
+以下が分かりやすい
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/wkrkaffUM70?si=dwTtWBBmxlgJ7e6-" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
+
+## 実装
+
+最初に実装したのは以下
+
+```ts
+
+const eratosthenes = (value: number): number[] => {
+  // 調べたい数が2未満の場合
+  if (value < 2) return [];
+
+  // 調べたい数が2だった場合
+  if (value === 2) return [2];
+
+  // 調べたい数の最大値までの整数を生成する
+  const primesData = [...Array(value - 1).keys()].map(i => i + 2);
+
+  /**
+   * 素数の倍数を除外する関数
+   */
+  const removePrimeMultiples = (candidates: number[], currentPrime: number): number[] => 
+    candidates.filter(num => num === currentPrime || num % currentPrime !== 0);
+
+  /**
+   * 再帰的に素数を見つける関数
+   */
+  const sievePrimes = (candidates: number[], currentIndex = 0): number[] => {
+    const currentPrime = candidates[currentIndex];
+    if (currentIndex >= candidates.length || currentPrime * currentPrime > value) {
+      return candidates;
+    }
+    
+    // 現在の素数の倍数を除外して次の素数を探す
+    const filteredCandidates = removePrimeMultiples(candidates, currentPrime);
+    return sievePrimes(filteredCandidates, currentIndex + 1);
+  };
+  
+  return sievePrimes(primesData);
+};
+
+console.log(eratosthenes(100));
+
+```
+
+0と1は除外なので、早期リターンをした。
+
+しかしそもそも型レベルで除外すれば良さそうと思い、Branded Typesを使って実装してみた。
+
+
+```ts
+/**
+ * 有効なエラトステネス入力値の型（2以上の整数）
+ */
+type EratosthenesInput = number & { readonly __brand: 'EratosthenesInput' };
+
+/**
+ * 2以上の数値であることを検証し、専用型に変換
+ */
+const asValidNumber = (value: number): EratosthenesInput => {
+  if (value < 2) {
+    throw new Error('エラトステネスのふるいは2以上の数値でのみ使用できます。');
+  }
+  return value as EratosthenesInput;
+};
+
+/**
+ * エラトステネスのふるいを使用して素数を見つける関数
+ */
+const eratosthenes = (value: EratosthenesInput): number[] => {
+  // 2の場合は特殊処理
+  if (value === 2) {
+    return [2];
+  }
+  
+  // 調べたい数の最大値までの整数を生成する
+  const candidates = [...Array(value - 1).keys()].map(i => i + 2);
+  
+  /**
+   * 素数の倍数を除外する関数
+   */
+  const removePrimeMultiples = (candidates: number[], prime: number): number[] => 
+    candidates.filter(candidate => candidate === prime || num % prime !== 0);
+  
+  /**
+   * 素数を篩い落とす再帰関数
+   */
+  const sieve = (candidates: number[], index = 0): number[] => {
+    const prime = candidates[index];
+    if (index >= candidates.length || prime * prime > value) {
+      return candidates;
+    }
+    // 現在の素数の倍数を除外して次の素数を探す
+    return sieve(removePrimeMultiples(candidates, prime), index + 1);
+  };
+  
+  return sieve(candidates);
+
+  console.log(eratosthenes(asValidNumber(100)));
+};
+
+```
+
+これで良いのかは微妙。eratosthenes関数に0や1を渡すときに型エラーで止まるシンプルなものだと
+
+```ts
+type NumberGreaterThanTwo<T extends number> = T extends 0 | 1 ? never : T;
+```
+みたいなこともできるかもしれない。どちらが良いんだろうか。Brand Typeだと安全性は高いかもしれないが、今回のケースだとやり過ぎだったりするかもしれない。
+
+AIくんに聴いてみると、実行時の検証が明示的だったり拡張性が増す一方で、実行時のオーバーヘッドがあるとのことだった。
+
+## おわりに
+
+Branded Typesの理解をもっと深めたい。
