@@ -71,7 +71,7 @@ console.log(eratosthenes(100));
 type EratosthenesInput = number & { readonly __brand: 'EratosthenesInput' };
 
 /**
- * 2以上の数値であることを検証し、専用型に変換
+ * 2以上の数値であることを検証する
  */
 const asValidNumber = (value: number): EratosthenesInput => {
   if (value < 2) {
