@@ -1,0 +1,592 @@
+---
+title: axe-coreでアクセシビリティチェックをどうやっているのか雑に調べた
+publishDate: "2025-08-27"
+---
+
+import LinkCard from '../../../components/LinkCard.astro';
+
+[axe-core](https://github.com/dequelabs/axe-core)は、HTMLを解析してアクセシビリティ検証を自動で行ってくれるライブラリです。
+
+ブラウザ上でアクセシビリティを検証してくれる拡張機能として便利な[axe DevTools](https://chromewebstore.google.com/detail/axe-devtools-web-accessib/lhdoppojpmngadmnindnejefpokejbdd)や、Reactアプリケーションのアクセシビリティをテストすることのできる[@axe-core/react](https://github.com/dequelabs/axe-core-npm/tree/develop/packages/react)などで利用されています。
+
+[eslint-plugin-jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)を組み合わせると静的解析も可能です。
+
+
+axe-coreの[README](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)にもあるように、WCAG準拠の問題を平均で57%自動で検出できます。つまり、残りの43%は人力による手動のチェックや、他のツール、各企業ごとに定めたアクセシビリティガイドラインなどを掛け合わせてテストを行う必要があります。
+
+個人的に他のツールとしてAccessibility Visualizerをよく利用しています。視覚的にアクセシビリティの問題を発見しやすく便利です。
+
+<LinkCard url="https://chromewebstore.google.com/detail/accessibility-visualizer/idcacekakoknnpbfjcdhnkffgfbddnhk?hl=ja" />
+
+各企業ごとに定めたアクセシビリティガイドラインについては、所属している会社によって状況は異なります。既に存在していれば良いですが、ない場合などは、他社でいくつか公開されているものを参考にしてみるのも良いでしょう。
+
+今回は、実際にaxe-coreがどうやってHTMLを解釈してアクセシビリティチェックをしているのかなと気になったので、ソースコードを辿ったのでそのことについて記載しました。
+
+※細かい部分までは追い切れていないので、間違いなどがあった場合は、教えてください！
+
+## 基本的な処理フロー
+
+axe-coreのリポジトリ内のdocsフォルダを一通り眺めた後に、DeepWikiを見にいきました。
+
+<LinkCard url="https://deepwiki.com/dequelabs/axe-core" />
+
+ここで全体的なアーキテクチャをなんとなく理解した上で、処理を追っていきました。今回は題材として、imgタグに関するアクセシビリティチェックがどのように実行されるかを見ていきます。
+
+### 処理の大まかな流れ
+
+一つ一つの処理は後述しますが、ざっくり以下の流れで行われていました。
+
+```
+1. axe.run()の実行
+   → axe-coreのエントリーポイントとなる関数
+
+2. HTML解析 → VirtualDOM変換
+   → ページ全体のHTMLをaxe-core専用の仮想DOM形式に変換
+   → Shadow DOMやiframe内のコンテンツも含めて統一的に扱えるようにする
+
+3. ルールを確認する
+   → 作られたVirtualDOMから、ルールのselectorにマッチする要素を抽出
+
+4. ルールに適合しているか違反しているかをチェック
+
+5. 結果を出力
+```
+
+今回は以下のようなHTMLをテストしてみようと思います。
+
+```html
+<!DOCTYPE html>
+<html>
+<body>
+  <!-- alt属性なし -->
+  <img src="image1.jpg" width="100" height="100">
+  <!-- 空白のみのalt -->
+  <img src="image2.jpg" alt="   " width="100" height="100">
+  <!-- altあり -->
+  <img src="image3.jpg" alt="美しい風景" width="100" height="100">
+  <!-- 装飾画像（role="presentation"） -->
+  <img src="decoration.jpg" alt="" role="presentation" width="50" height="50">
+</body>
+</html>
+```
+
+実際にテストする際のAPIの使い方については、[axe API Documentation](https://www.deque.com/axe/core-documentation/api-documentation/)にあります。
+
+## axe.run()
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/lib/core/public/run.js" />
+
+この関数が呼ばれると、axe-core全体の処理が始まります。
+
+※コードの中のコメントは私が追加したものです。
+
+
+```javascript
+export default function run(...args) {
+  // ローカライゼーションなどの初期化
+  setupGlobals(args[0]);
+
+  const { context, options, callback = noop } = normalizeRunParams(args);
+  try {
+    // 事前チェック：他のaxe.run()が実行中でないかなどを確認
+    assert(axe._audit, 'No audit configured');
+    assert(!axe._running, 'Axe is already running');
+  } catch (e) {
+    return handleError(e, callback);
+  }
+
+  // 実行中フラグをセット
+  axe._running = true;
+
+  // ルール実行エンジンを起動
+  // context: チェック対象のDOM範囲
+  // options: 実行オプション（どのルールを実行するかなど）
+  // handleRunRules: 成功時コールバック
+  // errorRunRules: エラー時コールバック
+  axe._runRules(context, options, handleRunRules, errorRunRules);
+
+  return thenable;
+}
+```
+
+`setupGlobals`で言語設定などをした後に、実行したときに引数として設定したチェック対象のDOMや、実行したいルールなどを確認して、`axe._runRules`関数に渡します。
+
+以下はrun関数で呼び出す際のサンプルです。
+
+```javascript
+// ページ全体をチェックするとき
+axe.run().then(results => {
+  console.log(results.violations);
+});
+
+// 特定のセレクタのみをチェック
+axe.run('img').then(results => {
+  const imgViolations = results.violations.filter(v => 
+    v.id.includes('image') || v.id.includes('alt')
+  );
+});
+
+// テストしたいルールをを指定してチェック
+axe.run(document, {
+  rules: {
+    // imgタグにaltルールを指定
+    'image-alt': { enabled: true },
+    // 全体的なカラーコントラストチェックを無効にする
+    'color-contrast': { enabled: false }
+  }
+}).then(results => {
+  console.log(results.violations);
+});
+```
+
+## HTML解析 → VirtualDOM変換(axe._runRules())
+
+`axe._runRules`が呼び出されると、実際の処理は`runRules`関数に渡ります。ここで渡されたcontext（チェック対象のDOM）を元に、VirtualDOMに変換します。axe-coreはiframeでもテストすることが可能です。あとでアクセシビリティチェックをするために扱いやすい形式にしたいためですね！
+
+イメージとしては、図書館に並んだ書籍になります。通常のHTMLだと、div要素一つとっても様々な場所に存在します。それらをdiv要素だったら1階のdivコーナー、img要素だったら2階のimgコーナーのように本棚にまとめてくれるイメージです。
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/lib/core/public/run-rules.js#L22" />
+
+ここでチェック対象のDOM範囲を定義するContextオブジェクトを作成して、DOM要素の場合はその要素とその子孫を、未指定の場合はdocument全体をチェック範囲とします。
+
+実際のVirtualDOMへの変換は、new Context内の`getFlattenedTree`で行われます。
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/lib/core/utils/get-flattened-tree.js" />
+
+```javascript
+function flattenTree(node, shadowId, parent) {
+  let vNode, childNodes;
+
+  if (node.documentElement) {
+    node = node.documentElement;
+  }
+  
+  const nodeName = node.nodeName.toLowerCase();
+
+  // Shadow Root の処理
+  if (isShadowRoot(node)) {
+    hasShadowRoot = true;
+    vNode = createNode(node, parent, shadowId);
+    shadowId = 'a' + Math.random().toString().substring(2);
+    childNodes = Array.from(node.shadowRoot.childNodes);
+    vNode.children = createChildren(childNodes, vNode, shadowId);
+    return [vNode];
+  }
+
+  // 要素ノードの処理（img要素はここで処理される）
+  if (node.nodeType === document.ELEMENT_NODE) {
+    // VirtualNode オブジェクトを作成
+    vNode = createNode(node, parent, shadowId);
+    
+    // 子要素を再帰的に処理している
+    childNodes = Array.from(node.childNodes);
+    vNode.children = createChildren(childNodes, vNode, shadowId);
+
+    return [vNode];
+  }
+
+  // テキストノードの処理
+  if (node.nodeType === document.TEXT_NODE) {
+    return [createNode(node, parent)];
+  }
+
+  return undefined;
+}
+```
+
+ここで処理される主なノードタイプは以下の3つです。
+
+**1. Shadow Rootの処理**
+Shadow DOMを使用している要素（例：Web Components）が見つかった場合、`hasShadowRoot`フラグをtrueにして、一意のshadowIdを生成します。このIDによって、通常のDOMとShadow DOM内の要素を区別できるようになります。
+
+```html
+<!-- 例：Shadow DOMを使ったカスタム要素 -->
+<my-component>
+  #shadow-root
+    <img src="internal.jpg" alt="内部画像">
+</my-component>
+```
+
+**2. 要素ノード（HTMLタグ）の処理**
+`<img>`、`<div>`、`<button>`などの実際のHTML要素を処理します。各要素に対してcreateNode関数を呼び出してVirtualNodeオブジェクトを作成し、子要素がある場合は再帰的に処理を続けます。
+
+```html
+<div>
+  <img src="photo.jpg" alt="写真">
+  <p>キャプション</p>
+</div>
+```
+
+**3. テキストノードの処理**
+HTMLタグ内のテキスト部分も処理対象になります。
+
+一方で、以下のようなノードは処理対象外として`undefined`を返し、VirtualDOMに含めません：
+- HTMLコメント（`<!-- コメント -->`）
+- CDATA（XML形式のデータ）
+- その他の特殊なノードタイプ
+
+このようにして、`getFlattenedTree`関数はページ全体のHTML構造を、axe-coreが扱いやすいVirtualDOMツリーに変換していきます。
+
+
+createNode関数は以下のようになっています。
+
+```javascript
+function createNode(node, parent, shadowId) {
+
+  const vNode = new VirtualNode(node, parent, shadowId);
+  cacheNodeSelectors(vNode, cache.get('selectorMap'));
+
+  return vNode;
+}
+```
+
+`new VirtualNode`コンストラクタが実行されると、実DOM要素からVirtualNodeオブジェクトを作成します。
+
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/lib/core/base/virtual-node/virtual-node.js" />
+
+
+例えば、以下のようなimg要素があるとします。
+
+```html
+<img src="photo.jpg" alt="かわいい猫の画像" width="300" height="200">
+```
+
+上記を実際のVirtualNode内で処理されたものは、以下になります。
+
+```javascript
+{
+  actualNode: <img src="photo.jpg" alt="かわいい猫の画像" width="300" height="200">,
+  parent: <div>要素のVirtualNode,
+  shadowId: undefined,
+  props: {
+    nodeName: 'img',
+    src: 'photo.jpg',
+    alt: 'かわいい猫の画像',
+    width: '300',
+    height: '200'
+  },
+  children: [], // img要素は通常子要素を持たないので空
+  hasAttr: function(name) { ... },
+  attr: function(name) { ... }
+}
+```
+<details>
+<summary>小話</summary>
+
+この仮想DOMの変換のソースコードを読んでいた当時は、以下のコードに遭遇しました
+
+```js
+const styl = window.getComputedStyle(node);
+ 
+     // check the display property. intentionally does not run, see notable information at top of file
+     if (false && styl.display !== 'contents') {
+       // has a box
+       vNode = createNode(node, parent, shadowId);
+       vNode.children = createChildren(childNodes, vNode, shadowId);
+ 
+       return [vNode];
+     }
+ 
+     return createChildren(childNodes, parent, shadowId);
+   }
+
+```
+
+<p>if文はfalseで絶対に実行されないようになっているのですが、コメントには「intentionally does not run」と書かれており、意図的に実行されないようにしていることがわかります。定数の`styl`もtypoに見えます。</p>
+
+<p>このファイルの冒頭に別のコメントがあり、どうやらChrome59以降で`<slot>`要素の`display: contents`以外の場合に問題があったようで、その対策として意図的に無効化しているようでした。しかし調べてみると、interop2024の取り組みによってこの問題は解消されているようだったので、コントリビューションチャンス！と思ったのですが、タイミングが悪く最近この箇所がリファクタリングされてmergeされていました。（泣）</p>
+
+<LinkCard url="https://github.com/dequelabs/axe-core/pull/4854" />
+
+
+</details>
+
+
+## ルールを確認する
+
+VirtualDOMの構築が完了すると、`runRules`関数内に戻り、`audit.run()`が呼び出されます。アクセシビリティチェックしやすい構造が既にできているので、次は実際にルールを確認していくフェーズです。
+
+ここから処理は複雑なので、正直全部追いきれていません！
+
+以下の記事に、実際にルールがどのようにテストされるかまでの流れが詳しく書かれていましたので、こちらをお読み頂ければと思います。
+
+<LinkCard url="https://www.dkrk-blog.net/a11y/axe-rules" />
+
+
+具体のソースは省略しますが、`audit.js`で行われています。
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/lib/core/base/audit.js" />
+
+
+`getRulesToRun()`関数で渡されている全ルールを`now`と`later`に分類します。`now`は即時に実行されるもので、`later`は後で実行されるルールです。例えばCSS解析が必要な場合などが`later`に分類されます。
+
+その後いよいよアクセシビリティチェックが行われる`lib/core/base/rule.js`に処理が移動していきます。
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/lib/core/base/rule.js" />
+
+処理としては、Rule.prototype.runで行われます。
+
+```javascript
+Rule.prototype.run = function run(context, options = {}, resolve, reject) {
+  const q = queue();
+  const ruleResult = new RuleResult(this);
+  let nodes;
+
+  try {
+    // 対象ノードを収集：セレクタ + マッチング条件
+    nodes = this.gatherAndMatchNodes(context, options);
+    // 例：selector='img' → ページ内のすべてのimg要素を収集
+    // 例：matches='no-explicit-name-required-matches' → 装飾画像以外に絞り込み
+  } catch (error) {
+    reject(new SupportError({ cause: error, ruleId: this.id }));
+    return;
+  }
+
+  // 各img要素に対してチェックを実行
+  nodes.forEach(node => {
+    q.defer((resolveNode, rejectNode) => {
+      const checkQueue = queue();
+
+      // any/all/none チェックを並列に実行
+      ['any', 'all', 'none'].forEach(type => {
+        checkQueue.defer((res, rej) => {
+          // 個別チェック実行（例：has-alt, aria-label, alt-space-value）
+          this.runChecks(type, node, options, context, res, rej);
+        });
+      });
+
+      // チェック結果を統合
+      checkQueue.then(results => {
+        const result = getResult(results);
+        if (result) {
+          result.node = new DqElement(node);
+          ruleResult.nodes.push(result);
+        }
+        resolveNode();
+      }).catch(rejectNode);
+    });
+  });
+
+  // すべてのimg要素のチェック完了後にルール結果を返す
+  q.then(() => resolve(ruleResult)).catch(reject);
+}
+```
+
+`gatherAndMatchNodes`関数で、最初に渡したルールのselectorにマッチする要素をVirtualDOMから収集します。チェック対象外のものはここで除外されます。
+
+その後、`runChecks`関数が呼ばれ、any/all/noneの各条件に対して個別チェックが実行されます。
+
+
+実際のルールは以下に定義されています。
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/lib/rules/image-alt.json" />
+
+
+```
+{
+  "id": "image-alt",
+  "impact": "critical",
+  "selector": "img",
+  "matches": "no-explicit-name-required-matches",
+  "tags": [
+    "cat.text-alternatives",
+    "wcag2a",
+    "wcag111",
+    "section508",
+    "section508.22.a",
+    "TTv5",
+    "TT7.a",
+    "TT7.b",
+    "EN-301-549",
+    "EN-9.1.1.1",
+    "ACT"
+  ],
+  "actIds": ["23a2a8"],
+  "metadata": {
+    "description": "Ensure <img> elements have alternative text or a role of none or presentation",
+    "help": "Images must have alternative text"
+  },
+  "all": [],
+  "any": [
+    "has-alt",
+    "aria-label",
+    "aria-labelledby",
+    "non-empty-title",
+    "presentational-role"
+  ],
+  "none": ["alt-space-value"]
+}
+```
+
+any/all/noneの役割は以下になります。
+
+- **any**: この配列のチェックのうち、少なくとも1つがpassすれば全体がpass
+- **all**: この配列のすべてのチェックがpassしなければ全体がfail
+- **none**: この配列のチェックがすべてfailしなければ全体がfail
+
+
+ここで注目なのは、axe-coreでは`rules`ディレクトリに様々なアクセシビリティルールが独自で定義されていることです。渡されたルールを元に、どのようなチェックを実行するかが決定されます。
+
+
+## ルールに適合しているか違反しているかをチェック
+
+`runChecks`関数でいよいよルールをチェックしていきます。
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/lib/core/base/rule.js#L168" />
+
+
+```javascript
+Rule.prototype.runChecks = function runChecks(type, node, options, context, resolve, reject) {
+  const self = this;
+  const checkQueue = queue();
+
+  // チェック配列を取得（any, all, none）
+  this[type].forEach(c => {
+    // チェックIDから実際のCheckするオブジェクトを取得
+    const check = self._audit.checks[c.id || c];
+
+    const option = getCheckOption(check, self.id, options);
+
+    checkQueue.defer((res, rej) => {
+      check.run(node, option, context, res, rej);
+    });
+  });
+
+  checkQueue.then(results => {
+    results = results.filter(check => check);
+    resolve({ type: type, results: results });
+  }).catch(reject);
+};
+```
+その後、個別のルールをチェックする`evaluate`関数を実行していきます。
+
+axe-coreでは、issue_impact.mdにルールの影響度が定義されています。
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/doc/issue_impact.md" />
+
+
+例えば今回のimgタグについては以下のようになっています。
+
+- Critical Level
+  - **image-alt**: 基本的なimg要素のalt属性チェック
+  - **input-image-alt**: `<input type="image">`のalt属性チェック
+  - **area-alt**: イメージマップの`<area>`要素のalt属性チェック
+
+- Serious Level
+  - **role-img-alt**: `role="img"`要素のアクセシブルネームチェック
+  - **svg-img-alt**: SVG画像要素のアクセシブルネームチェック
+
+- Minor Level
+  - **image-redundant-alt**: 冗長なalt属性の検出
+  - **object-alt**: `<object>`要素のアクセシブルネームチェック
+  - **server-side-image-map**: サーバーサイドイメージマップの検出
+  - **presentation-role-conflict**: presentationalロールの競合検出
+
+いくつかチェック関数を見ていきます。
+
+altをチェックする関数：
+
+```javascript
+function hasAltEvaluate(node, options, virtualNode) {
+  const { nodeName } = virtualNode.props;
+  if (!['img', 'input', 'area'].includes(nodeName)) {
+    return false;
+  }
+  return virtualNode.hasAttr('alt');
+}
+```
+
+alt属性があるのに、空白文字が入っているかチェックする関数：
+
+```javascript
+function altSpaceValueEvaluate(node, options, virtualNode) {
+  const alt = virtualNode.attr('alt');
+  const isOnlySpace = /^\s+$/; 
+  return typeof alt === 'string' && isOnlySpace.test(alt);
+}
+```
+
+いずれもシンプルです。
+
+`presentational-role`のチェック関数についても以下にあります。
+
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/lib/checks/shared/presentational-role-evaluate.js
+" />
+
+少々複雑ですが、単にpresentationalロール（`role="presentation"`や`role="none"`）が設定されているかをチェックするだけでなく、そのロールが実際に有効かどうかまで検証しているようです。
+
+presentationalロールを設定した要素にARIA属性が存在する場合やフォーカス可能な場合、presentationalロールは無効になります。WCAGの仕様をみると確かにそうなっていそうです。
+
+
+<LinkCard url="https://www.w3.org/TR/wai-aria/#presentation
+" />
+
+## 結果を出力
+
+詳細はかなり省きますが、ひとつひとつチェックした結果を`ruleResult.nodes.push`によって蓄積していき、最終的にまとめて返しています。先ほどのrule.js内の`getResult`関数で取得して、`aggregate-result.js`に渡されます。
+
+<LinkCard url="https://github.com/dequelabs/axe-core/blob/develop/lib/core/utils/aggregate-result.js" />
+
+
+
+そして、結果をJSON形式で出力します。
+
+```javascript
+{
+  violations: [
+    {
+      id: "image-alt",
+      impact: "critical",
+      description: "Ensure <img> elements have alternative text or a role of none or presentation",
+      nodes: [
+        {
+          html: '<img src="image1.jpg" width="100" height="100">',
+          any: [
+            {
+              id: "has-alt",
+              message: "Element does not have an alt attribute",
+              impact: "critical"
+            }
+          ]
+        },
+        {
+          html: '<img src="image2.jpg" alt="   " width="100" height="100">',
+          none: [
+            {
+              id: "alt-space-value", 
+              message: "Element has an alt attribute containing only a space character",
+              impact: "critical"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+1つ目の画像は`has-alt`チェックでfailし、2つ目の画像は`alt-space-value`チェックでfailしています。3つ目と4つ目の画像は問題なく、violations配列には含まれません。
+
+
+## まとめ
+
+すごくざっくりですが、axe-coreがどのようにアクセシビリティチェックを行っているかを追ってみました。JavaScriptが読めれば、そこそこ理解できると思います。WCAGの仕様書を読むこともちろん重要ですが、実際にツールがどうやってチェックしているかを知ることも、とても面白いです！
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
