@@ -34,7 +34,7 @@ const ogImageURLAsset = assets.find(asset => {
   title={entry.data.title}
   description={entry.data.description || ""}
   ogType="article"
-  image={`/og/${entry.slug.replace(/\//g, '-')}.png`}
+  image={entry.data.ogImageURL || `/og/${entry.slug.replace(/\//g, '-')}.png`}
   twitterCard={entry.data.twitterCard as "summary" | "summary_large_image" | undefined}
 >
   <article>
