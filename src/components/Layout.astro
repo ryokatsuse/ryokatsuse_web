@@ -16,7 +16,7 @@ export interface Props {
 
 const siteTitle = 'ryokatsu.dev';
 
-const { title = siteTitle, description, ogType = 'website', image} = Astro.props as Props;
+const { title = siteTitle, description, ogType = 'website', image, twitterCard = 'summary_large_image' } = Astro.props as Props;
 let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
 
 // Prism型定義
@@ -52,11 +52,11 @@ declare global {
     {image && <meta property="og:image" content={new URL(image, Astro.url)} />}
     <!-- Twitter -->
     <meta name="twitter:site" content="@ryo__kts" />
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={Astro.url} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    {image && <meta property="og:image" content={new URL(image, Astro.url)} />}
+    <meta name="twitter:card" content={twitterCard} />
+    <meta name="twitter:url" content={Astro.url} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {image && <meta name="twitter:image" content={new URL(image, Astro.url)} />}
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
     
     <!-- iframeスクリプト -->
