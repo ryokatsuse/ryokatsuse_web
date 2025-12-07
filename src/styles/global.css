@@ -72,15 +72,20 @@ img {
 }
 code {
   padding: 2px 5px;
-  background-color: #f2f2f2;
+  background-color: #374151;
   border-radius: 0.3em;
-  color: #db4c69;
+  color: #fff;
   font-family: var(--font-family-mono);
 }
 
+code::before,
+code::after {
+  content: '`';
+}
+
 :global(.dark) code {
-  background-color: #374151;
-  color: #f87171;
+  background-color: #4b5563;
+  color: #fff;
 }
 
 pre {
@@ -97,7 +102,13 @@ pre > code {
   font-family: var(--font-family-mono);
 }
 
-.post code::before, .post code::after {
+pre > code::before,
+pre > code::after {
+  content: none;
+}
+
+.post pre > code::before,
+.post pre > code::after {
   content: none;
 }
 

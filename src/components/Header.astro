@@ -3,7 +3,7 @@ import { SITE_TITLE } from '../config';
 import { getCollection } from 'astro:content';
 ---
 
-<header class="bg-neutral-800">
+<header id="site-header" class="bg-neutral-800 fixed top-0 left-0 right-0 z-40 transition-transform duration-300">
   <div class="flex items-center justify-between max-w-3xl m-auto p-4">
     <a
       class="flex items-center gap-x-2 w-fit text-white"
@@ -67,6 +67,35 @@ import { getCollection } from 'astro:content';
 </div>
 
 <script>
+  // ヘッダーのスクロール制御
+  const header = document.getElementById('site-header') as HTMLElement;
+  const scrollState = { lastScrollY: window.scrollY, ticking: false };
+
+  const updateHeader = (state: typeof scrollState) => () => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY <= 0) {
+      // ページ最上部では常に表示
+      header.style.transform = 'translateY(0)';
+    } else if (currentScrollY > state.lastScrollY) {
+      // 下にスクロール時は隠す
+      header.style.transform = 'translateY(-100%)';
+    } else {
+      // 上にスクロール時は表示
+      header.style.transform = 'translateY(0)';
+    }
+
+    state.lastScrollY = currentScrollY;
+    state.ticking = false;
+  };
+
+  window.addEventListener('scroll', () => {
+    if (!scrollState.ticking) {
+      window.requestAnimationFrame(updateHeader(scrollState));
+      scrollState.ticking = true;
+    }
+  });
+
   // 分離したロジックを使用する
   import { fetchBlogPosts, searchPosts, generateSearchResultsHtml, type BlogPost } from '../lib/search';
 
