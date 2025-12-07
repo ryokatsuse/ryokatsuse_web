@@ -1,0 +1,190 @@
+---
+title: 眠っていたMarkuplintを復活させました
+publishDate: "2025-12-08"
+ogImageURL: "/images/advent_2025_day_8.png"
+---
+
+import LinkCard from '../../../components/LinkCard.astro';
+
+
+この記事は[Timee Product Advent Calendar 2025](https://qiita.com/advent-calendar/2025/timee-product)の8日目の記事です。
+
+フロントエンドのinfxer（[@ryo__kts](https://x.com/ryo__kts)）です。法人様向けの管理画面のプロダクト開発を担当しています。
+
+今回は法人様向け管理画面に既に導入されていたMarkuplintを有効化した話です。
+
+## Markuplintとは
+
+マークアップ開発者のためのHTMLのリンターです。HTMLがセマンティックに正しく書けているか、Aria属性が正しく設定されているかなどのチェックを行ってくれます。HTMLファイル以外にもJSX、Vue.jsやSvelteなど様々なファイルにも対応しています。
+
+<LinkCard url="https://markuplint.dev/" />
+
+## 動かない設定ファイル
+
+元々は、Markuplintの設定ファイルがあり、過去に運用されていた形跡がありました。しかし、アップデート時にMarkuplint側の影響で正しく動かなくなった旨のコメントが設定ファイルにあり、その時点から設定が無効化されていました。履歴を遡ると、2年前から無効になっていました。
+
+コメントに参照されていたIssueのリンクを確認したところ、問題は解消されていました。そこで手元で最新バージョンにアップデートしたところ問題なく動くことを確認できたため、復活させようと思い、他のフロントエンドメンバーに相談して再び有効化することが決まりました。
+
+## 導入前までにやったこと
+
+相談した際にMarkuplint以外の選択肢があるかもしれないという意見が出たため調査しました。調査したのは以下2つです。
+
+
+- [eslint-plugin-jsx-a11y](https://github.com/jsx-eslint/eslint-plugin-jsx-a11y)
+- [html-eslint](https://html-eslint.org/)
+
+弊社はESLintを導入しており、そのまま設定ファイルにプラグインを差し込めば使える状況でした。eslint-plugin-jsx-a11yについては、MarkuplintのFAQに以下のように違いをまとめてくれています。
+
+<LinkCard url="https://markuplint.dev/docs/guides/faq#what-makes-it-different-from-htmlhint-and-eslint-plugin-jsx-a11y" />
+
+特に「要素の親子関係（構造）の適合性をチェックする機能」が非常に優れています。これは割とHTMLを知っている人でもやってしまいがちなことなので、ここを見てくれるのは非常にありがたいです。
+
+そしてhtml-eslintの方は、今年に出たESLintのHTML構文を検出してくれるものです。
+
+<LinkCard url="https://eslint.org/blog/2025/05/eslint-html-plugin/" />
+
+しかし、サポートしているファイルが少なく、JSXのサポートがないため見送りました。またMarkuplintはエラーメッセージが非常にわかりやすいのも特徴なため、導入することにしました。eslint-plugin-jsx-a11yについてはMarkuplintと併用も可能なため、いずれ導入したいと考えています。
+
+## 導入までの流れ
+
+まず、Markuplintを有効化した結果、エラーの検出数は約40〜50件ほどありました。数がそこまで多くないことが分かったため、時間を掛けずにできそうだなと判断し、すべてのエラーを修正して有効化するまでの作業自体は空いた時間で対応して、2週間も掛からず完了しました。
+
+主にエラーとなっていたルールについては以下です。
+
+- permitted-contents
+- heading-levels
+- required-attr
+- attr-duplication
+- id-duplication
+- wai-aria
+- use-list
+- invalid-attr
+- no-consecutive-br
+- ineffective-attr
+- label-has-control
+
+このうち`permitted-contents`が全体の割合の半分を占めていました。残りは軽微な修正がほとんどだったことと、CI環境は既にあったため、一度すべての設定をfalseした状態で、一つ一つ地道に修正してマージしていく方針を取りました。
+
+すべてのルールを紹介すると長くなるので、今回はこの中から3つほどのルールに絞って紹介していきます。
+
+## permitted-contents
+
+許可されていない要素を子要素に入れた時などにエラーを出してくれます。buttonタグの中にdivを入れちゃうみたいなあれですね。
+
+実際、このルールに違反しているケースが多く、子要素のタグを正しいものに置き換える作業をしていきました。しかし、このルールには一点注意することがあります。
+
+それは、JSXやVue.jsでコンポーネント化したカスタムなコンポーネントについて、コンポーネントの先頭のタグの情報をMarkuplintが知っていないといけません。その際に必要になる設定として、Markuplintには`pretenders`という設定があります。
+
+<LinkCard url="https://markuplint.dev/ja/docs/configuration/properties#pretenders" />
+
+ドキュメントの内容そのままですが、`.markuplintrc`に以下のような設定を書くことで`MyComponent`がdivタグから始まるコンポーネントだということを認識してくれます。
+
+```jsx
+{
+  "pretenders": [
+    {
+      "selector": "MyComponent",
+      "as": "div"
+    }
+  ]
+}
+```
+
+これは一見便利ではありつつも沢山のカスタムコンポーネントがある場合は、設定ファイルの量が多くなり管理も大変になります。
+
+弊社のコンポーネントの設計ルールはありますが、コンポーネントの粒度感はコンポーネントによって大きな差があるわけではないですが、様々ある印象です。（[Compound Pattern](https://www.patterns.dev/react/compound-pattern/)っぽく作られているケースが多くなってきていそうです。）
+
+コンポーネント数はそれなりにあるのですが、エラーとしてはそこまで多くなかったこともあり、最終的には4つのコンポーネントだけ`pretenders`をするだけに収まりました。
+
+特に`ul` > `li`タグ構造のコンポーネントでliタグからコンポーネントになっているようなパターンで起こります。
+
+```jsx
+<ul>
+  <ListItem title="項目1" />
+  <ListItem title="項目2" />
+</ul>
+
+const ListItem = ({ title }) => <li>{title}</li>;
+```
+
+このような場合、Markuplintはul要素の直下にListItemコンポーネントを認識してしまい、`ul` > `li`構造が正しく検証されません。
+
+全部ではないですが、このようなケースで特にexportせずに外に出ていかないコンポーネントでは、`li`タグまでコンポーネント化せずにその中の要素を単体のコンポーネントにして責務を狭めるような対応をしました。
+
+```jsx
+<ul>
+  <li><ListItemContent title="項目1" /></li>
+  <li><ListItemContent title="項目2" /></li>
+</ul>
+
+const ListItemContent = ({ title }) => <>{title}</>;
+```
+
+`pretenders`を回避するために、コンポーネントを`renderXXComponent`のように`ReactNode`を返すような関数にすれば回避できますが、ReactのライフサイクルにならずReact Developer Tools 上からコンポーネントが確認できない、意図しない再レンダリングが起こる可能性もあるという点からあまり対応はせずに、上記のようにコンポーネントの責務を調整して、セマンティクスなHTMLに書き直しました。
+
+## invalid-attr
+
+`invalid-attr`については、最初に設定しました。このルールは存在しない属性であったり、無効な型の値だった場合にエラーを検知してくれます。
+
+弊社はTailwindCSSをベースにしていますが、一部Emotionが残っている箇所があります。またTailwindCSSで表現できない複雑なCSS（あまりないですが）Styled JSXを許容するコーディングルールになっているため、`css`や`jsx`などの属性は許可するようにしています。
+
+また、サードパーティのCSSをどうしても上書きしないといけない場合のために`global`も許容しています。（このあたりはCSSのカスケードレイヤーなどでいずれ対応はできるかもしれません。）
+
+<LinkCard url="https://developer.mozilla.org/ja/docs/Learn_web_development/Core/Styling_basics/Cascade_layers" />
+
+## wai-aria
+
+その名の通り、WAI-ARIAの仕様通りにrole属性やaria属性が付与されているかを検知してくれます。
+
+いくつか間違ったaria属性の設定や暗黙のロールを付与している箇所については削除していきました。
+
+その中に、propsの振る舞いによってタグが変わるアイコンを表示するコンポーネントがありました。
+
+簡略しますが、以下のようなイメージです。
+
+```jsx
+export const Icon: React.FC<IconProps> = ({
+  src,
+  alt,
+  name,
+  onClick,
+  ...props
+}) => {
+
+  return src ? (
+    <img
+      src={src}
+      alt={alt}
+      onClick={onClick}
+      {...props}
+    />
+  ) : (
+    <span
+      onClick={onClick}
+		  role={onClick ? 'button' : undefined}
+      aria-label={alt && alt !== '' ? alt : undefined}
+      aria-hidden={alt === '' ? 'true' : undefined}
+      {...props}
+    >
+      {name}
+    </span>
+  );
+};
+
+```
+
+このままだとspanタグに直接aria-labelなどを設定することができません。
+
+本来は正しいセマンティクスに修正したいところですが、影響範囲が多いため、propsの値に応じてアクセシビリティの振る舞いを適切に設定する関数を別途作成してエラーを解消しました。
+
+## まとめ
+
+上記のような対応を行い、再びMarkuplintを有効化することができました。
+
+Markuplintのいいところは、何と言ってもエラーが見やすいことです。HTMLやWAI-ARIAについて何気なくコーディングしていると、間違ったことを指摘してくれ、更には学びにもなります。
+
+また、VSCodeやCursorなどのエディタ上でタグをホバーすると、そのタグのアクセシビリティプロパティの簡単な概要も知ることができます。
+
+![VSCode上でspanタグをホバーしたときに表示されるMarkuplintのアクセシビリティプロパティの概要 roleの種類 nameがあるかないか focusableがあるかないかなどが記載されている](/images/markuplint-a11y-properties.png)
+
+これから正しいHTMLを書いていこうと思います!
