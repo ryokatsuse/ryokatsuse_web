@@ -35,9 +35,9 @@
     @apply text-sm;
   }
 
-  blockquote {
+  /* blockquote {
     @apply ml-[2em] space-y-3;
-  }
+  } */
 
   :is(ol, ul) {
     @apply list-[revert] pl-[2em];
