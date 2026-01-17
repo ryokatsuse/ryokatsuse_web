@@ -2,7 +2,7 @@
 import { SITE_TITLE } from '../config';
 ---
 
-<header id="site-header" class="bg-neutral-800 fixed top-0 left-0 right-0 z-40 transition-transform duration-300">
+<header id="site-header" class="header-container bg-neutral-800 fixed top-0 left-0 right-0 transition-transform duration-300">
   <div class="flex items-center justify-between max-w-3xl m-auto p-4">
     <a
       class="flex items-center gap-x-2 w-fit text-white"
@@ -63,7 +63,7 @@ import { SITE_TITLE } from '../config';
 </header>
 
 <!-- 検索モーダル -->
-<div id="search-modal" class="fixed inset-0 bg-black bg-opacity-70 z-50 hidden flex items-center justify-center">
+<div id="search-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center">
   <div class="relative w-full max-w-3xl mx-auto px-4">
     <div class="bg-neutral-800 rounded-lg shadow-xl p-6">
       <div class="flex items-center mb-4">
@@ -211,8 +211,14 @@ import { SITE_TITLE } from '../config';
 </script>
 
 <style>
+  .header-container {
+    z-index: var(--z-header);
+    isolation: isolate;
+  }
+
   #search-modal {
     backdrop-filter: blur(4px);
+    z-index: var(--z-modal);
   }
 
   #search-results {

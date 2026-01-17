@@ -15,6 +15,11 @@
 /* フォントファミリーの設定 */
 :root {
   --font-family-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  /* z-index scale (isolateを使用したスタッキングコンテキスト管理) */
+  --z-header: 40;
+  --z-reading-progress: 40; /* ヘッダーと同レイヤー */
+  --z-modal: 50;
 }
 
 body {

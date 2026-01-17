@@ -37,6 +37,7 @@ const ogImageURLAsset = assets.find(asset => {
   image={entry.data.ogImageURL || `/og/${entry.slug.replace(/\//g, '-')}.png`}
   twitterCard={entry.data.twitterCard as "summary" | "summary_large_image" | undefined}
 >
+  <div class="reading-progress" aria-hidden="true"></div>
   <article>
     <div class="mb-8">
       <a href="/blog" class="text-black dark:text-white underline hover:hover:no-underline flex items-center">
@@ -93,4 +94,53 @@ const ogImageURLAsset = assets.find(asset => {
 <script>
   import { registerFavoriteButton } from '../../components/FavoriteButton';
   registerFavoriteButton();
+
+  // ヘッダーの表示/非表示に合わせてプログレスバーの位置を調整
+  const progressBar = document.querySelector('.reading-progress') as HTMLElement;
+  const header = document.getElementById('site-header') as HTMLElement;
+
+  if (progressBar && header) {
+    const observer = new MutationObserver(() => {
+      const headerTransform = header.style.transform;
+      if (headerTransform === 'translateY(-100%)') {
+        progressBar.style.top = '0';
+      } else {
+        progressBar.style.top = '53px';
+      }
+    });
+
+    observer.observe(header, {
+      attributes: true,
+      attributeFilter: ['style']
+    });
+  }
 </script>
+
+<style is:global>
+  @keyframes progress-grow {
+    to {
+      transform: scaleX(1);
+    }
+  }
+
+  .reading-progress {
+    position: fixed;
+    top: 53px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    transform-origin: left center;
+    transform: scaleX(0);
+    z-index: var(--z-reading-progress);
+    isolation: isolate;
+    pointer-events: none;
+    transition: top 0.3s ease;
+    animation: progress-grow linear both;
+    animation-timeline: scroll();
+  }
+
+  .dark .reading-progress {
+    background: linear-gradient(to right, #60a5fa, #a78bfa);
+  }
+</style>
