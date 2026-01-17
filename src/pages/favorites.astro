@@ -20,15 +20,15 @@ const favoriteArticles = allBlogEntries.filter((entry: CollectionEntry<"blog">) 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
   const action = formData.get('action');
-  
+
   if (action === 'clear_favorites') {
-    await Astro.session?.set('article_favorites', []);
+    Astro.session?.set('article_favorites', []);
     return Astro.redirect(Astro.url.pathname);
   } else if (action === 'remove_favorite') {
     const articleSlug = formData.get('slug');
     if (typeof articleSlug === 'string') {
       const newFavorites = favorites.filter(f => f !== articleSlug);
-      await Astro.session?.set('article_favorites', newFavorites);
+      Astro.session?.set('article_favorites', newFavorites);
       return Astro.redirect(Astro.url.pathname);
     }
   }

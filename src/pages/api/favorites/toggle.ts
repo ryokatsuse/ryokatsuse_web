@@ -32,7 +32,7 @@ export async function POST(context: APIContext) {
 
   const [newFavorites, isFavorite] = toggleFavoriteItem(favorites, slug);
 
-  await context.session?.set('article_favorites', newFavorites);
+  context.session?.set('article_favorites', newFavorites);
 
   return createSuccessResponse({
     isFavorite,

@@ -12,18 +12,6 @@ const AVATAR_PATH = path.join(process.cwd(), 'public', 'images', 'ryokatsu.jpg')
 // フォントキャッシュディレクトリ
 const FONT_CACHE_DIR = path.join(process.cwd(), '.font-cache');
 
-// 最初の起動時にフォントキャッシュをクリアする（開発中のトラブルシューティング用）
-async function clearFontCache(): Promise<void> {
-  try {
-    const files = await fs.readdir(FONT_CACHE_DIR);
-    for (const file of files) {
-      await fs.unlink(path.join(FONT_CACHE_DIR, file));
-    }
-  } catch (error) {
-    // ディレクトリが存在しない場合は無視
-  }
-}
-
 // フォントキャッシュディレクトリを確保する関数
 async function ensureFontCacheDir(): Promise<void> {
   try {
@@ -202,7 +190,7 @@ async function fetchTtfFont(fontName: string, weight: number): Promise<ArrayBuff
   return await response.arrayBuffer();
 }
 
-async function fetchFont(text: string, font: string, weight: number): Promise<SatoriArrayBuffer> {
+async function fetchFont(_text: string, font: string, weight: number): Promise<SatoriArrayBuffer> {
   const MAX_RETRIES = 3;
   let retries = 0;
 

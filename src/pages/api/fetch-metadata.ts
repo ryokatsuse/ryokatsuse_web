@@ -1,7 +1,7 @@
 // メタデータ取得APIエンドポイント
 import type { APIContext, APIRoute } from 'astro';
 
-export const GET: APIRoute = async ({ request, url }: APIContext) => {
+export const GET: APIRoute = async ({ url }: APIContext) => {
   try {
     // URLパラメータから取得対象のURLを取得
     const targetUrl = url.searchParams.get('url');

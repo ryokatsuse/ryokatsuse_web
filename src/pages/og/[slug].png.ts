@@ -1,5 +1,5 @@
 import type { APIContext } from 'astro';
-import { getCollection, getEntryBySlug } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import { getOgImage } from '../../components/OgImage';
 
 // ブログ記事の型を定義
@@ -51,7 +51,7 @@ export async function GET({ params, request }: APIContext) {
     // 単純なテキスト文字列のケース（テストページからのリクエスト）
     if (params.slug.startsWith('これは') || params.slug.includes('テスト')) {
       const body = await getOgImage(decodeURIComponent(params.slug));
-      return new Response(body, {
+      return new Response(new Uint8Array(body), {
         status: 200,
         headers: {
           'Content-Type': 'image/png',
@@ -67,19 +67,18 @@ export async function GET({ params, request }: APIContext) {
       // まず通常のスラグでの検索
       let post: BlogEntry | null = null;
       try {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const result = await (getEntryBySlug as any)('blog', originalSlug);
+        const result = await getEntry('blog', originalSlug);
         if (result) {
           post = result as BlogEntry;
         }
-      } catch (error) {
+      } catch {
         post = null;
       }
 
       if (post) {
         console.log(`記事が見つかりました: ${originalSlug}, タイトル: ${post.data.title}`);
         const body = await getOgImage(post.data.title || 'No title');
-        return new Response(body, {
+        return new Response(new Uint8Array(body), {
           status: 200,
           headers: {
             'Content-Type': 'image/png',
@@ -101,19 +100,18 @@ export async function GET({ params, request }: APIContext) {
 
         let post: BlogEntry | null = null;
         try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const result = await (getEntryBySlug as any)('blog', formattedSlug);
+          const result = await getEntry('blog', formattedSlug);
           if (result) {
             post = result as BlogEntry;
           }
-        } catch (error) {
+        } catch {
           post = null;
         }
 
         if (post) {
           console.log(`記事が見つかりました: ${formattedSlug}, タイトル: ${post.data.title}`);
           const body = await getOgImage(post.data.title || 'No title');
-          return new Response(body, {
+          return new Response(new Uint8Array(body), {
             status: 200,
             headers: {
               'Content-Type': 'image/png',
@@ -128,8 +126,7 @@ export async function GET({ params, request }: APIContext) {
 
     // 記事が見つからない場合は、すべての記事を取得して類似のスラグを探す
     try {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const allPosts = (await (getCollection as any)('blog')) as BlogEntry[];
+      const allPosts = (await getCollection('blog')) as BlogEntry[];
 
       // スラグの一部が一致する記事を検索
       const searchSlug = originalSlug.replace(/^(\d{4})\//, '$1/');
@@ -143,7 +140,7 @@ export async function GET({ params, request }: APIContext) {
       if (matchingPost) {
         console.log(`類似スラグで記事が見つかりました: ${matchingPost.slug}, タイトル: ${matchingPost.data.title}`);
         const body = await getOgImage(matchingPost.data.title || 'No title');
-        return new Response(body, {
+        return new Response(new Uint8Array(body), {
           status: 200,
           headers: {
             'Content-Type': 'image/png',
@@ -158,7 +155,7 @@ export async function GET({ params, request }: APIContext) {
     // それでも見つからない場合はスラグからタイトルを生成
     console.log(`記事が見つかりません。スラグからタイトルを生成: ${params.slug}`);
     const body = await getOgImage(decodeURIComponent(params.slug.replace(/-/g, ' ')));
-    return new Response(body, {
+    return new Response(new Uint8Array(body), {
       status: 200,
       headers: {
         'Content-Type': 'image/png',
@@ -171,7 +168,7 @@ export async function GET({ params, request }: APIContext) {
     try {
       // デフォルトのエラー画像を返す（黒背景に白文字）
       const defaultErrorImage = await getOgImage('画像生成エラー');
-      return new Response(defaultErrorImage, {
+      return new Response(new Uint8Array(defaultErrorImage), {
         status: 200,
         headers: {
           'Content-Type': 'image/png',

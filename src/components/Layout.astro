@@ -67,13 +67,6 @@ declare global {
     <meta name="twitter:description" content={description} />
     {image && <meta name="twitter:image" content={new URL(image, Astro.url)} />}
     {canonicalURL && <link rel="canonical" href={canonicalURL} />}
-    
-    <!-- iframeスクリプト -->
-    <script
-      type="text/javascript"
-      src="https://cdn.iframe.ly/embed.js"
-    />
-    
     <!-- PrismJSのスタイルとスクリプト -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js" is:inline></script>
