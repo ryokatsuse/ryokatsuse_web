@@ -7,6 +7,7 @@ declare namespace App {
     lastVisit: Date;
     favorites: string[];
     article_favorites: string[];
+    liked_articles: string[];
   }
 }
 

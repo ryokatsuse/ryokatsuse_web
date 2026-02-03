@@ -6,6 +6,8 @@ import mdx from '@astrojs/mdx';
 import vercel from '@astrojs/vercel/serverless';
 import { markdownComponents } from './src/integrations/markdown-components';
 
+import db from '@astrojs/db';
+
 // https://astro.build/config
 export default defineConfig({
   site: 'https://ryokatsu.dev',
@@ -14,22 +16,16 @@ export default defineConfig({
   session: {
     driver: 'memory',
   },
-  integrations: [
-    sitemap(),
-    tailwind({
-      config: {
-        applyBaseStyles: false,
-      },
-    }),
-    react(),
-    mdx({
-      // MDXファイルでグローバルに使用できるコンポーネントを設定
-      components: {
-        LinkCard: './src/components/LinkCard.astro',
-      },
-    }),
-    markdownComponents(),
-  ],
+  integrations: [sitemap(), tailwind({
+    config: {
+      applyBaseStyles: false,
+    },
+  }), react(), mdx({
+    // MDXファイルでグローバルに使用できるコンポーネントを設定
+    components: {
+      LinkCard: './src/components/LinkCard.astro',
+    },
+  }), markdownComponents(), db()],
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp',
@@ -74,15 +70,11 @@ export default defineConfig({
     ],
   },
   markdown: {
-    // マークダウンのシンタックスハイライト
-    syntaxHighlight: 'prism',
-    // シンタックスハイライト用のテーマを指定
+    syntaxHighlight: 'shiki',
     shikiConfig: {
       theme: 'github-dark',
     },
-    // リハイドレーションを有効化（マークダウン内のコンポーネントを使用可能に）
     rehypePlugins: [],
-    // コンポーネントを設定（PrismJSを使用するため）
     remarkPlugins: [],
   },
 });
