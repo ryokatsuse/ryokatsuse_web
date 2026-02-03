@@ -1,0 +1,92 @@
+---
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+---
+
+<button
+  class="like-button flex items-center gap-1 px-3 py-1.5 rounded-full transition-colors hover:bg-pink-50 dark:hover:bg-pink-900/30 cursor-pointer"
+  data-slug={slug}
+  aria-label="いいね"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="w-5 h-5 text-gray-500 dark:text-gray-400 like-icon transition-colors"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+    stroke-width="2"
+    fill="none"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+    />
+  </svg>
+  <span class="like-count text-sm text-gray-600 dark:text-gray-400">0</span>
+</button>
+
+<script>
+  interface LikeStatus {
+    count: number;
+    hasLiked: boolean;
+  }
+
+  const updateUI = (button: HTMLElement, status: LikeStatus) => {
+    const icon = button.querySelector('.like-icon');
+    const countEl = button.querySelector('.like-count');
+
+    if (countEl) {
+      countEl.textContent = status.count.toString();
+    }
+
+    if (icon) {
+      if (status.hasLiked) {
+        icon.classList.add('text-pink-500', 'fill-pink-500');
+        icon.classList.remove('text-gray-500', 'dark:text-gray-400');
+      } else {
+        icon.classList.remove('text-pink-500', 'fill-pink-500');
+        icon.classList.add('text-gray-500', 'dark:text-gray-400');
+      }
+    }
+
+    if (status.hasLiked) {
+      button.classList.add('liked');
+    }
+  };
+
+  const initLikeButton = async (button: HTMLElement) => {
+    const slug = button.dataset.slug;
+    if (!slug) return;
+    try {
+      const res = await fetch(`/api/likes/get?slug=${encodeURIComponent(slug)}`);
+      if (res.ok) {
+        const status: LikeStatus = await res.json();
+        updateUI(button, status);
+      }
+    } catch (e) {
+      console.error('Failed to get like status:', e);
+    }
+
+    button.addEventListener('click', async () => {
+      if (button.classList.contains('liked')) return;
+
+      try {
+        const res = await fetch('/api/likes/increment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ slug }),
+        });
+        if (res.ok) {
+          const status: LikeStatus = await res.json();
+          updateUI(button, status);
+        }
+      } catch (e) {
+        console.error('Failed to increment like:', e);
+      }
+    });
+  };
+  document.querySelectorAll<HTMLElement>('.like-button').forEach(initLikeButton);
+</script>
