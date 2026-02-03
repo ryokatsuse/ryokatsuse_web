@@ -54,12 +54,16 @@ const { slug } = Astro.props;
 
     if (status.hasLiked) {
       button.classList.add('liked');
+    } else {
+      button.classList.remove('liked');
     }
   };
 
   const initLikeButton = async (button: HTMLElement) => {
     const slug = button.dataset.slug;
     if (!slug) return;
+
+    // 初期状態を取得
     try {
       const res = await fetch(`/api/likes/get?slug=${encodeURIComponent(slug)}`);
       if (res.ok) {
@@ -70,11 +74,10 @@ const { slug } = Astro.props;
       console.error('Failed to get like status:', e);
     }
 
+    // クリックでトグル
     button.addEventListener('click', async () => {
-      if (button.classList.contains('liked')) return;
-
       try {
-        const res = await fetch('/api/likes/increment', {
+        const res = await fetch('/api/likes/toggle', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ slug }),
@@ -84,9 +87,10 @@ const { slug } = Astro.props;
           updateUI(button, status);
         }
       } catch (e) {
-        console.error('Failed to increment like:', e);
+        console.error('Failed to toggle like:', e);
       }
     });
   };
+
   document.querySelectorAll<HTMLElement>('.like-button').forEach(initLikeButton);
 </script>
