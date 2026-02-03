@@ -25,7 +25,7 @@ const { slug } = Astro.props;
       d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
     />
   </svg>
-  <span class="like-count text-sm text-gray-600 dark:text-gray-400">0</span>
+  <span class="like-count text-sm text-gray-600 dark:text-gray-400 opacity-0 transition-opacity"></span>
 </button>
 
 <script>
@@ -50,6 +50,8 @@ const { slug } = Astro.props;
 
     if (countEl) {
       countEl.textContent = count.toString();
+      countEl.classList.remove('opacity-0');
+      countEl.classList.add('opacity-100');
     }
 
     if (icon) {
