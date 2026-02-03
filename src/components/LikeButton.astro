@@ -7,7 +7,7 @@ const { slug } = Astro.props;
 ---
 
 <button
-  class="like-button flex items-center gap-1 px-3 py-1.5 rounded-full transition-colors hover:bg-pink-50 dark:hover:bg-pink-900/30 cursor-pointer"
+  class="like-button flex items-center gap-1 px-2 py-1 rounded-full transition-colors hover:bg-pink-50 dark:hover:bg-pink-900/30 cursor-pointer"
   data-slug={slug}
   aria-label="いいね"
 >
@@ -29,21 +29,31 @@ const { slug } = Astro.props;
 </button>
 
 <script>
-  interface LikeStatus {
-    count: number;
-    hasLiked: boolean;
-  }
+  const STORAGE_KEY = 'liked_articles';
 
-  const updateUI = (button: HTMLElement, status: LikeStatus) => {
+  const getLikedSlugs = (): string[] => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const setLikedSlugs = (slugs: string[]) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(slugs));
+  };
+
+  const updateUI = (button: HTMLElement, count: number, hasLiked: boolean) => {
     const icon = button.querySelector('.like-icon');
     const countEl = button.querySelector('.like-count');
 
     if (countEl) {
-      countEl.textContent = status.count.toString();
+      countEl.textContent = count.toString();
     }
 
     if (icon) {
-      if (status.hasLiked) {
+      if (hasLiked) {
         icon.classList.add('text-pink-500', 'fill-pink-500');
         icon.classList.remove('text-gray-500', 'dark:text-gray-400');
       } else {
@@ -52,7 +62,7 @@ const { slug } = Astro.props;
       }
     }
 
-    if (status.hasLiked) {
+    if (hasLiked) {
       button.classList.add('liked');
     } else {
       button.classList.remove('liked');
@@ -63,28 +73,45 @@ const { slug } = Astro.props;
     const slug = button.dataset.slug;
     if (!slug) return;
 
-    // 初期状態を取得
+    // ローカルストレージからいいね状態を取得
+    const likedSlugs = getLikedSlugs();
+    const hasLiked = likedSlugs.includes(slug);
+
+    // DBからカウントを取得
     try {
       const res = await fetch(`/api/likes/get?slug=${encodeURIComponent(slug)}`);
       if (res.ok) {
-        const status: LikeStatus = await res.json();
-        updateUI(button, status);
+        const { count } = await res.json();
+        updateUI(button, count, hasLiked);
       }
     } catch (e) {
-      console.error('Failed to get like status:', e);
+      console.error('Failed to get like count:', e);
     }
 
     // クリックでトグル
     button.addEventListener('click', async () => {
+      const currentLikedSlugs = getLikedSlugs();
+      const currentHasLiked = currentLikedSlugs.includes(slug);
+      const action = currentHasLiked ? 'unlike' : 'like';
+
       try {
         const res = await fetch('/api/likes/toggle', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ slug }),
+          body: JSON.stringify({ slug, action }),
         });
         if (res.ok) {
-          const status: LikeStatus = await res.json();
-          updateUI(button, status);
+          const { count } = await res.json();
+          const newHasLiked = !currentHasLiked;
+
+          // ローカルストレージを更新
+          if (newHasLiked) {
+            setLikedSlugs([...currentLikedSlugs, slug]);
+          } else {
+            setLikedSlugs(currentLikedSlugs.filter(s => s !== slug));
+          }
+
+          updateUI(button, count, newHasLiked);
         }
       } catch (e) {
         console.error('Failed to toggle like:', e);
