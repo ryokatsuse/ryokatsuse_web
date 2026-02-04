@@ -23,7 +23,7 @@ export async function getStaticPaths() {
   try {
     const posts = await getCollection('blog');
 
-    return posts.map(post => ({
+    return posts.map((post) => ({
       params: { slug: post.slug.replace(/\//g, '-') },
     }));
   } catch (error) {
@@ -76,7 +76,9 @@ export async function GET({ params, request }: APIContext) {
       }
 
       if (post) {
-        console.log(`記事が見つかりました: ${originalSlug}, タイトル: ${post.data.title}`);
+        console.log(
+          `記事が見つかりました: ${originalSlug}, タイトル: ${post.data.title}`,
+        );
         const body = await getOgImage(post.data.title || 'No title');
         return new Response(new Uint8Array(body), {
           status: 200,
@@ -109,7 +111,9 @@ export async function GET({ params, request }: APIContext) {
         }
 
         if (post) {
-          console.log(`記事が見つかりました: ${formattedSlug}, タイトル: ${post.data.title}`);
+          console.log(
+            `記事が見つかりました: ${formattedSlug}, タイトル: ${post.data.title}`,
+          );
           const body = await getOgImage(post.data.title || 'No title');
           return new Response(new Uint8Array(body), {
             status: 200,
@@ -131,14 +135,16 @@ export async function GET({ params, request }: APIContext) {
       // スラグの一部が一致する記事を検索
       const searchSlug = originalSlug.replace(/^(\d{4})\//, '$1/');
       const matchingPost = allPosts.find(
-        post =>
+        (post) =>
           post.slug.includes(searchSlug) ||
           searchSlug.includes(post.slug) ||
           post.slug.endsWith(originalSlug.split('/').pop() || ''),
       );
 
       if (matchingPost) {
-        console.log(`類似スラグで記事が見つかりました: ${matchingPost.slug}, タイトル: ${matchingPost.data.title}`);
+        console.log(
+          `類似スラグで記事が見つかりました: ${matchingPost.slug}, タイトル: ${matchingPost.data.title}`,
+        );
         const body = await getOgImage(matchingPost.data.title || 'No title');
         return new Response(new Uint8Array(body), {
           status: 200,
@@ -153,8 +159,12 @@ export async function GET({ params, request }: APIContext) {
     }
 
     // それでも見つからない場合はスラグからタイトルを生成
-    console.log(`記事が見つかりません。スラグからタイトルを生成: ${params.slug}`);
-    const body = await getOgImage(decodeURIComponent(params.slug.replace(/-/g, ' ')));
+    console.log(
+      `記事が見つかりません。スラグからタイトルを生成: ${params.slug}`,
+    );
+    const body = await getOgImage(
+      decodeURIComponent(params.slug.replace(/-/g, ' ')),
+    );
     return new Response(new Uint8Array(body), {
       status: 200,
       headers: {

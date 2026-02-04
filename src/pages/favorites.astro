@@ -1,21 +1,25 @@
 ---
-import { getCollection, type CollectionEntry } from "astro:content";
-import Layout from "../components/Layout.astro";
-import dayjs from "../lib/dayjs";
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../components/Layout.astro';
+import dayjs from '../lib/dayjs';
 export const prerender = false;
 
-const favorites = await Astro.session?.get('article_favorites') ?? [];
-const allBlogEntries = await getCollection("blog");
+const favorites = (await Astro.session?.get('article_favorites')) ?? [];
+const allBlogEntries = await getCollection('blog');
 
-function getSlugFromEntry(entry: CollectionEntry<"blog">): string {
+function getSlugFromEntry(entry: CollectionEntry<'blog'>): string {
   return entry.slug;
 }
 
-const favoriteArticles = allBlogEntries.filter((entry: CollectionEntry<"blog">) => {
-  return favorites.includes(getSlugFromEntry(entry));
-}).sort((a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) => 
-  dayjs(b.data.publishDate).tz().valueOf() - dayjs(a.data.publishDate).tz().valueOf()
-);
+const favoriteArticles = allBlogEntries
+  .filter((entry: CollectionEntry<'blog'>) => {
+    return favorites.includes(getSlugFromEntry(entry));
+  })
+  .sort(
+    (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) =>
+      dayjs(b.data.publishDate).tz().valueOf() -
+      dayjs(a.data.publishDate).tz().valueOf(),
+  );
 
 if (Astro.request.method === 'POST') {
   const formData = await Astro.request.formData();
@@ -27,7 +31,7 @@ if (Astro.request.method === 'POST') {
   } else if (action === 'remove_favorite') {
     const articleSlug = formData.get('slug');
     if (typeof articleSlug === 'string') {
-      const newFavorites = favorites.filter(f => f !== articleSlug);
+      const newFavorites = favorites.filter((f) => f !== articleSlug);
       Astro.session?.set('article_favorites', newFavorites);
       return Astro.redirect(Astro.url.pathname);
     }

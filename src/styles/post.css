@@ -3,13 +3,12 @@
 
   * + :is(h2, hr, pre, figure, iframe, .twitter-tweet-rendered),
   :is(hr, pre, figure, iframe, :is(.twitter-tweet-rendered) + script) + * {
-  @apply !mt-10;
+    @apply !mt-10;
   }
 
   h2 {
     @apply flex gap-x-3 sm:text-2xl text-xl leading-tight font-bold;
   }
-
 
   h3 {
     @apply sm:text-xl text-lg font-bold leading-tight;
@@ -20,7 +19,7 @@
   }
 
   p {
-    @apply leading-7 sm:text-lg text-base
+    @apply leading-7 sm:text-lg text-base;
   }
 
   hr {
@@ -47,16 +46,17 @@
     @apply mt-1 sm:text-lg text-base;
   }
 
-    > :is(ol, ul) > li:first-child {
+  > :is(ol, ul) > li:first-child {
     @apply mt-0;
   }
 
-  b, strong {
-    @apply not-italic
+  b,
+  strong {
+    @apply not-italic;
   }
 
   blockquote {
-    @apply border rounded text-black dark:text-white italic p-2
+    @apply border rounded text-black dark:text-white italic p-2;
   }
 
   pre > code::before,
@@ -65,7 +65,7 @@
   }
 
   a {
-    @apply text-black dark:text-white underline hover:hover:no-underline
+    @apply text-black dark:text-white underline hover:hover:no-underline;
   }
 
   img {

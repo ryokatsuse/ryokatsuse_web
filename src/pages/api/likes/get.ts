@@ -7,10 +7,13 @@ export async function GET(context: APIContext) {
   const slug = context.url.searchParams.get('slug');
 
   if (!slug) {
-    return new Response(JSON.stringify({ error: 'Slug parameter is required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'Slug parameter is required' }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
   }
 
   // DBからいいね数を取得

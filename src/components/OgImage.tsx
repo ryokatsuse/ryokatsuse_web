@@ -8,7 +8,12 @@ import path from 'node:path';
 const fontFamily = 'Noto Sans JP';
 
 // アバター画像のパス
-const AVATAR_PATH = path.join(process.cwd(), 'public', 'images', 'ryokatsu.jpg');
+const AVATAR_PATH = path.join(
+  process.cwd(),
+  'public',
+  'images',
+  'ryokatsu.jpg',
+);
 // フォントキャッシュディレクトリ
 const FONT_CACHE_DIR = path.join(process.cwd(), '.font-cache');
 
@@ -162,7 +167,10 @@ export async function getOgImage(text: string) {
 type SatoriArrayBuffer = ArrayBuffer;
 
 // 指定されたURLからTTFフォントを直接取得する関数
-async function fetchTtfFont(fontName: string, weight: number): Promise<ArrayBuffer> {
+async function fetchTtfFont(
+  fontName: string,
+  weight: number,
+): Promise<ArrayBuffer> {
   // CDNから直接Noto Sans JPのTTFファイルを取得するURL
   // 注: 実際には適切なライセンスを持つフォントを使用してください
   const ttfUrls: Record<string, Record<number, string>> = {
@@ -179,18 +187,26 @@ async function fetchTtfFont(fontName: string, weight: number): Promise<ArrayBuff
   // フォント名と重みに基づいてURLを取得
   const url = ttfUrls[fontName]?.[weight];
   if (!url) {
-    throw new Error(`指定されたフォント（${fontName} - ${weight}）のURLが見つかりません`);
+    throw new Error(
+      `指定されたフォント（${fontName} - ${weight}）のURLが見つかりません`,
+    );
   }
 
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error(`TTFフォント取得エラー: ${response.status} ${response.statusText}`);
+    throw new Error(
+      `TTFフォント取得エラー: ${response.status} ${response.statusText}`,
+    );
   }
 
   return await response.arrayBuffer();
 }
 
-async function fetchFont(_text: string, font: string, weight: number): Promise<SatoriArrayBuffer> {
+async function fetchFont(
+  _text: string,
+  font: string,
+  weight: number,
+): Promise<SatoriArrayBuffer> {
   const MAX_RETRIES = 3;
   let retries = 0;
 
@@ -202,7 +218,10 @@ async function fetchFont(_text: string, font: string, weight: number): Promise<S
   try {
     const cachedFont = await fs.readFile(cachePath);
     // ArrayBufferに変換して返す
-    return cachedFont.buffer.slice(cachedFont.byteOffset, cachedFont.byteOffset + cachedFont.byteLength) as ArrayBuffer;
+    return cachedFont.buffer.slice(
+      cachedFont.byteOffset,
+      cachedFont.byteOffset + cachedFont.byteLength,
+    ) as ArrayBuffer;
   } catch (error) {
     console.log(`キャッシュにフォントがありません: ${cacheFileName}`);
   }
@@ -224,10 +243,12 @@ async function fetchFont(_text: string, font: string, weight: number): Promise<S
 
       if (retries < MAX_RETRIES) {
         // 再試行前に少し待機
-        await new Promise(resolve => setTimeout(resolve, 1000 * retries));
+        await new Promise((resolve) => setTimeout(resolve, 1000 * retries));
       } else {
         const err = error as Error;
-        throw new Error(`フォント取得に${MAX_RETRIES}回失敗しました: ${err.message}`);
+        throw new Error(
+          `フォント取得に${MAX_RETRIES}回失敗しました: ${err.message}`,
+        );
       }
     }
   }

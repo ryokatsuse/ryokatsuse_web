@@ -38,7 +38,9 @@ export const searchPosts = (posts: BlogPost[], query: string): BlogPost[] => {
 
   const lowerQuery = query.toLowerCase();
   const filteredPosts = posts.filter(
-    post => post.data.title.toLowerCase().includes(lowerQuery) || post.body.toLowerCase().includes(lowerQuery),
+    (post) =>
+      post.data.title.toLowerCase().includes(lowerQuery) ||
+      post.body.toLowerCase().includes(lowerQuery),
   );
 
   // 日付で降順ソート（最新のポストを最初に表示）
@@ -52,14 +54,17 @@ export const searchPosts = (posts: BlogPost[], query: string): BlogPost[] => {
 /**
  * 検索結果のHTMLを生成
  */
-export const generateSearchResultsHtml = (posts: BlogPost[], maxResults: number = 30): string => {
+export const generateSearchResultsHtml = (
+  posts: BlogPost[],
+  maxResults: number = 30,
+): string => {
   if (posts.length === 0) {
     return '<div class="p-3 text-white">検索結果が見つかりませんでした</div>';
   }
 
   const resultHtml = posts
     .slice(0, maxResults)
-    .map(post => {
+    .map((post) => {
       // スラグから拡張子を確実に削除（大文字小文字を区別せず、末尾にある拡張子を削除）
       const cleanSlug = post.slug.replace(/\.(md|mdx|astro)$/i, '');
 

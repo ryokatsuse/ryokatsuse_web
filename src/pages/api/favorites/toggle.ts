@@ -12,10 +12,15 @@ const createSuccessResponse = (data: Record<string, unknown>) =>
     headers: { 'Content-Type': 'application/json' },
   });
 
-const toggleFavoriteItem = (favorites: string[], slug: string): [string[], boolean] => {
+const toggleFavoriteItem = (
+  favorites: string[],
+  slug: string,
+): [string[], boolean] => {
   const isFavorite = favorites.includes(slug);
 
-  const newFavorites = isFavorite ? favorites.filter((f: string) => f !== slug) : [...favorites, slug];
+  const newFavorites = isFavorite
+    ? favorites.filter((f: string) => f !== slug)
+    : [...favorites, slug];
 
   return [newFavorites, !isFavorite];
 };

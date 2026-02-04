@@ -1,18 +1,22 @@
 ---
-import { getCollection, type CollectionEntry } from "astro:content";
-import Layout from "../components/Layout.astro";
-import dayjs from "../lib/dayjs";
-import Lists from "../components/Lists.astro";
-import { fetchRssData } from "../lib/fetchRssData";
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Layout from '../components/Layout.astro';
+import dayjs from '../lib/dayjs';
+import Lists from '../components/Lists.astro';
+import { fetchRssData } from '../lib/fetchRssData';
 
-const allBlogEntries = (await getCollection("blog")).sort(
-  (a: CollectionEntry<"blog">, b: CollectionEntry<"blog">) => 
-    dayjs(b.data.publishDate).tz().valueOf() - dayjs(a.data.publishDate).tz().valueOf());
+const allBlogEntries = (await getCollection('blog')).sort(
+  (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) =>
+    dayjs(b.data.publishDate).tz().valueOf() -
+    dayjs(a.data.publishDate).tz().valueOf(),
+);
 
 // ScrapboxのRSSフィードからデータを取得
-const scrapboxEntries = await fetchRssData("https://scrapbox.io/api/feed/ryokatsu");
+const scrapboxEntries = await fetchRssData(
+  'https://scrapbox.io/api/feed/ryokatsu',
+);
 
-const description = 'JavaScriptエンジニア。インターフェースデザインが好き。'
+const description = 'JavaScriptエンジニア。インターフェースデザインが好き。';
 
 // Astroコンテンツコレクションの型に対応
 type BlogEntry = {
@@ -22,39 +26,44 @@ type BlogEntry = {
   description?: string;
 };
 
-const blogEntries: BlogEntry[] = allBlogEntries.map((post: CollectionEntry<"blog">) => {
-  const parts = post.id.split('/');
-  const slug = parts.length >= 2 ? `${parts[parts.length - 2]}/${parts[parts.length - 1].replace(/\.(md|mdx)$/, '')}` : '';
-  
-  let description = '';
-  if (post.body) {
-    const cleanText = post.body
-      .replace(/^import.*?;$/gm, '')
-      .replace(/!\[.*?\]\(.*?\)/g, '')
-      .replace(/<LinkCard.*?\/>/g, '')
-      .replace(/<.*?>/g, '')
-      .replace(/```[\s\S]*?```/g, '')
-      .replace(/#+\s+.*?\n/g, '')
-      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
-      .replace(/\n\s*\n/g, '\n')
-      .trim();
-    
-    // 100文字以内に切り詰め
-    description = cleanText.length > 100 
-      ? cleanText.substring(0, 100) + '...' 
-      : cleanText;
-  }
-  
-  return {
-    title: post.data.title,
-    slug,
-    meta: `<time datetime="${dayjs(post.data.publishDate).tz().toISOString()}">
-      ${dayjs(post.data.publishDate).tz().format("LL")}
-    </time>`,
-    description
-  };
-});
+const blogEntries: BlogEntry[] = allBlogEntries.map(
+  (post: CollectionEntry<'blog'>) => {
+    const parts = post.id.split('/');
+    const slug =
+      parts.length >= 2
+        ? `${parts[parts.length - 2]}/${parts[parts.length - 1].replace(/\.(md|mdx)$/, '')}`
+        : '';
 
+    let description = '';
+    if (post.body) {
+      const cleanText = post.body
+        .replace(/^import.*?;$/gm, '')
+        .replace(/!\[.*?\]\(.*?\)/g, '')
+        .replace(/<LinkCard.*?\/>/g, '')
+        .replace(/<.*?>/g, '')
+        .replace(/```[\s\S]*?```/g, '')
+        .replace(/#+\s+.*?\n/g, '')
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        .replace(/\n\s*\n/g, '\n')
+        .trim();
+
+      // 100文字以内に切り詰め
+      description =
+        cleanText.length > 100
+          ? cleanText.substring(0, 100) + '...'
+          : cleanText;
+    }
+
+    return {
+      title: post.data.title,
+      slug,
+      meta: `<time datetime="${dayjs(post.data.publishDate).tz().toISOString()}">
+      ${dayjs(post.data.publishDate).tz().format('LL')}
+    </time>`,
+      description,
+    };
+  },
+);
 ---
 
 <Layout description={description}>

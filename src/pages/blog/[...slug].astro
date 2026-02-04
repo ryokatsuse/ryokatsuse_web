@@ -1,25 +1,25 @@
 ---
-import { getCollection } from "astro:content";
-import Layout from "../../components/Layout.astro";
-import { Image } from "astro:assets";
-import TableOfContents from "../../components/TableOfContents.astro";
-import LikeButton from "../../components/LikeButton.astro";
+import { getCollection } from 'astro:content';
+import Layout from '../../components/Layout.astro';
+import { Image } from 'astro:assets';
+import TableOfContents from '../../components/TableOfContents.astro';
+import LikeButton from '../../components/LikeButton.astro';
 
 export const prerender = true;
 
 export async function getStaticPaths() {
-	const entries = await getCollection("blog");
-	return entries.map((entry) => ({
-		params: { slug: entry.slug },
-		props: { entry },
-	}));
+  const entries = await getCollection('blog');
+  return entries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
 }
 
 const { entry } = Astro.props;
 const { Content, headings } = await entry.render();
 
 const assets = await Astro.glob('../../assets/**/*');
-const ogImageURLAsset = assets.find(asset => {
+const ogImageURLAsset = assets.find((asset) => {
   if (!entry.data.ogImageURL) {
     return false;
   }

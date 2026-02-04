@@ -1,5 +1,5 @@
 ---
-import Layout from "../components/Layout.astro";
+import Layout from '../components/Layout.astro';
 import { Image } from 'astro:assets';
 
 export interface Props {
@@ -10,12 +10,19 @@ export interface Props {
     updatedDate?: string;
     heroImage?: string;
     ogImageURL?: string;
-    twitterCard?: "summary" | "summary_large_image";
+    twitterCard?: 'summary' | 'summary_large_image';
   };
 }
 
 const {
-  content: { title, description, publishDate, updatedDate, ogImageURL, twitterCard },
+  content: {
+    title,
+    description,
+    publishDate,
+    updatedDate,
+    ogImageURL,
+    twitterCard,
+  },
 } = Astro.props as Props;
 type Asset = {
   default?: {
@@ -23,8 +30,10 @@ type Asset = {
   };
 };
 
-const posts = Object.values(import.meta.glob<Asset>('./posts/*.md', { eager: true }));
-const ogImageURLAsset = posts.find(asset => {
+const posts = Object.values(
+  import.meta.glob<Asset>('./posts/*.md', { eager: true }),
+);
+const ogImageURLAsset = posts.find((asset) => {
   if (!ogImageURL) {
     return false;
   }

@@ -9,10 +9,13 @@ export async function POST(context: APIContext) {
   const action = body?.action; // 'like' or 'unlike'
 
   if (!slug) {
-    return new Response(JSON.stringify({ error: 'Slug parameter is required' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'Slug parameter is required' }),
+      {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      },
+    );
   }
 
   const existing = await db.select().from(Likes).where(eq(Likes.slug, slug));
@@ -22,7 +25,10 @@ export async function POST(context: APIContext) {
     // いいね解除
     const newCount = Math.max(0, currentCount - 1);
     if (existing.length > 0) {
-      await db.update(Likes).set({ count: newCount }).where(eq(Likes.slug, slug));
+      await db
+        .update(Likes)
+        .set({ count: newCount })
+        .where(eq(Likes.slug, slug));
     }
     return new Response(JSON.stringify({ count: newCount }), {
       status: 200,
@@ -32,7 +38,10 @@ export async function POST(context: APIContext) {
     // いいね追加
     const newCount = currentCount + 1;
     if (existing.length > 0) {
-      await db.update(Likes).set({ count: newCount }).where(eq(Likes.slug, slug));
+      await db
+        .update(Likes)
+        .set({ count: newCount })
+        .where(eq(Likes.slug, slug));
     } else {
       await db.insert(Likes).values({ slug, count: 1 });
     }

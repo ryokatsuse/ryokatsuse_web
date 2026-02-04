@@ -8,17 +8,17 @@ let testResult = {
   error: '',
   imageUrl: '',
   processTime: 0,
-  debugInfo: ''
+  debugInfo: '',
 };
 
 try {
   const startTime = Date.now();
   // テスト用のテキストでOGP画像生成を試みる
   const testText = 'これはOGP画像生成テストです';
-  
+
   // OGP画像生成を試みる
   await getOgImage(testText);
-  
+
   // 成功の場合、テスト結果を更新
   const endTime = Date.now();
   testResult = {
@@ -26,7 +26,7 @@ try {
     error: '',
     imageUrl: `/og/${encodeURIComponent(testText)}.png?t=${Date.now()}`, // キャッシュバスティング用のパラメータを追加
     processTime: endTime - startTime,
-    debugInfo: `フォント取得成功、画像生成完了`
+    debugInfo: `フォント取得成功、画像生成完了`,
   };
 } catch (error) {
   // エラーの場合、エラー情報を記録
@@ -35,7 +35,7 @@ try {
     error: error instanceof Error ? error.message : String(error),
     imageUrl: '',
     processTime: 0,
-    debugInfo: '画像生成処理中にエラーが発生しました'
+    debugInfo: '画像生成処理中にエラーが発生しました',
   };
 }
 

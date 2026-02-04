@@ -2,7 +2,9 @@ import type { AstroIntegration } from 'astro';
 import { fileURLToPath } from 'node:url';
 
 // コンポーネントパス
-const COMPONENTS_PATH = fileURLToPath(new URL('../components', import.meta.url));
+const COMPONENTS_PATH = fileURLToPath(
+  new URL('../components', import.meta.url),
+);
 
 /**
  * マークダウンでカスタムコンポーネントを使用するための統合

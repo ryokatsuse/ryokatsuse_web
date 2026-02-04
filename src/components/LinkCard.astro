@@ -11,11 +11,16 @@ const pathname = new URL(url).pathname;
 const currentHost = Astro.url.host;
 
 // 内部リンクかどうかを判定
-const isInternalLink = domain === currentHost || domain === 'ryokatsu.dev' || domain === 'www.ryokatsu.dev';
+const isInternalLink =
+  domain === currentHost ||
+  domain === 'ryokatsu.dev' ||
+  domain === 'www.ryokatsu.dev';
 // ブログ記事へのリンクかどうかを判定
 const isBlogPost = isInternalLink && pathname.startsWith('/blog/');
 // ブログ記事のスラグを取得
-const blogSlug = isBlogPost ? pathname.replace('/blog/', '').replace(/\/$/, '') : '';
+const blogSlug = isBlogPost
+  ? pathname.replace('/blog/', '').replace(/\/$/, '')
+  : '';
 
 // HTMLからメタデータを抽出する純粋関数
 const extractMetadata = (html: string, baseUrl: string) => {
@@ -25,53 +30,66 @@ const extractMetadata = (html: string, baseUrl: string) => {
   };
 
   const titleMatch = getMatch(/<title[^>]*>([^<]+)<\/title>/i);
-  const descriptionMatch = 
-    getMatch(/<meta[^>]*name=['"]description['"][^>]*content=['"]([^'"]+)['"]/i) || 
-    getMatch(/<meta[^>]*property=['"]og:description['"][^>]*content=['"]([^'"]+)['"]/i);
-  const ogImageMatch = getMatch(/<meta[^>]*property=['"]og:image['"][^>]*content=['"]([^'"]+)['"]/i);
-  const siteNameMatch = getMatch(/<meta[^>]*property=['"]og:site_name['"][^>]*content=['"]([^'"]+)['"]/i);
-  const faviconMatch = getMatch(/<link[^>]*rel=['"](?:shortcut )?icon['"][^>]*href=['"]([^'"]+)['"]/i);
+  const descriptionMatch =
+    getMatch(
+      /<meta[^>]*name=['"]description['"][^>]*content=['"]([^'"]+)['"]/i,
+    ) ||
+    getMatch(
+      /<meta[^>]*property=['"]og:description['"][^>]*content=['"]([^'"]+)['"]/i,
+    );
+  const ogImageMatch = getMatch(
+    /<meta[^>]*property=['"]og:image['"][^>]*content=['"]([^'"]+)['"]/i,
+  );
+  const siteNameMatch = getMatch(
+    /<meta[^>]*property=['"]og:site_name['"][^>]*content=['"]([^'"]+)['"]/i,
+  );
+  const faviconMatch = getMatch(
+    /<link[^>]*rel=['"](?:shortcut )?icon['"][^>]*href=['"]([^'"]+)['"]/i,
+  );
 
   return {
     title: titleMatch || domain,
-    description: descriptionMatch || "",
+    description: descriptionMatch || '',
     thumbnail: ogImageMatch || null,
     siteName: siteNameMatch || domain,
-    faviconUrl: faviconMatch ? new URL(faviconMatch, baseUrl).toString() : null
+    faviconUrl: faviconMatch ? new URL(faviconMatch, baseUrl).toString() : null,
   };
 };
 
 // メタデータを非同期で取得する関数
-const fetchMetadata = async (url: string, timeout = 2000): Promise<{ 
-  title: string; 
-  description: string; 
-  thumbnail: string | null; 
-  siteName: string; 
+const fetchMetadata = async (
+  url: string,
+  timeout = 2000,
+): Promise<{
+  title: string;
+  description: string;
+  thumbnail: string | null;
+  siteName: string;
   faviconUrl: string | null;
 }> => {
   const defaultMetadata = {
     title: domain,
-    description: "",
+    description: '',
     thumbnail: null,
     siteName: domain,
-    faviconUrl: null
+    faviconUrl: null,
   };
-  
+
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
-    
+
     const response = await fetch(url, {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; LinkCardBot/1.0)' },
-      signal: controller.signal
+      signal: controller.signal,
     });
-    
+
     clearTimeout(timeoutId);
-    
+
     if (!response.ok) {
       return defaultMetadata;
     }
-    
+
     const html = await response.text();
     return extractMetadata(html, url);
   } catch (error) {
@@ -81,22 +99,20 @@ const fetchMetadata = async (url: string, timeout = 2000): Promise<{
 };
 
 // ブログ記事のOGP画像URLを生成する関数
-const getBlogPostThumbnail = (slug: string): string => 
+const getBlogPostThumbnail = (slug: string): string =>
   `/og/${slug.replace(/\//g, '-')}.png?t=${Date.now()}`;
 
 // メタデータ取得の実行
-const initialMetadata = isBlogPost 
+const initialMetadata = isBlogPost
   ? { thumbnail: getBlogPostThumbnail(blogSlug) }
   : {};
 
-const metadata = await fetchMetadata(url)
-  .then(fetchedData => ({
-    ...fetchedData,
-    thumbnail: isBlogPost ? initialMetadata.thumbnail : fetchedData.thumbnail
-  }));
+const metadata = await fetchMetadata(url).then((fetchedData) => ({
+  ...fetchedData,
+  thumbnail: isBlogPost ? initialMetadata.thumbnail : fetchedData.thumbnail,
+}));
 
 const { title, description, thumbnail, siteName, faviconUrl } = metadata;
-
 ---
 
 <div class="my-6 w-full">

@@ -26,11 +26,14 @@ export const GET: APIRoute = async () => {
     });
   } catch (error) {
     console.error('記事データの取得エラー:', error);
-    return new Response(JSON.stringify({ error: '記事データの取得に失敗しました' }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
+    return new Response(
+      JSON.stringify({ error: '記事データの取得に失敗しました' }),
+      {
+        status: 500,
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-    });
+    );
   }
 };

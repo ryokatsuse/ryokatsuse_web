@@ -5,18 +5,23 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { SITE_TITLE } from '../config';
 
-
 export interface Props {
   title?: string;
   description?: string;
   image?: string;
   ogType?: 'website' | 'article';
-  twitterCard?: "summary" | "summary_large_image";
+  twitterCard?: 'summary' | 'summary_large_image';
 }
 
 const siteTitle = 'ryokatsu.dev';
 
-const { title = siteTitle, description, ogType = 'website', image, twitterCard = 'summary_large_image' } = Astro.props as Props;
+const {
+  title = siteTitle,
+  description,
+  ogType = 'website',
+  image,
+  twitterCard = 'summary_large_image',
+} = Astro.props as Props;
 let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
 
 // Prism型定義

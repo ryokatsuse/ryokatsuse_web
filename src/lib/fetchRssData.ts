@@ -11,7 +11,10 @@ interface RssItem {
  * XML文字列から特定のタグの値を抽出する
  */
 const extractValue = (text: string, tag: string): string => {
-  const regex = new RegExp(`<${tag}[^>]*>(?:<!\\\[CDATA\\\[)?(.*?)(?:\\\]\\\]>)?<\/${tag}>`, 's');
+  const regex = new RegExp(
+    `<${tag}[^>]*>(?:<!\\\[CDATA\\\[)?(.*?)(?:\\\]\\\]>)?<\/${tag}>`,
+    's',
+  );
   const match = text.match(regex);
   return match ? match[1].trim() : '';
 };
@@ -19,7 +22,10 @@ const extractValue = (text: string, tag: string): string => {
 /**
  * ScrapboxのRSSフィードからデータを取得する
  */
-export async function fetchRssData(url: string, limit = 10): Promise<RssItem[]> {
+export async function fetchRssData(
+  url: string,
+  limit = 10,
+): Promise<RssItem[]> {
   try {
     const response = await fetch(url);
     const text = await response.text();
@@ -30,13 +36,19 @@ export async function fetchRssData(url: string, limit = 10): Promise<RssItem[]> 
     const itemRegex = /<item>([\s\S]*?)<\/item>/g;
     let match;
 
-    while ((match = itemRegex.exec(remainingText)) !== null && items.length < limit) {
+    while (
+      (match = itemRegex.exec(remainingText)) !== null &&
+      items.length < limit
+    ) {
       items.push(match[0]);
     }
 
     // RSSアイテムを整形
-    return items.map(item => {
-      const title = extractValue(item, 'title').replace(/\<!\[CDATA\[(.*?)\]\]>/, '$1');
+    return items.map((item) => {
+      const title = extractValue(item, 'title').replace(
+        /\<!\[CDATA\[(.*?)\]\]>/,
+        '$1',
+      );
       const link = extractValue(item, 'link');
       const pubDate = extractValue(item, 'pubDate');
 
