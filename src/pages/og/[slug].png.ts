@@ -4,7 +4,7 @@ import { getOgImage } from '../../components/OgImage';
 
 // ブログ記事の型を定義
 type BlogEntry = {
-  slug: string;
+  id: string;
   data: {
     title: string;
     publishDate: string;
@@ -24,7 +24,7 @@ export async function getStaticPaths() {
     const posts = await getCollection('blog');
 
     return posts.map((post) => ({
-      params: { slug: post.slug.replace(/\//g, '-') },
+      params: { slug: post.id.replace(/\//g, '-') },
     }));
   } catch (error) {
     console.error('getStaticPathsエラー:', error);
@@ -136,14 +136,14 @@ export async function GET({ params, request }: APIContext) {
       const searchSlug = originalSlug.replace(/^(\d{4})\//, '$1/');
       const matchingPost = allPosts.find(
         (post) =>
-          post.slug.includes(searchSlug) ||
-          searchSlug.includes(post.slug) ||
-          post.slug.endsWith(originalSlug.split('/').pop() || ''),
+          post.id.includes(searchSlug) ||
+          searchSlug.includes(post.id) ||
+          post.id.endsWith(originalSlug.split('/').pop() || ''),
       );
 
       if (matchingPost) {
         console.log(
-          `類似スラグで記事が見つかりました: ${matchingPost.slug}, タイトル: ${matchingPost.data.title}`,
+          `類似スラグで記事が見つかりました: ${matchingPost.id}, タイトル: ${matchingPost.data.title}`,
         );
         const body = await getOgImage(matchingPost.data.title || 'No title');
         return new Response(new Uint8Array(body), {
