@@ -8,7 +8,7 @@ const favorites = (await Astro.session?.get('article_favorites')) ?? [];
 const allBlogEntries = await getCollection('blog');
 
 function getSlugFromEntry(entry: CollectionEntry<'blog'>): string {
-  return entry.slug;
+  return entry.id;
 }
 
 const favoriteArticles = allBlogEntries

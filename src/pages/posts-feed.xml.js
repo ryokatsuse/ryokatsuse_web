@@ -14,7 +14,7 @@ export async function GET(context) {
     description: '雑記やエンジニアリングの記事',
     site: context.site,
     items: allBlogEntries.map((entry) => ({
-      link: new URL(`/blog/${entry.slug}`, import.meta.env.SITE).toString(),
+      link: new URL(`/blog/${entry.id}`, import.meta.env.SITE).toString(),
       title: entry.data.title,
       pubDate: entry.data.publishDate,
     })),

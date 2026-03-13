@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import Layout from '../../components/Layout.astro';
 import { Image } from 'astro:assets';
 import TableOfContents from '../../components/TableOfContents.astro';
@@ -10,15 +10,16 @@ export const prerender = true;
 export async function getStaticPaths() {
   const entries = await getCollection('blog');
   return entries.map((entry) => ({
-    params: { slug: entry.slug },
+    params: { slug: entry.id },
     props: { entry },
   }));
 }
 
 const { entry } = Astro.props;
-const { Content, headings } = await entry.render();
+const { Content, headings } = await render(entry);
 
-const assets = await Astro.glob('../../assets/**/*');
+const assetModules = import.meta.glob<{ default: ImageMetadata }>('../../assets/**/*', { eager: true });
+const assets = Object.values(assetModules);
 const ogImageURLAsset = assets.find((asset) => {
   if (!entry.data.ogImageURL) {
     return false;
@@ -35,7 +36,7 @@ const ogImageURLAsset = assets.find((asset) => {
   title={entry.data.title}
   description={entry.data.description || ""}
   ogType="article"
-  image={entry.data.ogImageURL || `/og/${entry.slug.replace(/\//g, '-')}.png`}
+  image={entry.data.ogImageURL || `/og/${entry.id.replace(/\//g, '-')}.png`}
   twitterCard={entry.data.twitterCard as "summary" | "summary_large_image" | undefined}
 >
   <div class="reading-progress" aria-hidden="true"></div>
@@ -64,10 +65,10 @@ const ogImageURLAsset = assets.find((asset) => {
       </div>
       
       <div class="flex items-center gap-2">
-        <LikeButton slug={entry.slug} />
+        <LikeButton slug={entry.id} />
 
         <favorite-button
-          data-slug={entry.slug}
+          data-slug={entry.id}
           class="p-2 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
           title="お気に入りに追加"
         >

@@ -1,9 +1,9 @@
-import { defineConfig, fontProviders } from 'astro/config';
+import { defineConfig, fontProviders, sessionDrivers } from 'astro/config';
 import tailwind from '@astrojs/tailwind';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
-import vercel from '@astrojs/vercel/serverless';
+import vercel from '@astrojs/vercel';
 import { markdownComponents } from './src/integrations/markdown-components';
 
 import db from '@astrojs/db';
@@ -14,7 +14,7 @@ export default defineConfig({
   output: 'server',
   adapter: vercel(),
   session: {
-    driver: 'memory',
+    driver: sessionDrivers.memory(),
   },
   integrations: [sitemap(), tailwind({
     config: {
@@ -59,16 +59,14 @@ export default defineConfig({
       dedupe: ['react', 'react-dom'],
     },
   },
-  experimental: {
-    fonts: [
-      {
-        provider: fontProviders.google(),
-        name: 'Noto Sans JP',
-        cssVariable: '--font-noto-sans-jp',
-        weights: ['400', '500', '700'],
-      },
-    ],
-  },
+  fonts: [
+    {
+      provider: fontProviders.google(),
+      name: 'Noto Sans JP',
+      cssVariable: '--font-noto-sans-jp',
+      weights: ['400', '500', '700'],
+    },
+  ],
   markdown: {
     syntaxHighlight: 'shiki',
     shikiConfig: {
