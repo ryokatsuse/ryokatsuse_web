@@ -1,5 +1,6 @@
 ---
 import { SITE_TITLE } from '../config';
+import SearchModal from './SearchModal.astro';
 ---
 
 <header id="site-header" class="header-container bg-neutral-800 fixed top-0 left-0 right-0 transition-transform duration-300">
@@ -20,7 +21,7 @@ import { SITE_TITLE } from '../config';
         aria-expanded="false"
         aria-controls="search-modal"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
@@ -28,7 +29,7 @@ import { SITE_TITLE } from '../config';
       <ul class="flex gap-x-4 items-center">
         <li>
           <a class="text-white hover:text-gray-300 flex items-center" href="/posts-feed.xml" title="RSS Feed">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-rss" aria-hidden="true">
               <path d="M4 11a9 9 0 0 1 9 9"></path>
               <path d="M4 4a16 16 0 0 1 16 16"></path>
               <circle cx="5" cy="19" r="1"></circle>
@@ -42,7 +43,7 @@ import { SITE_TITLE } from '../config';
             aria-label="テーマを切り替える"
           >
             <!-- 太陽アイコン（ダークモード時に表示） -->
-            <svg id="sun-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg id="sun-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <circle cx="12" cy="12" r="5"></circle>
               <line x1="12" y1="1" x2="12" y2="3"></line>
               <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -54,7 +55,7 @@ import { SITE_TITLE } from '../config';
               <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
             </svg>
             <!-- 月アイコン（ライトモード時に表示） -->
-            <svg id="moon-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg id="moon-icon" class="hidden" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
             </svg>
           </button>
@@ -64,40 +65,7 @@ import { SITE_TITLE } from '../config';
   </div>
 </header>
 
-<!-- 検索モーダル -->
-<div
-  id="search-modal"
-  class="fixed inset-0 bg-black/70 hidden flex items-center justify-center"
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="search-modal-title"
->
-  <div class="relative w-full max-w-3xl mx-auto px-4">
-    <div class="bg-neutral-800 rounded-lg shadow-xl p-6">
-      <h2 id="search-modal-title" class="sr-only">記事を検索</h2>
-      <div class="flex items-center mb-4">
-        <svg class="text-white mr-3" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <circle cx="11" cy="11" r="8"></circle>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-        </svg>
-        <label for="search-input" class="sr-only">記事を検索</label>
-        <input
-          type="search"
-          id="search-input"
-          placeholder="記事を検索..."
-          class="w-full px-3 py-2 rounded text-sm bg-neutral-700 text-white border border-neutral-600 focus:outline-none focus:border-neutral-500"
-        />
-        <button id="close-search" class="ml-3 text-white hover:text-gray-300" aria-label="検索を閉じる">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <div id="search-results" class="overflow-y-auto"></div>
-    </div>
-  </div>
-</div>
+<SearchModal />
 
 <script>
   // テーマ切り替え
@@ -151,77 +119,17 @@ import { SITE_TITLE } from '../config';
     }
   });
 
-  // 分離したロジックを使用する
-  import { fetchBlogPosts, searchPosts, generateSearchResultsHtml, type BlogPost } from '../lib/search';
-
+  // 検索モーダルのトリガー（モーダル本体は SearchModal.astro が管理）
   const searchToggle = document.getElementById('search-toggle') as HTMLButtonElement;
-  const searchModal = document.getElementById('search-modal') as HTMLDivElement;
-  const searchInput = document.getElementById('search-input') as HTMLInputElement;
-  const searchResultsElement = document.getElementById('search-results') as HTMLDivElement;
-  const closeSearch = document.getElementById('close-search') as HTMLButtonElement;
-  
-  let blogPosts: BlogPost[] = [];
-  let isDataLoaded = false;
 
-  // 検索結果を表示
-  const showSearchResults = (query: string): void => {
-    if (!query.trim()) {
-      searchResultsElement.innerHTML = '';
-      return;
-    }
-
-    if (!isDataLoaded) {
-      searchResultsElement.innerHTML = '<div class="p-3 text-white">データを読み込み中...</div>';
-      return;
-    }
-
-    // 分離したロジックを使用して検索を実行
-    const filteredPosts = searchPosts(blogPosts, query);
-    
-    // 検索結果からHTMLを生成
-    searchResultsElement.innerHTML = generateSearchResultsHtml(filteredPosts);
-  };
-
-  // モーダルを開く
-  const openSearchModal = async (): Promise<void> => {
-    searchModal.classList.remove('hidden');
-    document.body.classList.add('overflow-hidden');
+  searchToggle.addEventListener('click', () => {
     searchToggle.setAttribute('aria-expanded', 'true');
-    searchInput.focus();
-
-    if (!isDataLoaded) {
-      blogPosts = await fetchBlogPosts();
-      isDataLoaded = true;
-    }
-  };
-
-  // モーダルを閉じる
-  const closeSearchModal = (): void => {
-    searchModal.classList.add('hidden');
-    document.body.classList.remove('overflow-hidden');
-    searchInput.value = '';
-    searchResultsElement.innerHTML = '';
-    searchToggle.setAttribute('aria-expanded', 'false');
-    searchToggle.focus();
-  };
-
-  // イベントリスナーの設定
-  searchToggle.addEventListener('click', openSearchModal);
-  closeSearch.addEventListener('click', closeSearchModal);
-  searchInput.addEventListener('input', () => showSearchResults(searchInput.value));
-
-  // ESCキーでモーダルを閉じる
-  document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !searchModal.classList.contains('hidden')) {
-      closeSearchModal();
-    }
+    document.dispatchEvent(new CustomEvent('search:open'));
   });
 
-  // モーダル外をクリックしたら閉じる
-  searchModal.addEventListener('click', (event) => {
-    if (event.target === searchModal) {
-      closeSearchModal();
-    }
+  document.addEventListener('search:closed', () => {
+    searchToggle.setAttribute('aria-expanded', 'false');
+    searchToggle.focus();
   });
 </script>
 
@@ -229,20 +137,5 @@ import { SITE_TITLE } from '../config';
   .header-container {
     z-index: var(--z-header);
     isolation: isolate;
-  }
-
-  #search-modal {
-    backdrop-filter: blur(4px);
-    z-index: var(--z-modal);
-  }
-
-  #search-results {
-    height: 60vh;
-  }
-
-  @media (max-width: 640px) {
-    #search-results {
-      height: 40vh;
-    }
   }
 </style>
