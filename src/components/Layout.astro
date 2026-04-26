@@ -49,6 +49,9 @@ declare global {
       html.dark body { background-color: oklch(26.9% 0 0); color: oklch(98.5% 0.002 247.839); }
       a { color: inherit; }
       html.dark a { color: oklch(98.5% 0.002 247.839); }
+      /* ヘッダーは両モード共通で暗背景・白文字。Tailwind ロード前のちらつき/不可視を防止 */
+      #site-header { background-color: oklch(26.9% 0 0); color: oklch(100% 0 0); }
+      #site-header a { color: oklch(100% 0 0); }
     </style>
     <!-- Global Metadata -->
     <meta charset="utf-8" />
