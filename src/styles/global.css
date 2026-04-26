@@ -45,11 +45,11 @@ body {
   margin: auto;
   /* max-width: 80vw; */
   text-align: left;
-  background-color: #fff;
+  background-color: oklch(100% 0 0);
   word-wrap: break-word;
   overflow-wrap: break-word;
   line-height: 1.5;
-  color: #444;
+  color: oklch(28% 0 0);
   display: flex;
   flex-flow: column;
   min-height: 100vh;
@@ -85,9 +85,9 @@ img {
 }
 code {
   padding: 2px 5px;
-  background-color: #374151;
+  background-color: var(--color-gray-700);
   border-radius: 0.3em;
-  color: #fff;
+  color: var(--color-white);
   font-family: var(--font-family-mono);
 }
 
