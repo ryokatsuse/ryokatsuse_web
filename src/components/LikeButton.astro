@@ -10,6 +10,7 @@ const { slug } = Astro.props;
   class="like-button flex items-center gap-1 px-2 py-1 rounded-full transition-colors hover:bg-pink-50 dark:hover:bg-pink-900/30 cursor-pointer"
   data-slug={slug}
   aria-label="いいね"
+  aria-pressed="false"
 >
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -69,6 +70,9 @@ const { slug } = Astro.props;
     } else {
       button.classList.remove('liked');
     }
+
+    button.setAttribute('aria-pressed', String(hasLiked));
+    button.setAttribute('aria-label', hasLiked ? 'いいね済み' : 'いいね');
   };
 
   const initLikeButton = async (button: HTMLElement) => {

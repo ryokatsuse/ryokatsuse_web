@@ -13,10 +13,12 @@ import { SITE_TITLE } from '../config';
       {SITE_TITLE}
     </a>
     <div class="flex gap-x-4 items-center">
-      <button 
-        id="search-toggle" 
-        class="text-white hover:text-gray-300 flex items-center" 
+      <button
+        id="search-toggle"
+        class="text-white hover:text-gray-300 flex items-center cursor-pointer"
         aria-label="検索を開く"
+        aria-expanded="false"
+        aria-controls="search-modal"
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="11" cy="11" r="8"></circle>
@@ -63,28 +65,36 @@ import { SITE_TITLE } from '../config';
 </header>
 
 <!-- 検索モーダル -->
-<div id="search-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden flex items-center justify-center">
+<div
+  id="search-modal"
+  class="fixed inset-0 bg-black/70 hidden flex items-center justify-center"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="search-modal-title"
+>
   <div class="relative w-full max-w-3xl mx-auto px-4">
     <div class="bg-neutral-800 rounded-lg shadow-xl p-6">
+      <h2 id="search-modal-title" class="sr-only">記事を検索</h2>
       <div class="flex items-center mb-4">
-        <svg class="text-white mr-3" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg class="text-white mr-3" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <input 
-          type="text" 
-          id="search-input" 
-          placeholder="記事を検索..." 
+        <label for="search-input" class="sr-only">記事を検索</label>
+        <input
+          type="search"
+          id="search-input"
+          placeholder="記事を検索..."
           class="w-full px-3 py-2 rounded text-sm bg-neutral-700 text-white border border-neutral-600 focus:outline-none focus:border-neutral-500"
         />
-        <button id="close-search" class="ml-3 text-white hover:text-gray-300">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button id="close-search" class="ml-3 text-white hover:text-gray-300" aria-label="検索を閉じる">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <line x1="18" y1="6" x2="6" y2="18"></line>
             <line x1="6" y1="6" x2="18" y2="18"></line>
           </svg>
         </button>
       </div>
-      <div id="search-results" class="max-h-60vh overflow-y-auto"></div>
+      <div id="search-results" class="overflow-y-auto"></div>
     </div>
   </div>
 </div>
@@ -99,6 +109,8 @@ import { SITE_TITLE } from '../config';
     const isDark = document.documentElement.classList.contains('dark');
     sunIcon.classList.toggle('hidden', !isDark);
     moonIcon.classList.toggle('hidden', isDark);
+    themeToggle.setAttribute('aria-pressed', String(isDark));
+    themeToggle.setAttribute('aria-label', isDark ? 'ライトモードに切り替える' : 'ダークモードに切り替える');
   };
 
   // 初期表示
@@ -174,8 +186,9 @@ import { SITE_TITLE } from '../config';
   const openSearchModal = async (): Promise<void> => {
     searchModal.classList.remove('hidden');
     document.body.classList.add('overflow-hidden');
+    searchToggle.setAttribute('aria-expanded', 'true');
     searchInput.focus();
-    
+
     if (!isDataLoaded) {
       blogPosts = await fetchBlogPosts();
       isDataLoaded = true;
@@ -188,6 +201,8 @@ import { SITE_TITLE } from '../config';
     document.body.classList.remove('overflow-hidden');
     searchInput.value = '';
     searchResultsElement.innerHTML = '';
+    searchToggle.setAttribute('aria-expanded', 'false');
+    searchToggle.focus();
   };
 
   // イベントリスナーの設定
@@ -222,12 +237,12 @@ import { SITE_TITLE } from '../config';
   }
 
   #search-results {
-    max-height: 60vh;
+    height: 60vh;
   }
 
   @media (max-width: 640px) {
     #search-results {
-      max-height: 40vh;
+      height: 40vh;
     }
   }
 </style>
