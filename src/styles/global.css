@@ -1,10 +1,26 @@
-@import "tailwindcss/base";
-@import "tailwindcss/components";
-@import "tailwindcss/utilities";
-@import "post";
+@import "tailwindcss";
+@import "./post.css";
 
 /* PrismJSのデフォルトテーマをインポート */
 @import "prismjs/themes/prism-tomorrow.css";
+
+/* darkMode: 'class' を v4 で再現 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-noto-sans: "Noto Sans JP", sans-serif;
+}
+
+/* v3 互換: border のデフォルト色 (v4 は currentColor) */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
 
 /*
   The CSS in this style tag is based off of Bear Blog's default CSS.
@@ -39,24 +55,14 @@ body {
   min-height: 100vh;
 }
 
-/* ダークモード時の背景と文字色 */
-:global(.dark) body {
-  background-color: #1f2937;
-  color: #f9fafb;
-}
-
 main {
   flex: 1;
   background-color: inherit;
 }
 
-a {
+/* a {
   color: #3273dc;
-}
-
-:global(.dark) a {
-  color: #60a5fa;
-}
+} */
 
 nav a {
   margin-right: 10px;
@@ -90,10 +96,6 @@ code::after {
   content: "`";
 }
 
-:global(.dark) code {
-  background-color: #4b5563;
-  color: #fff;
-}
 
 pre {
   padding: 1rem;

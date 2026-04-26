@@ -43,6 +43,13 @@ declare global {
         }
       })();
     </script>
+    <!-- メインCSS読み込み前のちらつき防止 -->
+    <style is:inline>
+      html.dark { color-scheme: dark; background-color: #262626; }
+      html.dark body { background-color: #262626; color: #f9fafb; }
+      a { color: inherit; }
+      html.dark a { color: #f9fafb; }
+    </style>
     <!-- Global Metadata -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
