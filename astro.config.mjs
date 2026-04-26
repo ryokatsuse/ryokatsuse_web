@@ -1,5 +1,5 @@
 import { defineConfig, fontProviders, sessionDrivers } from 'astro/config';
-import tailwind from '@astrojs/tailwind';
+import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
@@ -16,11 +16,7 @@ export default defineConfig({
   session: {
     driver: sessionDrivers.memory(),
   },
-  integrations: [sitemap(), tailwind({
-    config: {
-      applyBaseStyles: false,
-    },
-  }), react(), mdx({
+  integrations: [sitemap(), react(), mdx({
     // MDXファイルでグローバルに使用できるコンポーネントを設定
     components: {
       LinkCard: './src/components/LinkCard.astro',
@@ -35,6 +31,7 @@ export default defineConfig({
     prefetchAll: true,
   },
   vite: {
+    plugins: [tailwindcss()],
     optimizeDeps: {
       exclude: ['@resvg/resvg-js'],
       include: [],
