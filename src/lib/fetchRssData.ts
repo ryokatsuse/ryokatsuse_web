@@ -34,13 +34,10 @@ export async function fetchRssData(
     const items: string[] = [];
     let remainingText = text;
     const itemRegex = /<item>([\s\S]*?)<\/item>/g;
-    let match;
-
-    while (
-      (match = itemRegex.exec(remainingText)) !== null &&
-      items.length < limit
-    ) {
+    let match: RegExpExecArray | null = itemRegex.exec(remainingText);
+    while (match !== null && items.length < limit) {
       items.push(match[0]);
+      match = itemRegex.exec(remainingText);
     }
 
     // RSSアイテムを整形
