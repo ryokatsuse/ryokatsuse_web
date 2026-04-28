@@ -1,14 +1,18 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { type CollectionEntry, getCollection } from 'astro:content';
 import Layout from '../components/Layout.astro';
-import dayjs from '../lib/dayjs';
 import Lists from '../components/Lists.astro';
+import {
+  epochMilliseconds,
+  formatLongDate,
+  toISOString,
+} from '../lib/datetime';
 import { fetchRssData } from '../lib/fetchRssData';
 
 const allBlogEntries = (await getCollection('blog')).sort(
   (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) =>
-    dayjs(b.data.publishDate).tz().valueOf() -
-    dayjs(a.data.publishDate).tz().valueOf(),
+    epochMilliseconds(b.data.publishDate) -
+    epochMilliseconds(a.data.publishDate),
 );
 
 // ScrapboxのRSSフィードからデータを取得
@@ -57,8 +61,8 @@ const blogEntries: BlogEntry[] = allBlogEntries.map(
     return {
       title: post.data.title,
       slug,
-      meta: `<time datetime="${dayjs(post.data.publishDate).tz().toISOString()}">
-      ${dayjs(post.data.publishDate).tz().format('LL')}
+      meta: `<time datetime="${toISOString(post.data.publishDate)}">
+      ${formatLongDate(post.data.publishDate)}
     </time>`,
       description,
     };

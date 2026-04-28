@@ -21,12 +21,12 @@
     "@astrojs/sitemap": "^3.7.1",
     "@resvg/resvg-js": "^2.4.1",
     "astro": "^6.0.4",
-    "dayjs": "^1.11.4",
     "postcss": ">=8.4.29 <9.0.0",
     "prismjs": "^1.30.0",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "satori": "^0.10.3"
+    "satori": "^0.10.3",
+    "temporal-polyfill": "^0.3.2"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.7",
