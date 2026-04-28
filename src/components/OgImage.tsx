@@ -107,6 +107,7 @@ export async function getOgImage(text: string) {
             {/* アバター画像（左側） - Base64エンコードされた画像を使用 */}
             <img
               src={avatarImageBase64}
+              alt=""
               width={80}
               height={80}
               style={{

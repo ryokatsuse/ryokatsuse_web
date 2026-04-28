@@ -42,11 +42,19 @@ export const updateFavoriteUI = (
 
   const classes = getFavoriteUIClasses(isFavorite);
 
-  classes.containerAdd.forEach((cls) => element.classList.add(cls));
-  classes.containerRemove.forEach((cls) => element.classList.remove(cls));
+  classes.containerAdd.forEach((cls) => {
+    element.classList.add(cls);
+  });
+  classes.containerRemove.forEach((cls) => {
+    element.classList.remove(cls);
+  });
 
-  classes.iconAdd.forEach((cls) => (icon as Element).classList.add(cls));
-  classes.iconRemove.forEach((cls) => (icon as Element).classList.remove(cls));
+  classes.iconAdd.forEach((cls) => {
+    (icon as Element).classList.add(cls);
+  });
+  classes.iconRemove.forEach((cls) => {
+    (icon as Element).classList.remove(cls);
+  });
 };
 
 export const initializeFavoriteButton = (
