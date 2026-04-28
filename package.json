@@ -2,6 +2,7 @@
   "name": "ryokatsu.dev",
   "version": "0.0.1",
   "private": true,
+  "packageManager": "pnpm@10.11.1",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
