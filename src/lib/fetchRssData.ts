@@ -1,4 +1,4 @@
-import dayjs from './dayjs';
+import { formatLongDate } from './datetime';
 
 interface RssItem {
   title: string;
@@ -12,7 +12,7 @@ interface RssItem {
  */
 const extractValue = (text: string, tag: string): string => {
   const regex = new RegExp(
-    `<${tag}[^>]*>(?:<!\\\[CDATA\\\[)?(.*?)(?:\\\]\\\]>)?<\/${tag}>`,
+    `<${tag}[^>]*>(?:<!\\[CDATA\\[)?(.*?)(?:\\]\\]>)?</${tag}>`,
     's',
   );
   const match = text.match(regex);
@@ -32,7 +32,7 @@ export async function fetchRssData(
 
     // アイテムを抽出
     const items: string[] = [];
-    let remainingText = text;
+    const remainingText = text;
     const itemRegex = /<item>([\s\S]*?)<\/item>/g;
     let match: RegExpExecArray | null = itemRegex.exec(remainingText);
     while (match !== null && items.length < limit) {
@@ -43,7 +43,7 @@ export async function fetchRssData(
     // RSSアイテムを整形
     return items.map((item) => {
       const title = extractValue(item, 'title').replace(
-        /\<!\[CDATA\[(.*?)\]\]>/,
+        /<!\[CDATA\[(.*?)\]\]>/,
         '$1',
       );
       const link = extractValue(item, 'link');
@@ -54,7 +54,7 @@ export async function fetchRssData(
         slug: link,
         isExternal: true,
         meta: `<time datetime="${new Date(pubDate).toISOString()}">
-          ${dayjs(pubDate).tz().format('LL')}
+          ${formatLongDate(pubDate)}
         </time>`,
       };
     });

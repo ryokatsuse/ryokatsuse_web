@@ -1,12 +1,12 @@
-import rss from '@astrojs/rss';
-import dayjs from '../lib/dayjs';
 import { getCollection } from 'astro:content';
+import rss from '@astrojs/rss';
+import { epochMilliseconds } from '../lib/datetime';
 
 export async function GET(context) {
   const allBlogEntries = (await getCollection('blog')).sort(
     (a, b) =>
-      dayjs(b.data.publishDate).tz().valueOf() -
-      dayjs(a.data.publishDate).tz().valueOf(),
+      epochMilliseconds(b.data.publishDate) -
+      epochMilliseconds(a.data.publishDate),
   );
 
   return rss({

@@ -1,7 +1,7 @@
 ---
-import { getCollection, type CollectionEntry } from 'astro:content';
+import { type CollectionEntry, getCollection } from 'astro:content';
 import Layout from '../components/Layout.astro';
-import dayjs from '../lib/dayjs';
+import { epochMilliseconds, formatLongDate } from '../lib/datetime';
 export const prerender = false;
 
 const favorites = (await Astro.session?.get('article_favorites')) ?? [];
@@ -17,8 +17,8 @@ const favoriteArticles = allBlogEntries
   })
   .sort(
     (a: CollectionEntry<'blog'>, b: CollectionEntry<'blog'>) =>
-      dayjs(b.data.publishDate).tz().valueOf() -
-      dayjs(a.data.publishDate).tz().valueOf(),
+      epochMilliseconds(b.data.publishDate) -
+      epochMilliseconds(a.data.publishDate),
   );
 
 if (Astro.request.method === 'POST') {
@@ -76,7 +76,7 @@ if (Astro.request.method === 'POST') {
                     </a>
                     <div class="text-sm text-gray-600 dark:text-gray-400 mt-1">
                       {article.data.publishDate && (
-                        <time>{dayjs(article.data.publishDate).tz().format("LL")}</time>
+                        <time>{formatLongDate(article.data.publishDate)}</time>
                       )}
                     </div>
                   </div>
