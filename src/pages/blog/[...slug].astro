@@ -67,25 +67,29 @@ const ogImageURLAsset = assets.find((asset) => {
       <div class="flex items-center gap-2">
         <LikeButton slug={entry.id} />
 
-        <favorite-button
-          data-slug={entry.id}
-          class="p-2 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
-          title="お気に入りに追加"
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-5 h-5 text-gray-500 dark:text-gray-400 favorite-icon"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-            fill="none"
+        <favorite-button data-slug={entry.id}>
+          <button
+            type="button"
+            class="p-2 rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+            aria-label="お気に入りに追加"
+            aria-pressed="false"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
-            />
-          </svg>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-5 h-5 text-gray-500 dark:text-gray-400 favorite-icon"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="2"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
+              />
+            </svg>
+          </button>
         </favorite-button>
       </div>
     </div>

@@ -37,16 +37,17 @@ export const updateFavoriteUI = (
   element: HTMLElement,
   isFavorite: boolean,
 ): void => {
+  const button = element.querySelector('button');
   const icon = element.querySelector('.favorite-icon');
-  if (!icon) return;
+  if (!button || !icon) return;
 
   const classes = getFavoriteUIClasses(isFavorite);
 
   classes.containerAdd.forEach((cls) => {
-    element.classList.add(cls);
+    button.classList.add(cls);
   });
   classes.containerRemove.forEach((cls) => {
-    element.classList.remove(cls);
+    button.classList.remove(cls);
   });
 
   classes.iconAdd.forEach((cls) => {
@@ -55,12 +56,22 @@ export const updateFavoriteUI = (
   classes.iconRemove.forEach((cls) => {
     (icon as Element).classList.remove(cls);
   });
+
+  button.setAttribute('aria-pressed', String(isFavorite));
+  button.setAttribute(
+    'aria-label',
+    isFavorite ? 'お気に入りに登録済み' : 'お気に入りに追加',
+  );
 };
 
 export const initializeFavoriteButton = (
   element: HTMLElement,
 ): Promise<void> => {
   const slug = element.dataset.slug || '';
+  const button = element.querySelector('button');
+  if (!button) {
+    return Promise.resolve();
+  }
 
   const handleClick = () => {
     toggleFavorite(slug).then((isFavorite) =>
@@ -70,7 +81,7 @@ export const initializeFavoriteButton = (
 
   return getFavoriteStatus(slug).then((isFavorite) => {
     updateFavoriteUI(element, isFavorite);
-    element.addEventListener('click', handleClick);
+    button.addEventListener('click', handleClick);
   });
 };
 
