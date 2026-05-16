@@ -4,6 +4,7 @@ import Layout from '../../components/Layout.astro';
 import { Image } from 'astro:assets';
 import TableOfContents from '../../components/TableOfContents.astro';
 import LikeButton from '../../components/LikeButton.astro';
+import ShareButtons from '../../components/ShareButtons.astro';
 
 export const prerender = true;
 
@@ -99,6 +100,7 @@ const ogImageURLAsset = assets.find((asset) => {
     <div class="container post">
       <Content />
     </div>
+    <ShareButtons title={entry.data.title} url={new URL(Astro.url.pathname, Astro.site).toString()} />
   </article>
 </Layout>
 

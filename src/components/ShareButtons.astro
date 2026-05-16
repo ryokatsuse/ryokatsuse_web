@@ -1,0 +1,104 @@
+---
+interface Props {
+  title: string;
+  url: string;
+}
+
+const { title, url } = Astro.props;
+
+const shareText = `${title}`;
+const xShareURL = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(url)}`;
+---
+
+<nav class="mt-8 flex justify-end" aria-label="この記事を共有">
+  <ul class="flex items-center gap-2">
+    <li>
+      <a
+        href={xShareURL}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="block rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500"
+        aria-label="Xでシェアする"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5 text-gray-700 dark:text-gray-300"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          aria-hidden="true"
+        >
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+        </svg>
+      </a>
+    </li>
+    <li class="relative">
+      <button
+        type="button"
+        class="copy-link-button block rounded-full transition-colors hover:bg-gray-100 dark:hover:bg-gray-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500 cursor-pointer"
+        data-url={url}
+        aria-label="リンクをコピー"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-5 h-5 text-gray-700 dark:text-gray-300"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          fill="none"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+        </svg>
+      </button>
+      <output
+        class="copy-tooltip absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 rounded bg-gray-900 text-white text-xs whitespace-nowrap opacity-0 invisible transition-opacity dark:bg-gray-100 dark:text-gray-900"
+        aria-live="polite"
+      >
+        コピーしました
+        <span
+          class="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-100"
+          aria-hidden="true"
+        ></span>
+      </output>
+    </li>
+  </ul>
+</nav>
+
+<script>
+  const initCopyButton = (button: HTMLButtonElement) => {
+    const url = button.dataset.url;
+    if (!url) return;
+
+    const tooltip = button.parentElement?.querySelector<HTMLElement>('.copy-tooltip');
+    let resetTimer: number | undefined;
+
+    button.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+        if (tooltip) {
+          tooltip.classList.remove('opacity-0', 'invisible');
+          tooltip.classList.add('opacity-100', 'visible');
+        }
+
+        if (resetTimer) window.clearTimeout(resetTimer);
+        resetTimer = window.setTimeout(() => {
+          if (tooltip) {
+            tooltip.classList.add('opacity-0', 'invisible');
+            tooltip.classList.remove('opacity-100', 'visible');
+          }
+        }, 2000);
+      } catch (e) {
+        console.error('Failed to copy URL:', e);
+        if (tooltip) {
+          tooltip.textContent = 'コピーに失敗しました';
+          tooltip.classList.remove('opacity-0', 'invisible');
+          tooltip.classList.add('opacity-100', 'visible');
+        }
+      }
+    });
+  };
+
+  document.querySelectorAll<HTMLButtonElement>('.copy-link-button').forEach(initCopyButton);
+</script>
