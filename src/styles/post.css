@@ -75,4 +75,28 @@
   img {
     @apply rounded-md;
   }
+
+  table {
+    @apply block w-full overflow-x-auto border-collapse text-sm sm:text-base rounded-md border border-neutral-200 dark:border-neutral-700;
+  }
+
+  thead {
+    @apply bg-neutral-100 dark:bg-neutral-800;
+  }
+
+  th {
+    @apply px-4 py-3 text-left font-bold border-b border-neutral-200 dark:border-neutral-700;
+  }
+
+  td {
+    @apply px-4 py-3 align-top leading-7 border-b border-neutral-200 dark:border-neutral-700;
+  }
+
+  tbody tr:last-child :is(td, th) {
+    @apply border-b-0;
+  }
+
+  tbody tr {
+    @apply odd:bg-white even:bg-neutral-50 dark:odd:bg-transparent dark:even:bg-neutral-800/40;
+  }
 }
