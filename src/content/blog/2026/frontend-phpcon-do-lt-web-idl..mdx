@@ -15,23 +15,23 @@ import LinkCard from '../../../components/LinkCard.astro';
 WebAPIをどう使うか、どう実装するかを確認する時にまず参照するドキュメントとして[MDN](https://developer.mozilla.org/ja/)があります。
 
 
-MDNの各APIページには『仕様書』セクションがありURL Standardなどへのリンクが貼られています。
+MDNの各APIページには『仕様書』セクションがありリンクが貼られています。
 
-![MDNの各APIページには『仕様書』セクションがありURL Standardなどへのリンクが貼られている](/images/mdn-top-highlight.png)
+![MDNの各APIページには『仕様書』セクションがありURL Standardへのリンクが貼られている](/images/mdn-top-highlight.png)
 
 
-仕様書にリンクから遷移すると、各APIの仕様書に一次情報に辿り着くことができますが、その仕様書の中で、APIのインターフェースが定義されている部分があります。これはWeb IDLと呼ばれるもので、APIのインターフェースを定義するための言語になります。Web IDLは、Interface Definition Languageの略です。
+仕様書のリンクから遷移すると、各APIの一次情報に辿り着くことができますが、その仕様書の中に、APIのインターフェースが定義されている部分があります。これはWeb IDL(Web Interface Definition Language)と呼ばれるもので、APIのインターフェースを定義するための言語になります。
 
 ![Web IDLブロックがハイライト表示されている](/images/webidl-search-param-focus.png)
 
-Web IDLは、WebのほぼすべてのAPIで使用されており、Web IDLを確認することで、APIのインターフェースとブラウザでの実装の互換性を相互に確認することが可能です。MDNに記載されている情報でも、おおよそ確認することは可能ですが、本当の一次情報としての定義が、Web IDLになります。
+Web IDLは、WebのほぼすべてのAPIで使用されており、Web IDLを確認することで、APIのインターフェースとブラウザでの実装の互換性を相互に確認することが可能です。MDNに記載されている情報でも、おおよそ確認することは可能ですが、情報源としてはWeb IDLで定義した内容から作成されています。
 
 
 ## Web IDLを読む
 
 以下は、[URLSearchParams](https://url.spec.whatwg.org/#urlsearchparams)のWeb IDLの一部になります。
 
-```webidl
+```ts
 
 [Exposed=*]
 interface URLSearchParams {
@@ -70,12 +70,12 @@ declare var URLSearchParams: {
 };
 ```
 
-見た目は、結構似ています。それぞれの違いを見ていきます。
+見た目は、結構似ています。普段からTypeScriptを触っている人からすると読むのはそこまで難しくありません。それぞれの違いを見ていきます。
 
 
 ### 戻り値の型と引数の型の位置
 
-まず中身のメソッドの`append`と`get`を見ていきます。TypeScriptでは、通常型の戻り値や、引数の型は後ろに記述していますが、Web IDLでは、戻り値や引数の型は前に記述されています。
+まず中身のメソッドの`append`と`get`を見ていきます。TypeScriptでは、通常、戻り値や引数の型は後ろに記述しますが、Web IDLでは、戻り値や引数の型は前に記述されています。
 
 ```ts
 // Web IDL
@@ -86,11 +86,11 @@ append(name: string, value: string): void;
 get(name: string): string | null;
 ```
 
-`append`の方をみると、`undefined`は、何も返さないということを指す。つまりTypeScriptでいうところの`void`に相当します。
+`append`の方をみると、`undefined`は、何も返さないということを指します。つまりTypeScriptでいうところの`void`に相当します。
 
 ### 文字列の定義
 
-`get`では、[USVString](https://webidl.spec.whatwg.org/#idl-USVString)という型が定義されています。実は、WebIDLでは文字列の型は3種類あります。
+`get`では、[USVString](https://webidl.spec.whatwg.org/#idl-USVString)という型が定義されています。実は、Web IDLでは文字列の型は3種類あります。
 
 | 型 | 対応するもの | 特徴・用途 |
 | --- | --- | --- |
@@ -103,11 +103,11 @@ get(name: string): string | null;
 
 ### 拡張属性
 
-次に、Web IDLの先頭にある`[Exposed=*]`についてです。これは、拡張属性と呼ばれるもので、インターフェースの定義に対して、メタ情報を提供するためのものになります。
+Web IDLの先頭に`[Exposed=*]`等の記述があります。これは、拡張属性と呼ばれるもので、インターフェースの定義に対して、メタ情報を提供するためのものになります。JavaScript/TypeScriptではこのような記述はありません。
 
 例として、`[Exposed=*]`は、このインターフェースがすべてのグローバル環境で利用可能であることを示しています。例えば、`[Exposed=Window]`と指定されている場合、そのインターフェースはWindow環境でのみ利用可能であることを意味します。
 
-他にも`[SecureContext]` (HTTPS 必須)や、 `[SameObject]` (毎回同じものを返す)など様々な定義があります。
+他にも`[SecureContext]`（HTTPS必須）や、`[SameObject]`（毎回同じものを返す）など様々な定義があります。
 
 ## TypeScriptとの関係性
 
@@ -122,16 +122,16 @@ Microsoftが開発している[TypeScript-DOM-lib-generator](https://github.com/
 
 「Web IDLを元に自動生成されている」と書きましたが、実際にどういう流れで`lib.dom.d.ts`が出来上がっているのかを、もう少し具体的に見ていきます。
 
-ポイントは、生成に使われる入力（インプット）が大きく分けて2つあるという点です。
+生成に使われる入力（インプット）は、大きく分けて2つあります。
 
 1. **Web IDLの定義そのもの** … 「どんなインターフェースがあるのか」を知るための情報
 2. **ブラウザの実装状況のデータ** … 「そのインターフェースを採用してよいか」を判断するための情報
 
 ### webref
 
-まず1つ目のWeb IDLの定義ですが、これは各仕様書のページからひとつずつ手で集めているわけではありません。
+各仕様書のページからひとつずつ手で集めているわけではありません。
 
-W3Cが管理している[webref](https://github.com/w3c/webref)というプロジェクトが、WHATWGやW3Cの仕様書をクロールして、そこに書かれているWeb IDLを読めるような形（[@webref/idl](https://www.npmjs.com/package/@webref/idl)というnpmパッケージ）として、おおよそ数時間おきに自動で抽出・更新しています。
+W3Cが管理している[webref](https://github.com/w3c/webref)というプロジェクトが、WHATWGやW3Cの仕様書をクロールして、そこに書かれているWeb IDLを読めるような形にして、おおよそ数時間おきに自動で抽出・更新しています。
 
 TypeScript-DOM-lib-generatorは、この`@webref/idl`を入力として取り込みます。つまり、
 
@@ -142,7 +142,7 @@ TypeScript-DOM-lib-generatorは、この`@webref/idl`を入力として取り込
             └─ TypeScript-DOM-lib-generator が読み込む
 ```
 
-という流れで、私たちが普段書いている`lib.dom.d.ts`の型は、元をたどると仕様書のWeb IDLに行き着くようになっています。
+という流れで、私たちが普段書いている`lib.dom.d.ts`の型は、元を辿るとWeb IDLの仕様書に行き着くようになっています。
 
 ### browser-compat-data
 
@@ -158,7 +158,7 @@ TypeScript-DOM-lib-generatorは、このbrowser-compat-dataを参照して、**2
 
 この「2エンジン以上」という基準は、ベンダー間で十分な合意が取れている（=今後も安定して使える見込みが高い）APIだけを型に含めるための線引きになっています。
 
-1つのエンジンでしか実装されていない段階のAPIは、原則として`lib.dom.d.ts`には入ってこない、というわけです。
+1つのエンジンでしか実装されていない段階のAPIは、原則として`lib.dom.d.ts`には入ってこないことになります。
 
 整理すると、Web IDLとbrowser-compat-dataはそれぞれ次のような役割を担っています。
 
@@ -195,7 +195,7 @@ interface Storage {
 };
 ```
 
-`[Exposed=Window]`とあるので、Window環境でのみ利用可能なAPIであることがわかります。Worker環境などでは利用できません。（Worker環境で近いことをする場合はIndexDBを使いましょう！）
+`[Exposed=Window]`とあるので、Window環境でのみ利用可能なAPIであることがわかります。Worker環境などでは利用できません。（Worker環境で近いことをする場合は[IndexedDB](https://developer.mozilla.org/ja/docs/Web/API/IndexedDB_API)を使いましょう！）
 
 ### fetch()
 
@@ -277,6 +277,6 @@ URLとHeadersのWeb IDLを見てみると、URLは`USVString`、Headersは`ByteS
 
 Web IDLについて簡単ですが、触れていきました。MDNの情報だけでも十分にAPIを使うことはできますが、Web IDLを読むことで、より正確にAPIの仕様を理解することができるようになりますので、読めるようになると便利？なこともあります。特にTypeScriptの型定義がない場合などは、Web IDLの定義を見に行くことで確認もできるようになります。
 
-AIは時代に一次情報が大事という観点からも、Web IDLに興味を持っていただければ幸いです。
+AI時代に一次情報が大事という観点からも、Web IDLに興味を持っていただければ幸いです。
 
 
