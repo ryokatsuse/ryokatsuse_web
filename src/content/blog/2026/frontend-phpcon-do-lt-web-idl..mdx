@@ -15,16 +15,18 @@ import LinkCard from '../../../components/LinkCard.astro';
 WebAPIをどう使うか、どう実装するかを確認する時にまず参照するドキュメントとして[MDN](https://developer.mozilla.org/ja/)があります。
 
 
-MDNの各APIページには『仕様書』セクションがありリンクが貼られています。
+MDNの各APIページには仕様書へのリンクが貼られています。
 
 ![MDNの各APIページには『仕様書』セクションがありURL Standardへのリンクが貼られている](/images/mdn-top-highlight.png)
 
 
-仕様書のリンクから遷移すると、各APIの一次情報に辿り着くことができますが、その仕様書の中に、APIのインターフェースが定義されている部分があります。これはWeb IDL(Web Interface Definition Language)と呼ばれるもので、APIのインターフェースを定義するための言語になります。
+仕様書のリンクから遷移すると、各APIの一次情報に辿り着くことができます。
+
+その仕様書の中に、APIのインターフェースが定義されている部分があります。これはWeb IDL(Web Interface Definition Language)と呼ばれるもので、APIのインターフェースを定義するための言語になります。
 
 ![Web IDLブロックがハイライト表示されている](/images/webidl-search-param-focus.png)
 
-Web IDLは、WebのほぼすべてのAPIで使用されており、Web IDLを確認することで、APIのインターフェースとブラウザでの実装の互換性を相互に確認することが可能です。MDNに記載されている情報でも、おおよそ確認することは可能ですが、情報源としてはWeb IDLで定義した内容から作成されています。
+Web IDLは、WebのほぼすべてのAPIで使用されており、Web IDLを確認することで、APIのインターフェースとブラウザでの実装の互換性を相互に確認することが可能です。MDNに記載されている情報でも、おおよそ確認することは可能ですが、情報源としてはWeb IDLで定義した内容が含まれています。
 
 
 ## Web IDLを読む
@@ -90,7 +92,7 @@ get(name: string): string | null;
 
 ### 文字列の定義
 
-`get`では、[USVString](https://webidl.spec.whatwg.org/#idl-USVString)という型が定義されています。実は、Web IDLでは文字列の型は3種類あります。
+`get`では、[USVString](https://webidl.spec.whatwg.org/#idl-USVString)という型が定義されています。Web IDLでは文字列の型は3種類あります。
 
 | 型 | 対応するもの | 特徴・用途 |
 | --- | --- | --- |
@@ -100,6 +102,7 @@ get(name: string): string | null;
 
 `DOMString`は`null`を含まないため、`null`を許容するには`DOMString?`のようにnullableにする必要があります。基本的には`DOMString`を使い、テキスト処理が必要な場合に`USVString`、バイト列を扱う場合に`ByteString`を使う、という使い分けになります。
 
+JavaScriptのstringは、一つしかないと思いがちですが、Web IDLを知ることで実はstingには3種類あることが分かります。
 
 ### 拡張属性
 
@@ -138,7 +141,7 @@ TypeScript-DOM-lib-generatorは、この`@webref/idl`を入力として取り込
 ```
 仕様書（URL Standardなど）
   └─ webref がクロールしてWeb IDLを抽出
-       └─ @webref/idl（機械可読なIDL）
+       └─ @webref/idl（ツール側が読める状態のIDL）
             └─ TypeScript-DOM-lib-generator が読み込む
 ```
 
@@ -275,7 +278,7 @@ URLとHeadersのWeb IDLを見てみると、URLは`USVString`、Headersは`ByteS
 
 ## まとめ
 
-Web IDLについて簡単ですが、触れていきました。MDNの情報だけでも十分にAPIを使うことはできますが、Web IDLを読むことで、より正確にAPIの仕様を理解することができるようになりますので、読めるようになると便利？なこともあります。特にTypeScriptの型定義がない場合などは、Web IDLの定義を見に行くことで確認もできるようになります。
+Web IDLについて簡単ですが、触れていきました。MDNの情報だけでも十分にAPIを使うことはできますが、Web IDLを読むことで、より正確にAPIの仕様を理解することができるようになりますので、読めるようになると嬉しいなこともあります。特にTypeScriptの型定義がない場合などは、Web IDLの定義を見に行くことで確認もできるようになります。
 
 AI時代に一次情報が大事という観点からも、Web IDLに興味を持っていただければ幸いです。
 
