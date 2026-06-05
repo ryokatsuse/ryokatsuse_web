@@ -1,0 +1,282 @@
+---
+title: Web IDLって知ってる？
+publishDate: "2026-06-06"
+---
+
+import LinkCard from '../../../components/LinkCard.astro';
+
+<LinkCard url="https://frontend-phpcon-do-lt-web-idl.vercel.app/" />
+
+※この記事は、[フロントエンド・PHPカンファレンス北海道2026](https://frontend-php-con.hokkaido.jp/)の発表内容で話せなかった内容も含んだものになります。
+
+
+## Web IDLとは？
+
+WebAPIをどう使うか、どう実装するかを確認する時にまず参照するドキュメントとして[MDN](https://developer.mozilla.org/ja/)があります。
+
+
+MDNの各APIページには『仕様書』セクションがありリンクが貼られています。
+
+![MDNの各APIページには『仕様書』セクションがありURL Standardへのリンクが貼られている](/images/mdn-top-highlight.png)
+
+
+仕様書のリンクから遷移すると、各APIの一次情報に辿り着くことができますが、その仕様書の中に、APIのインターフェースが定義されている部分があります。これはWeb IDL(Web Interface Definition Language)と呼ばれるもので、APIのインターフェースを定義するための言語になります。
+
+![Web IDLブロックがハイライト表示されている](/images/webidl-search-param-focus.png)
+
+Web IDLは、WebのほぼすべてのAPIで使用されており、Web IDLを確認することで、APIのインターフェースとブラウザでの実装の互換性を相互に確認することが可能です。MDNに記載されている情報でも、おおよそ確認することは可能ですが、情報源としてはWeb IDLで定義した内容から作成されています。
+
+
+## Web IDLを読む
+
+以下は、[URLSearchParams](https://url.spec.whatwg.org/#urlsearchparams)のWeb IDLの一部になります。
+
+```ts
+
+[Exposed=*]
+interface URLSearchParams {
+  constructor(optional USVString init = "");
+  readonly attribute unsigned long size;
+
+  undefined append(USVString name, USVString value);
+  USVString? get(USVString name);
+  sequence<USVString> getAll(USVString name);
+  boolean has(USVString name, optional USVString value);
+  undefined sort();
+  // delete, set ほか省略
+
+  stringifier;
+};
+
+```
+このWeb IDLを元にTypeScriptの型が定義された`lib.dom.d.ts`は、以下になります。
+
+```ts
+
+interface URLSearchParams {
+  readonly size: number;
+
+  append(name: string, value: string): void;
+  get(name: string): string | null;
+  getAll(name: string): string[];
+  has(name: string, value?: string): boolean;
+  sort(): void;
+  toString(): string;
+  // delete, set, forEach ほか省略
+}
+
+declare var URLSearchParams: {
+  new (init?: string): URLSearchParams;
+};
+```
+
+見た目は、結構似ています。普段からTypeScriptを触っている人からすると読むのはそこまで難しくありません。それぞれの違いを見ていきます。
+
+
+### 戻り値の型と引数の型の位置
+
+まず中身のメソッドの`append`と`get`を見ていきます。TypeScriptでは、通常、戻り値や引数の型は後ろに記述しますが、Web IDLでは、戻り値や引数の型は前に記述されています。
+
+```ts
+// Web IDL
+undefined append(USVString name, USVString value);
+USVString? get(USVString name);
+// TypeScript
+append(name: string, value: string): void;
+get(name: string): string | null;
+```
+
+`append`の方をみると、`undefined`は、何も返さないということを指します。つまりTypeScriptでいうところの`void`に相当します。
+
+### 文字列の定義
+
+`get`では、[USVString](https://webidl.spec.whatwg.org/#idl-USVString)という型が定義されています。実は、Web IDLでは文字列の型は3種類あります。
+
+| 型 | 対応するもの | 特徴・用途 |
+| --- | --- | --- |
+| `DOMString` | 文字列（JavaScriptの`string`と同等） | 最も一般的な文字列型。コードユニットを解釈しない。サロゲートコードポイントの不一致を含む場合がある。 |
+| `ByteString` | バイト列 | 0〜255のバイトを表す。HTTPなどバイトと文字列を相互に扱うプロトコルとのやり取りにのみ使う |
+| `USVString` | スカラー値文字列（Unicode scalar values） | テキスト処理を行い、スカラー値の列が必要なAPIに使う。`URLSearchParams`のように文字を扱うAPIで採用される |
+
+`DOMString`は`null`を含まないため、`null`を許容するには`DOMString?`のようにnullableにする必要があります。基本的には`DOMString`を使い、テキスト処理が必要な場合に`USVString`、バイト列を扱う場合に`ByteString`を使う、という使い分けになります。
+
+
+### 拡張属性
+
+Web IDLの先頭に`[Exposed=*]`等の記述があります。これは、拡張属性と呼ばれるもので、インターフェースの定義に対して、メタ情報を提供するためのものになります。JavaScript/TypeScriptではこのような記述はありません。
+
+例として、`[Exposed=*]`は、このインターフェースがすべてのグローバル環境で利用可能であることを示しています。例えば、`[Exposed=Window]`と指定されている場合、そのインターフェースはWindow環境でのみ利用可能であることを意味します。
+
+他にも`[SecureContext]`（HTTPS必須）や、`[SameObject]`（毎回同じものを返す）など様々な定義があります。
+
+## TypeScriptとの関係性
+
+先ほどまでは`lib.dom.d.ts`の定義と照らし合わせて見てきましたが、実は`lib.dom.d.ts`は、Web IDLの情報を元に自動生成されたものになります。
+
+Microsoftが開発している[TypeScript-DOM-lib-generator](https://github.com/microsoft/TypeScript-DOM-lib-generator)を利用して生成されています。
+
+以下のZennの記事に詳しくまとめられています。
+
+<LinkCard url="https://zenn.dev/keita_hino/articles/2f6c2a19978fa8" />
+
+
+「Web IDLを元に自動生成されている」と書きましたが、実際にどういう流れで`lib.dom.d.ts`が出来上がっているのかを、もう少し具体的に見ていきます。
+
+生成に使われる入力（インプット）は、大きく分けて2つあります。
+
+1. **Web IDLの定義そのもの** … 「どんなインターフェースがあるのか」を知るための情報
+2. **ブラウザの実装状況のデータ** … 「そのインターフェースを採用してよいか」を判断するための情報
+
+### webref
+
+各仕様書のページからひとつずつ手で集めているわけではありません。
+
+W3Cが管理している[webref](https://github.com/w3c/webref)というプロジェクトが、WHATWGやW3Cの仕様書をクロールして、そこに書かれているWeb IDLを読めるような形にして、おおよそ数時間おきに自動で抽出・更新しています。
+
+TypeScript-DOM-lib-generatorは、この`@webref/idl`を入力として取り込みます。つまり、
+
+```
+仕様書（URL Standardなど）
+  └─ webref がクロールしてWeb IDLを抽出
+       └─ @webref/idl（機械可読なIDL）
+            └─ TypeScript-DOM-lib-generator が読み込む
+```
+
+という流れで、私たちが普段書いている`lib.dom.d.ts`の型は、元を辿るとWeb IDLの仕様書に行き着くようになっています。
+
+### browser-compat-data
+
+仕様書に定義されていても、実際にはどのブラウザにも実装されていなかったり、1つのブラウザでしか動かない実験的なAPIも存在します。
+
+そういったものまで`lib.dom.d.ts`に入れてしまうと、TypeScript上は型エラーにならないのに実行するとブラウザで動かない、という状況が起きてしまいます。
+
+そこで使われるのが、MDNが管理している[browser-compat-data](https://github.com/mdn/browser-compat-data)です。
+
+これはMDNの各ページに表示されている「ブラウザの対応状況」の表の、元データにあたるものです。
+
+TypeScript-DOM-lib-generatorは、このbrowser-compat-dataを参照して、**2つ以上の主要なブラウザエンジンで実装されているAPIだけを採用する**というルールでフィルタリングしています。
+
+この「2エンジン以上」という基準は、ベンダー間で十分な合意が取れている（=今後も安定して使える見込みが高い）APIだけを型に含めるための線引きになっています。
+
+1つのエンジンでしか実装されていない段階のAPIは、原則として`lib.dom.d.ts`には入ってこないことになります。
+
+整理すると、Web IDLとbrowser-compat-dataはそれぞれ次のような役割を担っています。
+
+| データ | 提供元 | 役割 |
+| --- | --- | --- |
+| Web IDL（@webref/idl） | W3C webref | インターフェースの「形」を決める |
+| browser-compat-data | MDN | そのインターフェースを「採用してよいか」を決める |
+
+### inputfiles
+
+自動生成だけではうまくいかないケースもあります。仕様書のWeb IDLがそのままだとTypeScriptの型として扱いにくかったり、まだ仕様に反映されていない型を補いたいこともでてきます。
+
+TypeScript-DOM-lib-generatorでは、こうしたケースに対応するために`inputfiles/`ディレクトリにいくつかの調整用ファイルを持っています。
+
+- `addedTypes.jsonc` … 仕様データに足りない型を追加する
+- `overridingTypes.jsonc` … 仕様の型をTypeScript向けに上書きする
+- `removedTypes.jsonc` … 仕様にはあるが除外したい型を取り除く
+
+## WebAPIをいくつか見ていく
+
+ここからいくつかのAPIを例に、Web IDLを見ていき仕様を確認する方法を見ていきます。基本的にはMDNの情報で事足りるケースがほとんどですが、読めるようになると、より深くかつ正確な情報を理解できるようになります。
+
+### localstorage
+
+localStorageのWeb IDLは以下のようになっています。
+
+```ts
+// 一部抜粋
+[Exposed=Window]
+interface Storage {
+  readonly attribute unsigned long length;
+  DOMString? key(unsigned long index);
+  ...
+};
+```
+
+`[Exposed=Window]`とあるので、Window環境でのみ利用可能なAPIであることがわかります。Worker環境などでは利用できません。（Worker環境で近いことをする場合は[IndexedDB](https://developer.mozilla.org/ja/docs/Web/API/IndexedDB_API)を使いましょう！）
+
+### fetch()
+
+fetchのWeb IDLは以下のようになっています。
+
+```ts
+// HTML仕様: mixinを2回includes
+Window includes WindowOrWorkerGlobalScope;
+WorkerGlobalScope includes WindowOrWorkerGlobalScope;
+
+// Fetch仕様: mixin に fetch を追加
+partial interface mixin WindowOrWorkerGlobalScope {
+  Promise<Response> fetch(RequestInfo input, ...);
+};
+```
+
+ここで出てくる`interface mixin`と`includes`が、`fetch()`を読む上でのポイントになります。
+
+`interface mixin`は、それ単体でインターフェースになるわけではなく、**複数のインターフェースに共通で混ぜ込むためのメンバーのまとまり**を定義したものです。そのままでは使われず、`includes`を使って他のインターフェースに混ぜ込むことで初めて有効になります。
+
+次のように読み解くことができます。
+
+1. `WindowOrWorkerGlobalScope`という、WindowとWorkerの両方に共通させたいメンバーのまとまりがある
+2. それを`Window includes ...`でWindow環境に、`WorkerGlobalScope includes ...`でWorker環境に、それぞれ混ぜ込んでいる
+3. Fetch仕様側で、その`WindowOrWorkerGlobalScope`に`fetch()`を追加している（`partial`は「既存の定義に後から付け足す」という意味）
+
+つまり`fetch()`はブラウザのWindow環境でも、Web Worker環境でも同じように使える、というわけです。
+
+### SecureContext
+
+Navigator.clipboardのWeb IDLは以下のようになっています。
+
+```ts
+// 一部抜粋
+[SecureContext, Exposed=Window]
+interface Clipboard { ... };
+
+partial interface Navigator {
+  [SecureContext, SameObject]
+  readonly attribute Clipboard clipboard;
+};
+
+```
+`SecureContext`は、HTTPSとlocalhostでアクセスしているときにのみ利用可能なAPIであることを示しています。つまりこのAPIは、HTTP環境では利用できないことを意味しています。
+
+最近はHTTP自体減ってきていると思いますが、定義としてもしっかり記述されていることが見て取れます。
+
+### 文字化け
+
+先ほどのStringの定義のところで、Web IDLには`DOMString`、`USVString`、`ByteString`の3種類の文字列があると説明しました。
+
+```ts
+// URL
+[Exposed=*]
+interface URL {
+  constructor(USVString url, optional USVString base);
+  stringifier attribute USVString href;
+  ...
+};
+
+// Headers
+[Exposed=(Window,Worker)]
+interface Headers {
+  undefined append(ByteString name, ByteString value);
+  ByteString? get(ByteString name);
+  ...
+};
+
+```
+
+URLとHeadersのWeb IDLを見てみると、URLは`USVString`、Headersは`ByteString`の文字列が受け取れることが分かります。
+
+
+実際に仕様通りエラーになるかを以下のCodePenで試しましたので参照いただければと思います。
+
+<LinkCard url="https://codepen.io/editor/ryokatsuse/pen/019e671e-1eab-7305-9ccc-482d5f286f3a?console=true&file=%2Fscript.js%3A0%3A2898&orientation=left&panel=files&show=split" />
+
+## まとめ
+
+Web IDLについて簡単ですが、触れていきました。MDNの情報だけでも十分にAPIを使うことはできますが、Web IDLを読むことで、より正確にAPIの仕様を理解することができるようになりますので、読めるようになると便利？なこともあります。特にTypeScriptの型定義がない場合などは、Web IDLの定義を見に行くことで確認もできるようになります。
+
+AI時代に一次情報が大事という観点からも、Web IDLに興味を持っていただければ幸いです。
+
+
