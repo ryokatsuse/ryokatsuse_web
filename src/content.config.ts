@@ -10,6 +10,14 @@ const blogCollection = defineCollection({
     ogImageURL: z.string().optional(),
     twitterCard: z.string().optional(),
     description: z.string().optional(),
+    references: z
+      .array(
+        z.object({
+          title: z.string().optional(),
+          url: z.string().url(),
+        })
+      )
+      .optional(),
   }),
 });
 

@@ -1,0 +1,36 @@
+---
+type Reference = {
+  title?: string;
+  url: string;
+};
+
+interface Props {
+  references?: Reference[];
+}
+
+const { references = [] } = Astro.props;
+---
+
+{references.length > 0 && (
+  <section class="mt-8 rounded-lg border border-gray-200 bg-gray-100 dark:bg-gray-700 dark:border-gray-600" aria-labelledby="references-heading">
+    <h2 id="references-heading" class="font-bold px-4 py-3">
+      参照
+    </h2>
+    <div class="px-4 py-2">
+      <ul class="list-disc pl-5">
+        {references.map((reference) => (
+          <li class="mb-2 break-all">
+            <a
+              href={reference.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-black dark:text-white no-underline border-b border-transparent hover:border-gray-300 dark:hover:border-gray-500 transition-colors"
+            >
+              {reference.title ?? reference.url}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+)}
