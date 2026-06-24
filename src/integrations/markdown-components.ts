@@ -15,14 +15,6 @@ export function markdownComponents(): AstroIntegration {
     hooks: {
       'astro:config:setup': ({ updateConfig }) => {
         updateConfig({
-          markdown: {
-            remarkPlugins: [],
-            rehypePlugins: [],
-            remarkRehype: {
-              allowDangerousHtml: true,
-              passThrough: ['html'],
-            },
-          },
           vite: {
             resolve: {
               alias: {
