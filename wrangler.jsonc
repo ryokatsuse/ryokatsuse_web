@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "infixer-net",
+  "main": "@astrojs/cloudflare/entrypoints/server",
+  "compatibility_date": "2026-07-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": {
+    "enabled": true
+  },
+  // Astro の session ストア。デプロイ時に Wrangler が自動でプロビジョニングする
+  "kv_namespaces": [
+    {
+      "binding": "SESSION"
+    }
+  ]
+}

@@ -1,27 +1,30 @@
-import { defineConfig, fontProviders, sessionDrivers } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
 import react from '@astrojs/react';
 import mdx from '@astrojs/mdx';
-import vercel from '@astrojs/vercel';
+import cloudflare from '@astrojs/cloudflare';
 import { markdownComponents } from './src/integrations/markdown-components';
 
 import db from '@astrojs/db';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://ryokatsu.dev',
+  site: 'https://infixer.net',
   output: 'server',
-  adapter: vercel(),
-  session: {
-    driver: sessionDrivers.memory(),
-  },
+  adapter: cloudflare({
+    // Workers 実行時に sharp は動かないため、画像最適化はビルド時に済ませる
+    imageService: 'compile',
+  }),
   integrations: [sitemap(), react(), mdx({
     // MDXファイルでグローバルに使用できるコンポーネントを設定
     components: {
       LinkCard: './src/components/LinkCard.astro',
     },
-  }), markdownComponents(), db()],
+  }), markdownComponents(), db({
+    // Workers 上では @libsql/client の Node ビルド（node:http 依存）が動かないため web ビルドを使う
+    mode: 'web',
+  })],
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp',
@@ -54,6 +57,11 @@ export default defineConfig({
     // 解決方法を明示的に設定
     resolve: {
       dedupe: ['react', 'react-dom'],
+      alias: {
+        // astro:db → hrana-client が cross-fetch(node-fetch) を掴むと Workers 上で落ちる
+        'cross-fetch': new URL('./src/lib/cross-fetch-shim.ts', import.meta.url)
+          .pathname,
+      },
     },
   },
   fonts: [

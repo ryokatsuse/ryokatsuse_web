@@ -25,3 +25,13 @@ pnpm-debug.log*
 
 .env.local
 .vercel
+
+# cloudflare
+.wrangler/
+
+# 生成物（scripts/generate-og.mts がビルド前に作る）
+public/og/
+.font-cache/
+
+# wrangler local secrets
+.dev.vars

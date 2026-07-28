@@ -20,7 +20,10 @@ export async function getStaticPaths() {
 const { entry } = Astro.props;
 const { Content, headings } = await render(entry);
 
-const assetModules = import.meta.glob<{ default: ImageMetadata }>('../../assets/**/*', { eager: true });
+const assetModules = import.meta.glob<{ default: ImageMetadata }>(
+  '../../assets/**/*',
+  { eager: true },
+);
 const assets = Object.values(assetModules);
 const ogImageURLAsset = assets.find((asset) => {
   if (!entry.data.ogImageURL) {
