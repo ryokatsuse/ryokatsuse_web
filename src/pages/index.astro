@@ -2,6 +2,7 @@
 import { type CollectionEntry, getCollection } from 'astro:content';
 import Layout from '../components/Layout.astro';
 import Materials from '../components/Materials.astro';
+import PoemList from '../components/PoemList.astro';
 import PostList from '../components/PostList.astro';
 import {
   epochMilliseconds,
@@ -14,6 +15,20 @@ const allBlogEntries = (await getCollection('blog')).sort(
     epochMilliseconds(b.data.publishDate) -
     epochMilliseconds(a.data.publishDate),
 );
+
+const latestPoems = (await getCollection('poems'))
+  .sort(
+    (a: CollectionEntry<'poems'>, b: CollectionEntry<'poems'>) =>
+      epochMilliseconds(b.data.publishDate) -
+      epochMilliseconds(a.data.publishDate),
+  )
+  .slice(0, 3)
+  .map((poem: CollectionEntry<'poems'>) => ({
+    title: poem.data.title,
+    slug: poem.id,
+    date: formatLongDate(poem.data.publishDate),
+    datetime: toISOString(poem.data.publishDate),
+  }));
 
 const description = 'JavaScriptエンジニア。インターフェースデザインが好き。';
 
@@ -93,6 +108,13 @@ const blogEntries: BlogEntry[] = allBlogEntries.map(
     <PostList items={blogEntries.slice(0, 4)} />
   </section>
   <div><a class="text-black dark:text-white underline hover:hover:no-underline" href="/blog">すべての記事一覧</a></div>
+
+  <h2 class="text-2xl font-bold mb-4 mt-12">最新のポエム</h2>
+  <p class="mb-8">うまく説明できないことを、ポエムのかたちで書いています。本文は縦書きです。</p>
+  <section class="mb-8">
+    <PoemList items={latestPoems} />
+  </section>
+  <div><a class="text-black dark:text-white underline hover:hover:no-underline" href="/poems" rel="prefetch">すべてのポエム</a></div>
   <h2 id="materials" class="text-2xl font-bold mb-4 mt-12 scroll-mt-20">登壇資料・作ったもの</h2>
   <p class="mb-8">これまでの登壇資料と、個人で作ったものをまとめています。</p>
   <section class="mb-12">

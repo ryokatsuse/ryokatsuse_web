@@ -1,0 +1,190 @@
+---
+import { type CollectionEntry, getCollection, render } from 'astro:content';
+import Layout from '../../components/Layout.astro';
+import { formatLongDate, toISOString } from '../../lib/datetime';
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+  const entries = await getCollection('poems');
+  return entries.map((entry: CollectionEntry<'poems'>) => ({
+    params: { slug: entry.id },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<Layout title={entry.data.title} description={entry.data.title} ogType="article" wide>
+  <div class="mb-8">
+    <a href="/poems" class="text-black dark:text-white underline hover:hover:no-underline inline-flex items-center gap-1">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M15 6l-6 6 6 6" />
+      </svg>
+      ポエム一覧に戻る
+    </a>
+  </div>
+
+  <article class="poem">
+    <div class="poem-scroll">
+      <div class="poem-vertical">
+        <h1 class="poem-title">{entry.data.title}</h1>
+        <time class="poem-date" datetime={toISOString(entry.data.publishDate)}>
+          {formatLongDate(entry.data.publishDate)}
+        </time>
+        <div class="poem-body">
+          <Content />
+        </div>
+      </div>
+    </div>
+    <p class="mt-4 text-xs text-gray-500 dark:text-neutral-400">※ 右から左へ読みます。横にスクロールできます。</p>
+  </article>
+</Layout>
+
+<script>
+  // 縦中横（tate-chu-yoko）: 3文字までの数字を正立させる。
+  // text-combine-upright は要素単位でしか効かず、桁数で自動判定する
+  // `digits` の値はどのブラウザも未実装なので、ここで数字だけを包む。
+  const body = document.querySelector('.poem-body');
+
+  if (body) {
+    const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+    const textNodes: Text[] = [];
+    while (walker.nextNode()) {
+      textNodes.push(walker.currentNode as Text);
+    }
+
+    for (const node of textNodes) {
+      const text = node.nodeValue ?? '';
+      if (!/\d/.test(text)) continue;
+
+      const fragment = document.createDocumentFragment();
+      let lastIndex = 0;
+
+      for (const match of text.matchAll(/\d+(?:\.\d+)?/g)) {
+        // 4文字以上を組むと潰れて読めないので横倒しのままにする
+        if (match[0].length > 3) continue;
+
+        const index = match.index ?? 0;
+        fragment.append(text.slice(lastIndex, index));
+
+        const combined = document.createElement('span');
+        combined.className = 'tcy';
+        combined.textContent = match[0];
+        fragment.append(combined);
+
+        lastIndex = index + match[0].length;
+      }
+
+      if (lastIndex === 0) continue;
+
+      fragment.append(text.slice(lastIndex));
+      node.replaceWith(fragment);
+    }
+  }
+</script>
+
+<style>
+  /*
+   * 横スクロールはこのコンテナの中だけで完結させる。
+   * スクロールの開始位置を右端にするため、コンテナ自体を縦書きにしている。
+   */
+  .poem-scroll {
+    /* rtl にするとスクロールの開始位置が右端になり、詩の書き出しから読める */
+    direction: rtl;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    padding-block: 0.5rem;
+  }
+
+  .poem-vertical {
+    direction: ltr;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-feature-settings: 'vpal' 1, 'palt' 1;
+    height: min(72vh, 34rem);
+    /* 縦書きの行間＝列の間隔 */
+    line-height: 2.4;
+    text-align: start;
+  }
+
+  .poem-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    margin-inline-start: 1.5rem;
+  }
+
+  .poem-date {
+    font-size: 0.8125rem;
+    letter-spacing: 0.1em;
+    color: oklch(55.1% 0.027 264.364);
+    margin-inline-start: 2rem;
+  }
+
+  :global(html.dark) .poem-date {
+    color: oklch(70.7% 0.022 261.325);
+  }
+
+  /*
+   * 連と連の左右の間隔は gap で取る。
+   * 縦書きではブロック方向が右→左なので flex-direction: column がその軸になる。
+   * margin だと相殺が起きて間隔が意図どおりにならない。
+   */
+  .poem-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* 改行を活かして詩の行をそのまま表示する */
+  .poem-body :global(p) {
+    white-space: pre-wrap;
+    /* 縦書きでは inline-start ＝ 上端。連の書き出しを少し下げる */
+    margin-inline-start: 1.75rem;
+  }
+
+  /* 縦中横。スクリプトで数字を包んだ span に効かせる */
+  .poem-body :global(.tcy) {
+    text-combine-upright: all;
+    letter-spacing: normal;
+  }
+
+  /* 本文中の --- を「大きな間」として使う */
+  .poem-body :global(hr) {
+    border: none;
+    margin: 0;
+    flex: 0 0 auto;
+    inline-size: 100%;
+    block-size: 4rem;
+  }
+
+  @media (max-width: 640px) {
+    .poem-vertical {
+      height: 68vh;
+      line-height: 2.2;
+    }
+
+    .poem-title {
+      font-size: 1.25rem;
+      margin-inline-start: 1.25rem;
+    }
+
+    .poem-body {
+      gap: 2rem;
+    }
+
+    .poem-body :global(p) {
+      margin-inline-start: 1.5rem;
+    }
+
+    .poem-body :global(hr) {
+      block-size: 2.5rem;
+    }
+  }
+</style>

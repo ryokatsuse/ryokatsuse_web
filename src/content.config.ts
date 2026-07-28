@@ -15,12 +15,21 @@ const blogCollection = defineCollection({
         z.object({
           title: z.string().optional(),
           url: z.string().url(),
-        })
+        }),
       )
       .optional(),
   }),
 });
 
+const poemsCollection = defineCollection({
+  loader: glob({ pattern: '**/*.{md,mdx}', base: './src/content/poems' }),
+  schema: z.object({
+    title: z.string(),
+    publishDate: z.string(),
+  }),
+});
+
 export const collections = {
   blog: blogCollection,
+  poems: poemsCollection,
 };
