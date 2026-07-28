@@ -18,14 +18,27 @@ type BlogEntry = {
 // 静的ビルド用に設定を変更
 export const prerender = true;
 
+// ポエムはブログ記事とIDが衝突しないよう接頭辞を付ける
+const POEM_PREFIX = 'poems-';
+
+const toSlug = (id: string) => id.replace(/\//g, '-');
+
 // SSGの場合に使用するパス設定
 export async function getStaticPaths() {
   try {
-    const posts = await getCollection('blog');
+    const [posts, poems] = await Promise.all([
+      getCollection('blog'),
+      getCollection('poems'),
+    ]);
 
-    return posts.map((post) => ({
-      params: { slug: post.id.replace(/\//g, '-') },
-    }));
+    return [
+      ...posts.map((post) => ({
+        params: { slug: toSlug(post.id) },
+      })),
+      ...poems.map((poem) => ({
+        params: { slug: `${POEM_PREFIX}${toSlug(poem.id)}` },
+      })),
+    ];
   } catch (error) {
     console.error('getStaticPathsエラー:', error);
     return [];
@@ -58,6 +71,24 @@ export async function GET({ params, request }: APIContext) {
           ...cacheHeaders,
         },
       });
+    }
+
+    // ポエムのケースを処理（IDにハイフンを含むので変換せず突き合わせる）
+    if (params.slug.startsWith(POEM_PREFIX)) {
+      const poemSlug = params.slug.slice(POEM_PREFIX.length);
+      const poems = await getCollection('poems');
+      const poem = poems.find((entry) => toSlug(entry.id) === poemSlug);
+
+      if (poem) {
+        const body = await getOgImage(poem.data.title || 'No title');
+        return new Response(new Uint8Array(body), {
+          status: 200,
+          headers: {
+            'Content-Type': 'image/png',
+            ...cacheHeaders,
+          },
+        });
+      }
     }
 
     // ブログ記事のケースを処理

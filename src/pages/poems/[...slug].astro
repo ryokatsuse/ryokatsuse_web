@@ -17,7 +17,13 @@ const { entry } = Astro.props;
 const { Content } = await render(entry);
 ---
 
-<Layout title={entry.data.title} description={entry.data.title} ogType="article" wide>
+<Layout
+  title={entry.data.title}
+  description={entry.data.title}
+  ogType="article"
+  image={`/og/poems-${entry.id.replace(/\//g, '-')}.png`}
+  wide
+>
   <div class="mb-8">
     <a href="/poems" class="text-black dark:text-white underline hover:hover:no-underline inline-flex items-center gap-1">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
