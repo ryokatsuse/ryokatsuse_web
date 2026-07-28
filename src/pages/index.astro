@@ -1,8 +1,8 @@
 ---
 import { type CollectionEntry, getCollection } from 'astro:content';
 import Layout from '../components/Layout.astro';
-import Lists from '../components/Lists.astro';
 import Materials from '../components/Materials.astro';
+import PostList from '../components/PostList.astro';
 import {
   epochMilliseconds,
   formatLongDate,
@@ -27,7 +27,8 @@ Astro.response.headers.set(
 type BlogEntry = {
   title: string;
   slug: string;
-  meta: string;
+  date: string;
+  datetime: string;
   description?: string;
 };
 
@@ -62,9 +63,8 @@ const blogEntries: BlogEntry[] = allBlogEntries.map(
     return {
       title: post.data.title,
       slug,
-      meta: `<time datetime="${toISOString(post.data.publishDate)}">
-      ${formatLongDate(post.data.publishDate)}
-    </time>`,
+      date: formatLongDate(post.data.publishDate),
+      datetime: toISOString(post.data.publishDate),
       description,
     };
   },
@@ -75,18 +75,25 @@ const blogEntries: BlogEntry[] = allBlogEntries.map(
   <h1 class="sr-only">ryokatsu.dev — JavaScript エンジニアのブログ</h1>
   <section class="mb-12 text-lg">
     <p>都内でソフトウェアエンジニアをしています。技術系はフロントエンドネタの記事が多めです。その他に雑多な学びや思考を書いています。</p>
-    <ul class="mt-4 flex gap-x-2">
-      <li><a class="text-black dark:text-white underline hover:hover:no-underline" href="https://x.com/ryo__kts">X</a></li>
-      <li><a class="text-black dark:text-white underline hover:hover:no-underline" href="https://github.com/ryokatsuse">GitHub</a></li>
-      <li><a class="text-black dark:text-white underline hover:hover:no-underline" href="https://scrapbox.io/ryokatsu">Cosense</a></li>
-    </ul>
+    <p class="mt-4">
+      <a
+        class="about-link group inline-flex items-center gap-2 rounded-full border border-gray-300 px-4 py-2 text-base font-bold text-gray-900! no-underline transition hover:border-gray-900 hover:bg-gray-900 hover:text-white! focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-neutral-600 dark:text-gray-50! dark:hover:border-white dark:hover:bg-white dark:hover:text-neutral-900!"
+        href="/about"
+        rel="prefetch"
+      >
+        About
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="transition-transform duration-200 group-hover:translate-x-0.5">
+          <path d="M9 6l6 6-6 6" />
+        </svg>
+      </a>
+    </p>
   </section>
-  <h2 class="text-2xl font-bold mb-8">ブログの記事</h2>
-  <section class="mb-12">
-    <Lists items={blogEntries.slice(0, 10)} />
+  <h2 class="text-2xl font-bold mb-8">最近の投稿記事</h2>
+  <section class="mb-8">
+    <PostList items={blogEntries.slice(0, 4)} />
   </section>
   <div><a class="text-black dark:text-white underline hover:hover:no-underline" href="/blog">すべての記事一覧</a></div>
-  <h2 class="text-2xl font-bold mb-4 mt-12">登壇資料・作ったもの</h2>
+  <h2 id="materials" class="text-2xl font-bold mb-4 mt-12 scroll-mt-20">登壇資料・作ったもの</h2>
   <p class="mb-8">これまでの登壇資料と、個人で作ったものをまとめています。詳しくは<a class="text-black dark:text-white underline hover:hover:no-underline" href="https://scrapbox.io/ryokatsu/%E6%88%90%E6%9E%9C%E7%89%A9">成果物</a>にも書いています。</p>
   <section class="mb-12">
     <Materials />

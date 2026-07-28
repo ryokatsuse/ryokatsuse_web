@@ -32,7 +32,7 @@ const tabs = [
           aria-controls={`panel-${tab.id}`}
           aria-selected={index === 0 ? 'true' : 'false'}
           tabindex={index === 0 ? 0 : -1}
-          class="flex-1 whitespace-nowrap rounded-md px-4 py-2 text-sm font-bold text-gray-600 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 aria-selected:bg-white aria-selected:text-gray-900 aria-selected:shadow-sm dark:text-neutral-300 dark:aria-selected:bg-neutral-900 dark:aria-selected:text-white"
+          class="flex-1 cursor-pointer whitespace-nowrap rounded-md px-4 py-2 text-sm font-bold text-gray-600 transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 aria-selected:bg-white aria-selected:text-gray-900 aria-selected:shadow-sm dark:text-neutral-300 dark:aria-selected:bg-neutral-900 dark:aria-selected:text-white"
         >
           {tab.label}
           <span class="ml-1 text-xs font-normal">({tab.count})</span>
