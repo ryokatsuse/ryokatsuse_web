@@ -1,0 +1,32 @@
+---
+import { type CollectionEntry, getCollection } from 'astro:content';
+import Layout from '../../components/Layout.astro';
+import PoemList from '../../components/PoemList.astro';
+import {
+  epochMilliseconds,
+  formatLongDate,
+  toISOString,
+} from '../../lib/datetime';
+
+const poems = (await getCollection('poems'))
+  .sort(
+    (a: CollectionEntry<'poems'>, b: CollectionEntry<'poems'>) =>
+      epochMilliseconds(b.data.publishDate) -
+      epochMilliseconds(a.data.publishDate),
+  )
+  .map((poem: CollectionEntry<'poems'>) => ({
+    title: poem.data.title,
+    slug: poem.id,
+    date: formatLongDate(poem.data.publishDate),
+    datetime: toISOString(poem.data.publishDate),
+  }));
+
+const description = '思いついたことをポエムのかたちで書いています。';
+---
+
+<Layout title="ポエム" description={description} wide>
+  <h1 class="text-2xl font-bold mb-4">ポエム</h1>
+  <p class="mb-8">技術のことも、そうでないことも、うまく説明できないものはポエムのかたちで置いています。本文は縦書きで表示しています。</p>
+
+  <PoemList items={poems} />
+</Layout>

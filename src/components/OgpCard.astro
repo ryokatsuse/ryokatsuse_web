@@ -1,0 +1,124 @@
+---
+import type { OgpData } from '../lib/ogp';
+
+export interface Props {
+  url: string;
+  ogp: OgpData;
+  /** カード上部に出すラベル（社外/社内 など） */
+  badge?: string;
+  /** 補足情報（イベント名など） */
+  note?: string;
+  /** 日付 (YYYY-MM-DD) */
+  date?: string;
+  /** OGPのdescriptionより優先して表示する説明 */
+  description?: string;
+}
+
+const { url, ogp, badge, note, date, description } = Astro.props;
+
+const domain = new URL(url).hostname.replace(/^www\./, '');
+const text = description || ogp.description;
+const formattedDate = date
+  ? `${date.slice(0, 4)}.${date.slice(5, 7)}.${date.slice(8, 10)}`
+  : undefined;
+---
+
+<a
+  href={url}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="ogp-card group flex h-full flex-col overflow-hidden rounded-lg border border-gray-200 bg-white no-underline transition hover:border-gray-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-500"
+>
+  <div class="relative aspect-video w-full shrink-0 overflow-hidden bg-gray-100 dark:bg-neutral-800">
+    <!-- 画像が無い・読み込めない場合のフォールバック -->
+    <div class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 p-4 text-center text-sm font-bold text-gray-500 dark:from-neutral-800 dark:to-neutral-700 dark:text-neutral-300">
+      <span class="line-clamp-3">{ogp.title}</span>
+    </div>
+    {ogp.image && (
+      <img
+        src={ogp.image}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        class="absolute inset-0 h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+        onerror="this.remove()"
+      />
+    )}
+    {badge && (
+      <span class="absolute left-2 top-2 rounded-full bg-black/75 px-2 py-0.5 text-xs font-medium text-white backdrop-blur-sm">
+        {badge}
+      </span>
+    )}
+  </div>
+
+  <div class="flex flex-1 flex-col gap-2 p-4">
+    {(formattedDate || note) && (
+      <p class="flex flex-wrap items-center gap-x-2 text-xs text-gray-500 dark:text-neutral-400">
+        {formattedDate && <time datetime={date}>{formattedDate}</time>}
+        {note && <span class="line-clamp-1 min-w-0">{note}</span>}
+      </p>
+    )}
+
+    <h3 class="text-base font-bold leading-snug text-gray-900 line-clamp-3 dark:text-gray-50">
+      {ogp.title}
+    </h3>
+
+    {text && (
+      <p class="text-sm leading-relaxed text-gray-600 line-clamp-2 dark:text-neutral-400">
+        {text}
+      </p>
+    )}
+
+    <div class="mt-auto flex items-center gap-2 pt-2 text-xs text-gray-500 dark:text-neutral-400">
+      {ogp.faviconUrl && (
+        <img
+          src={ogp.faviconUrl}
+          alt=""
+          width="16"
+          height="16"
+          loading="lazy"
+          class="h-4 w-4 rounded-sm"
+          onerror="this.style.display='none'"
+        />
+      )}
+      <span class="truncate">{domain}</span>
+    </div>
+  </div>
+</a>
+
+<style>
+  .ogp-card,
+  .ogp-card * {
+    text-decoration: none !important;
+  }
+
+  .line-clamp-1,
+  .line-clamp-2,
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-1 {
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    -webkit-line-clamp: 3;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ogp-card img {
+      transition: none;
+    }
+
+    .group:hover img {
+      transform: none;
+    }
+  }
+</style>

@@ -11,6 +11,8 @@ export interface Props {
   image?: string;
   ogType?: 'website' | 'article';
   twitterCard?: 'summary' | 'summary_large_image';
+  /** コンテンツ幅を少し広げる（トップページ用） */
+  wide?: boolean;
 }
 
 const siteTitle = 'ryokatsu.dev';
@@ -21,6 +23,7 @@ const {
   ogType = 'website',
   image,
   twitterCard = 'summary_large_image',
+  wide = false,
 } = Astro.props as Props;
 let canonicalURL: URL = new URL(Astro.url.pathname, Astro.site);
 
@@ -105,7 +108,7 @@ declare global {
     <a href="#main-content" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:bg-white focus:text-black focus:px-3 focus:py-2 focus:outline-2 focus:outline-blue-500 dark:focus:bg-neutral-900 dark:focus:text-white">本文へスキップ</a>
     <Header title={SITE_TITLE} />
     <main id="main-content" tabindex="-1" class="dark:bg-neutral-800">
-      <div class="max-w-3xl mx-auto p-4">
+      <div class={`${wide ? 'max-w-5xl' : 'max-w-3xl'} mx-auto p-4`}>
         <slot />
       </div>
     </main>

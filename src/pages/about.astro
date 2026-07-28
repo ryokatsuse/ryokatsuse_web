@@ -1,0 +1,178 @@
+---
+import Layout from '../components/Layout.astro';
+
+const description =
+  '都内でソフトウェアエンジニアをしています。JavaScript / フロントエンドとインターフェースデザインが好きです。';
+
+const links = [
+  {
+    label: 'X',
+    handle: '@ryo__kts',
+    href: 'https://x.com/ryo__kts',
+    icon: 'x',
+  },
+  {
+    label: 'GitHub',
+    handle: 'ryokatsuse',
+    href: 'https://github.com/ryokatsuse',
+    icon: 'github',
+  },
+  {
+    label: 'Cosense',
+    handle: 'ryokatsu',
+    href: 'https://scrapbox.io/ryokatsu',
+    icon: 'cosense',
+  },
+];
+
+const interests = [
+  'フロントエンド',
+  'アクセシビリティ',
+  'HTML',
+  'CSS',
+  'JavaScript',
+  'TypeScript',
+  'Haskell',
+  'Web標準',
+  'インターフェースデザイン',
+];
+---
+
+<Layout title="About - ryokatsu.dev" description={description} wide>
+  <!-- ヒーロー -->
+  <section class="relative overflow-hidden rounded-3xl border border-gray-200 bg-white px-6 py-12 sm:px-12 sm:py-16 dark:border-neutral-700 dark:bg-neutral-900">
+    <!-- 装飾（背景のぼかし） -->
+    <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+      <div class="absolute -left-16 -top-24 h-64 w-64 rounded-full bg-sky-400/25 blur-3xl dark:bg-sky-500/20"></div>
+      <div class="absolute -bottom-28 -right-10 h-72 w-72 rounded-full bg-fuchsia-400/20 blur-3xl dark:bg-fuchsia-500/15"></div>
+    </div>
+
+    <div class="relative flex flex-col items-center gap-6 text-center sm:flex-row sm:items-center sm:gap-8 sm:text-left">
+      <img
+        src="/images/ryokatsu.jpg"
+        alt=""
+        width="128"
+        height="128"
+        class="h-24 w-24 shrink-0 rounded-full bg-white object-cover shadow-lg ring-4 ring-white sm:h-32 sm:w-32 dark:ring-neutral-800"
+      />
+      <div class="min-w-0">
+        <p class="text-xs font-bold uppercase tracking-[0.2em] text-gray-500 dark:text-neutral-400">About</p>
+        <h1 class="mt-2 bg-gradient-to-r from-sky-500 via-indigo-500 to-fuchsia-500 bg-clip-text text-4xl font-bold leading-tight text-transparent sm:text-5xl dark:from-sky-300 dark:via-indigo-300 dark:to-fuchsia-300">
+          infixer
+        </h1>
+        <p class="mt-2 text-base text-gray-600 dark:text-neutral-300">
+          ソフトウェアエンジニア
+        </p>
+      </div>
+    </div>
+
+    <p class="relative mt-10 max-w-2xl text-lg leading-relaxed text-gray-700 dark:text-neutral-200">
+      都内でソフトウェアエンジニアをしています。技術系はフロントエンドネタの記事が多めです。その他に雑多な学びや思考を書いています。
+    </p>
+  </section>
+
+  <!-- リンク -->
+  <section class="mt-10">
+    <h2 class="text-sm font-bold tracking-[0.1em] text-gray-500 dark:text-neutral-400">リンク</h2>
+    <ul class="mt-4 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-3">
+      {links.map(link => (
+        <li class="min-w-0">
+          <a
+            href={link.href}
+            target="_blank"
+            rel="me noopener noreferrer"
+            class="about-link group flex h-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 no-underline transition hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-500"
+          >
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-700 transition group-hover:bg-gray-900 group-hover:text-white dark:bg-neutral-800 dark:text-neutral-200 dark:group-hover:bg-white dark:group-hover:text-neutral-900">
+              {link.icon === 'x' && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M18.9 2.3h3.3l-7.2 8.2 8.4 11.2h-6.6l-5.2-6.8-5.9 6.8H2.4l7.7-8.8L2 2.3h6.8l4.7 6.2 5.4-6.2Zm-1.2 17.6h1.8L7.4 4.1H5.4l12.3 15.8Z" />
+                </svg>
+              )}
+              {link.icon === 'github' && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.9 1.53 2.36 1.09 2.94.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.38.2 2.4.1 2.65.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85v2.74c0 .27.18.58.69.48A10 10 0 0 0 12 2Z" />
+                </svg>
+              )}
+              {link.icon === 'cosense' && (
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H19v15H6.5A2.5 2.5 0 0 0 4 20.5Z" />
+                  <path d="M8 7.5h7M8 11h5" />
+                </svg>
+              )}
+            </span>
+            <span class="min-w-0">
+              <span class="block font-bold text-gray-900 dark:text-gray-50">{link.label}</span>
+              <span class="block truncate text-sm text-gray-500 dark:text-neutral-400">{link.handle}</span>
+            </span>
+          </a>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- 興味のあること -->
+  <section class="mt-10">
+    <h2 class="text-sm font-bold tracking-[0.1em] text-gray-500 dark:text-neutral-400">興味のあること</h2>
+    <ul class="mt-4 flex list-none flex-wrap gap-2 p-0">
+      {interests.map(interest => (
+        <li class="rounded-full border border-gray-200 bg-white px-3 py-1.5 text-sm text-gray-700 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200">
+          {interest}
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <!-- サイト内の導線 -->
+  <section class="mt-10 mb-4">
+    <h2 class="text-sm font-bold tracking-[0.1em] text-gray-500 dark:text-neutral-400">このサイトの他のページ</h2>
+    <ul class="mt-4 grid list-none grid-cols-1 gap-4 p-0 sm:grid-cols-2">
+      <li>
+        <a
+          href="/blog"
+          class="about-link group flex h-full flex-col justify-between gap-2 rounded-xl border border-gray-200 bg-white p-5 no-underline transition hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-500"
+        >
+          <span class="font-bold text-gray-900 dark:text-gray-50">ブログの記事</span>
+          <span class="text-sm text-gray-600 dark:text-neutral-400">フロントエンドの技術ネタと、雑多な学びや思考</span>
+        </a>
+      </li>
+      <li>
+        <a
+          href="/materials"
+          rel="prefetch"
+          class="about-link group flex h-full flex-col justify-between gap-2 rounded-xl border border-gray-200 bg-white p-5 no-underline transition hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-500"
+        >
+          <span class="font-bold text-gray-900 dark:text-gray-50">登壇資料・作ったもの</span>
+          <span class="text-sm text-gray-600 dark:text-neutral-400">これまでの登壇スライドと、個人で作ったもの</span>
+        </a>
+      </li>
+      <li>
+        <a
+          href="/poems"
+          rel="prefetch"
+          class="about-link group flex h-full flex-col justify-between gap-2 rounded-xl border border-gray-200 bg-white p-5 no-underline transition hover:-translate-y-0.5 hover:border-gray-300 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-neutral-700 dark:bg-neutral-900 dark:hover:border-neutral-500"
+        >
+          <span class="font-bold text-gray-900 dark:text-gray-50">ポエム</span>
+          <span class="text-sm text-gray-600 dark:text-neutral-400">うまく説明できないものを、縦書きで置いている場所</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+</Layout>
+
+<style>
+  .about-link,
+  .about-link * {
+    text-decoration: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-link {
+      transition: none;
+    }
+
+    .about-link:hover {
+      transform: none;
+    }
+  }
+</style>
