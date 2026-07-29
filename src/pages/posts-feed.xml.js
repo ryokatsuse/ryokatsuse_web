@@ -10,7 +10,7 @@ export async function GET(context) {
   );
 
   return rss({
-    title: 'ryokatsu.dev',
+    title: 'infixer.net',
     description: '雑記やエンジニアリングの記事',
     site: context.site,
     items: allBlogEntries.map((entry) => ({

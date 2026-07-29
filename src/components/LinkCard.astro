@@ -11,10 +11,15 @@ const pathname = new URL(url).pathname;
 const currentHost = Astro.url.host;
 
 // 内部リンクかどうかを判定
+// 旧ドメイン(ryokatsu.dev)は infixer.net へリダイレクトするため、内部リンク扱いのまま残す
+const INTERNAL_HOSTS = [
+  'infixer.net',
+  'www.infixer.net',
+  'ryokatsu.dev',
+  'www.ryokatsu.dev',
+];
 const isInternalLink =
-  domain === currentHost ||
-  domain === 'ryokatsu.dev' ||
-  domain === 'www.ryokatsu.dev';
+  domain === currentHost || INTERNAL_HOSTS.includes(domain);
 // ブログ記事へのリンクかどうかを判定
 const isBlogPost = isInternalLink && pathname.startsWith('/blog/');
 // ブログ記事のスラグを取得
