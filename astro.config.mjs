@@ -16,15 +16,21 @@ export default defineConfig({
     // Workers 実行時に sharp は動かないため、画像最適化はビルド時に済ませる
     imageService: 'compile',
   }),
-  integrations: [sitemap(), react(), mdx({
-    // MDXファイルでグローバルに使用できるコンポーネントを設定
-    components: {
-      LinkCard: './src/components/LinkCard.astro',
-    },
-  }), markdownComponents(), db({
-    // Workers 上では @libsql/client の Node ビルド（node:http 依存）が動かないため web ビルドを使う
-    mode: 'web',
-  })],
+  integrations: [
+    sitemap(),
+    react(),
+    mdx({
+      // MDXファイルでグローバルに使用できるコンポーネントを設定
+      components: {
+        LinkCard: './src/components/LinkCard.astro',
+      },
+    }),
+    markdownComponents(),
+    db({
+      // Workers 上では @libsql/client の Node ビルド（node:http 依存）が動かないため web ビルドを使う
+      mode: 'web',
+    }),
+  ],
   image: {
     service: {
       entrypoint: 'astro/assets/services/sharp',
@@ -59,8 +65,7 @@ export default defineConfig({
       dedupe: ['react', 'react-dom'],
       alias: {
         // astro:db → hrana-client が cross-fetch(node-fetch) を掴むと Workers 上で落ちる
-        'cross-fetch': new URL('./src/lib/cross-fetch-shim.ts', import.meta.url)
-          .pathname,
+        'cross-fetch': new URL('./src/lib/cross-fetch-shim.ts', import.meta.url).pathname,
       },
     },
   },
@@ -70,6 +75,9 @@ export default defineConfig({
       name: 'Noto Sans JP',
       cssVariable: '--font-noto-sans-jp',
       weights: ['400', '500', '700'],
+      fallbacks: ['Hiragino Sans', 'Yu Gothic', 'sans-serif'],
+      // CJKフォントではsize-adjustが約200%に誤算出されFOUT時に巨大表示になるため無効化
+      optimizedFallbacks: false,
     },
   ],
   markdown: {
