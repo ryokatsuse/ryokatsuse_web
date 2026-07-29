@@ -7,6 +7,13 @@
   "observability": {
     "enabled": true
   },
+  // infixer.net を Custom Domain として接続（DNS レコードと証明書は Cloudflare が自動管理）
+  "routes": [
+    {
+      "pattern": "infixer.net",
+      "custom_domain": true
+    }
+  ],
   // Astro の session ストア。デプロイ時に Wrangler が自動でプロビジョニングする
   "kv_namespaces": [
     {
